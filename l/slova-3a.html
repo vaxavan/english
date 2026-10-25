@@ -1097,7 +1097,7 @@ function cheer(ev,arg){
     if(text){ if(party) setTimeout(paws,250); return showCheer(text,true); }
     return;
   }
-  if(packCheers>=2||now-lastCheer<8000||!arg) return;
+  if(packCheers>=1||!arg) return;          // золотая середина: не больше одной похвалы за подход
   const who=nextSpeaker(), set=who==='niko'?NIKO:who==='iki'?IKI:CAT;
   if(ev==='persist') text=pickC(set.persist)+` («${arg.en}»)`;
   else if(ev==='comeback') text=pickC([`«${arg.en}» сначала не давалось, а ты вернулась к нему — и получилось!`,`С «${arg.en}» была ошибка, а теперь — верно. Так слова и запоминаются.`]);
