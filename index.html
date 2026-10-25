@@ -120,10 +120,27 @@ h2{font:600 12px/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;c
 .backup{font-size:13px;color:var(--dim);margin:14px 0 0}
 .backup button{border:0;background:none;padding:0;color:var(--dim);text-decoration:underline;font:inherit;cursor:pointer}
 .backup-msg{font-size:13px;color:var(--moss);margin:6px 0 0;min-height:1em}
-@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+.topbar{display:flex;justify-content:flex-end;margin:-6px 0 2px}
+.chip{font:13px/1 var(--f-body);border:1px solid var(--line);border-radius:999px;padding:6px 10px;background:var(--card);color:var(--dim);cursor:pointer}
+.chip.snd{font-size:15px}
+button,.lesson{transition:transform .12s ease,border-color .2s,box-shadow .2s,background-color .2s}
+button:active,.lesson:active{transform:scale(.98)}
+.lesson:hover{box-shadow:0 4px 14px rgba(18,36,28,.08)}
+.lesson .l-go{transition:transform .2s}
+.lesson:hover .l-go{transform:translateX(3px)}
+.bar i{transition:width .6s cubic-bezier(.3,1,.4,1)}
+.player:not([hidden]){animation:slideup .28s ease-out}
+@keyframes slideup{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.welcome{animation:popin .35s cubic-bezier(.3,1.4,.5,1)}
+@keyframes popin{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+.bubble{transition:opacity .2s}
+.hero-cat,.pet{transition:transform .15s}
+.hero-cat:active,.pet:active{transform:scale(.94)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 
 <div class="wrap">
+  <div class="topbar" id="sndHost"></div>
   <header class="hero">
     <div class="hero-cat" id="cat" role="button" tabindex="0" aria-label="Погладить Машку"></div>
     <div>
@@ -522,6 +539,52 @@ showHero((Math.random()<.3&&mixPhrase(HERO,learnedEns()))||pickC(HELLO[HERO][tod
   document.getElementById('wgo').onclick=()=>{ sound(who); bg.remove(); };
 })();
 render();
+/* ═══ ЗВУКИ И ОТКЛИК ИНТЕРФЕЙСА ═══
+   Одна мягкая «деревянно-стеклянная» палитра: всё тихое, короткое, без резких частот.
+   Ошибка — глухой мягкий звук, не «бззз»: ошибка не наказание.
+   Выключается кнопкой 🔊 в шапке, выбор общий для всего сайта (eng-sound). */
+const UI={
+  on(){ try{ return localStorage.getItem('eng-sound')!=='off'; }catch(e){ return true; } },
+  set(v){ try{ localStorage.setItem('eng-sound',v?'on':'off'); }catch(e){} },
+  tone(f,t,dur,vol,type){ const ac=Sound.ensure(); if(!ac||!this.on()) return;
+    const o=ac.createOscillator(), g=ac.createGain(), s=ac.currentTime+(t||0);
+    o.type=type||'sine'; o.frequency.setValueAtTime(f,s);
+    g.gain.setValueAtTime(0.0001,s); g.gain.exponentialRampToValueAtTime(vol||.12,s+0.008); g.gain.exponentialRampToValueAtTime(0.0001,s+dur);
+    o.connect(g); g.connect(Sound.out); o.start(s); o.stop(s+dur+0.02); },
+  vib(p){ try{ this.on()&&navigator.vibrate&&navigator.vibrate(p); }catch(e){} },
+  tap(){ this.tone(520,0,.06,.05,'triangle'); },
+  tick(){ this.tone(880,0,.05,.045,'triangle'); },
+  right(){ this.tone(784,0,.16,.1); this.tone(1175,.08,.22,.09); this.vib(12); },
+  wrong(){ this.tone(220,0,.18,.09,'sine'); this.tone(196,.07,.2,.07,'sine'); this.vib([25,40,25]); },
+  stage(){ [523,659,784].forEach((f,i)=>this.tone(f,i*.09,.22,.08)); },
+  finish(){ [523,659,784,1047].forEach((f,i)=>this.tone(f,i*.1,.3,.08)); this.tone(1319,.42,.5,.06); },
+  sparkle(){ [1568,2093,2637].forEach((f,i)=>this.tone(f,i*.06,.18,.04)); }
+};
+/* щелчок на любой обычной кнопке; у ответов и букв — свои звуки */
+document.addEventListener('pointerdown',e=>{
+  const b=e.target.closest('button,[role=button],.lesson,.pet,.box');
+  if(!b||b.matches('.opt,.key,.chipw')) return;
+  UI.tap();
+},true);
+/* плавная смена экранов */
+(function(){
+  const sc=document.getElementById('scene'); if(!sc||!window.MutationObserver) return;
+  let last=0;
+  new MutationObserver(()=>{ const now=Date.now(); if(now-last<120) return; last=now;
+    sc.classList.remove('enter'); void sc.offsetWidth; sc.classList.add('enter'); }).observe(sc,{childList:true});
+})();
+/* кнопка звука в шапке */
+function soundButton(host){
+  if(!host) return;
+  const b=document.createElement('button'); b.className='chip snd'; b.type='button';
+  const paint=()=>{ b.textContent=UI.on()?'🔊':'🔇'; b.setAttribute('aria-label',UI.on()?'Выключить звук':'Включить звук'); b.setAttribute('aria-pressed',String(!UI.on())); };
+  b.onclick=()=>{ UI.set(!UI.on()); paint(); if(UI.on()) UI.right(); };
+  paint(); host.appendChild(b);
+}
+
+soundButton(document.getElementById('sndHost'));
+/* урок открылся — звук «блеска», закрылся — щелчок */
+const _open=openLesson; openLesson=function(f,t){ UI.sparkle(); _open(f,t); };
 
 /* ═══ СОХРАНИТЬ / ВОССТАНОВИТЬ ПРОГРЕСС ═══ страховка: прогресс живёт в браузере телефона,
    а тут его можно выгрузить в файл и вернуть обратно (на новом телефоне или после очистки). */

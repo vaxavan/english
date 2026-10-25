@@ -209,12 +209,32 @@ body.purring main,body.purring .cat{animation:purr-shake .09s linear 16}
 @keyframes lick{from{transform:translateY(0) rotate(-4deg)}to{transform:translateY(-3px) rotate(4deg)}}
 .mk-tongue{transform-box:fill-box;transform-origin:50% 0;animation:tongue .7s ease-in-out infinite alternate}
 @keyframes tongue{from{transform:scaleY(.6)}to{transform:scaleY(1.1)}}
+/* ── отклик интерфейса ── */
+button{transition:transform .12s ease,background-color .2s,border-color .2s,color .2s,box-shadow .2s}
+button:active:not([disabled]){transform:scale(.97)}
+button:focus-visible,.lesson:focus-visible,[role=button]:focus-visible{outline:2px solid var(--moss);outline-offset:2px}
+.opt:hover{border-color:var(--moss)}
+.opt.right{animation:pop .35s cubic-bezier(.3,1.6,.5,1)}
+.opt.wrong{animation:nudge .3s}
+.key:active{background:var(--chalk)}
+.slot.pop{animation:pop .4s cubic-bezier(.3,1.6,.5,1);border-color:var(--moss)}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.04)}100%{transform:scale(1)}}
+.next:hover{filter:brightness(1.15)}
+.rail i{transition:background .35s ease}
+#scene.enter{animation:enter .28s ease-out}
+@keyframes enter{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.chip.snd{padding:5px 9px;font-size:15px;line-height:1}
+header{gap:8px}
+.brand{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+header .chip{white-space:nowrap;flex:none}
+@media (max-width:420px){ .brand{font-size:11px;letter-spacing:.1em} #cram{padding:7px 10px} }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <header>
   <span class="brand">Spotlight 6 · 3a</span><span class="spacer"></span>
+  <span id="sndHost"></span>
   <button class="chip mkbtn" id="catBtn" title="Машка: показать или спрятать"></button>
   <button class="chip" id="cram" aria-pressed="false">Скоро диктант</button>
 </header>
@@ -768,7 +788,7 @@ function bindPuzzle(root,onOpen){
     if(!st.keys) return keyModal(st);
     const i=+g.dataset.piece, m=Store.meta();
     Store.setMeta({opened:[...(m.opened||[]),i], keysUsed:(m.keysUsed||0)+1});
-    g.classList.add('opening'); squeakOrPurr();
+    g.classList.add('opening'); UI.sparkle(); setTimeout(squeakOrPurr,250);
     setTimeout(onOpen,520);
   });
 }
@@ -1075,6 +1095,53 @@ function intro(){
   size.onchange=e=>{PACK=+e.target.value; Store.setMeta({size:PACK}); buildPack(); intro();};
 }
 
+/* ═══ ЗВУКИ И ОТКЛИК ИНТЕРФЕЙСА ═══
+   Одна мягкая «деревянно-стеклянная» палитра: всё тихое, короткое, без резких частот.
+   Ошибка — глухой мягкий звук, не «бззз»: ошибка не наказание.
+   Выключается кнопкой 🔊 в шапке, выбор общий для всего сайта (eng-sound). */
+const UI={
+  on(){ try{ return localStorage.getItem('eng-sound')!=='off'; }catch(e){ return true; } },
+  set(v){ try{ localStorage.setItem('eng-sound',v?'on':'off'); }catch(e){} },
+  tone(f,t,dur,vol,type){ const ac=Sound.ensure(); if(!ac||!this.on()) return;
+    const o=ac.createOscillator(), g=ac.createGain(), s=ac.currentTime+(t||0);
+    o.type=type||'sine'; o.frequency.setValueAtTime(f,s);
+    g.gain.setValueAtTime(0.0001,s); g.gain.exponentialRampToValueAtTime(vol||.12,s+0.008); g.gain.exponentialRampToValueAtTime(0.0001,s+dur);
+    o.connect(g); g.connect(Sound.out); o.start(s); o.stop(s+dur+0.02); },
+  vib(p){ try{ this.on()&&navigator.vibrate&&navigator.vibrate(p); }catch(e){} },
+  tap(){ this.tone(520,0,.06,.05,'triangle'); },
+  tick(){ this.tone(880,0,.05,.045,'triangle'); },
+  right(){ this.tone(784,0,.16,.1); this.tone(1175,.08,.22,.09); this.vib(12); },
+  wrong(){ this.tone(220,0,.18,.09,'sine'); this.tone(196,.07,.2,.07,'sine'); this.vib([25,40,25]); },
+  stage(){ [523,659,784].forEach((f,i)=>this.tone(f,i*.09,.22,.08)); },
+  finish(){ [523,659,784,1047].forEach((f,i)=>this.tone(f,i*.1,.3,.08)); this.tone(1319,.42,.5,.06); },
+  sparkle(){ [1568,2093,2637].forEach((f,i)=>this.tone(f,i*.06,.18,.04)); }
+};
+/* щелчок на любой обычной кнопке; у ответов и букв — свои звуки */
+document.addEventListener('pointerdown',e=>{
+  const b=e.target.closest('button,[role=button],.lesson,.pet,.box');
+  if(!b||b.matches('.opt,.key,.chipw')) return;
+  UI.tap();
+},true);
+/* плавная смена экранов */
+(function(){
+  const sc=document.getElementById('scene'); if(!sc||!window.MutationObserver) return;
+  let last=0;
+  new MutationObserver(()=>{ const now=Date.now(); if(now-last<120) return; last=now;
+    sc.classList.remove('enter'); void sc.offsetWidth; sc.classList.add('enter'); }).observe(sc,{childList:true});
+})();
+/* кнопка звука в шапке */
+function soundButton(host){
+  if(!host) return;
+  const b=document.createElement('button'); b.className='chip snd'; b.type='button';
+  const paint=()=>{ b.textContent=UI.on()?'🔊':'🔇'; b.setAttribute('aria-label',UI.on()?'Выключить звук':'Включить звук'); b.setAttribute('aria-pressed',String(!UI.on())); };
+  b.onclick=()=>{ UI.set(!UI.on()); paint(); if(UI.on()) UI.right(); };
+  paint(); host.appendChild(b);
+}
+
+soundButton(document.getElementById('sndHost'));
+/* внутри сайта название урока уже есть в верхней полосе — в шапке его не дублируем */
+try{ if(window.top!==window){ const br=document.querySelector('header .brand'); if(br) br.style.visibility='hidden'; } }catch(e){}
+
 /* ═══ ПОДДЕРЖКА ═══ (договорились 25.10.2026)
    Хвалим за УСИЛИЕ, редко и по делу — чтобы не отвлекать. Только три повода:
    1) села учить в первый раз — начать самое трудное;
@@ -1143,7 +1210,7 @@ function showCheer(text,big,whoIn){
    этап не закрывается, пока все слова не сделаны. */
 function solved(){touchActive();queue.shift();step();}
 function retry(){const w=queue.shift();queue.splice(Math.min(2,queue.length),0,w);retriesTotal++;step();}
-function step(){ if(!queue.length){stageIx++;queue=[...pack]; if(stageIx<STAGES.length) cheer('stageDone',STAGES[stageIx-1]);} render(); }
+function step(){ if(!queue.length){stageIx++;queue=[...pack]; if(stageIx<STAGES.length){ if(STAGES[stageIx-1].id!=='look') UI.stage(); cheer('stageDone',STAGES[stageIx-1]);} } render(); }
 
 function drawRail(){
   rail.innerHTML='';
@@ -1205,9 +1272,9 @@ function render(){
       const b=document.createElement('button'); b.className='opt'; b.textContent=t;
       b.onclick=()=>{
         if(opts.dataset.lock)return; opts.dataset.lock='1';
-        if(t===answer){ b.classList.add('right'); say(w.en); streak++;
+        if(t===answer){ b.classList.add('right'); UI.right(); setTimeout(()=>say(w.en),180); streak++;
           cheer(mistakes.find(m=>m.en===w.en)?'comeback':(oldFails[w.en]&&!recalled[w.en]?'recall':'streak'),w); recalled[w.en]=1; setTimeout(solved,650); }
-        else{ b.classList.add('wrong');
+        else{ b.classList.add('wrong'); UI.wrong();
           [...opts.children].forEach(c=>{if(c.textContent===answer)c.classList.add('right')});
           note(w); streak=0; say(w.en); setTimeout(retry,1600); }
       };
@@ -1239,8 +1306,8 @@ function render(){
     else{ streak=0; if((stuck[w.en]||0)>=2) cheer('persist',w); }
     setTimeout((copyMode||!errNow)?solved:retry,700); };
   function tap(ch,k){
-    if(ch===L[typed]){ typed++; k.remove(); paint(); if(typed===L.length) done(); }
-    else{ k.classList.add('shake'); setTimeout(()=>k.classList.remove('shake'),300);
+    if(ch===L[typed]){ typed++; k.remove(); paint(); if(typed===L.length){ UI.right(); slot.classList.add('pop'); done(); } else UI.tick(); }
+    else{ k.classList.add('shake'); UI.wrong(); setTimeout(()=>k.classList.remove('shake'),300);
       errNow=true; if(!stuck[w.en])note(w); else wrongs[w.en]=(wrongs[w.en]||0)+1; stuck[w.en]=(stuck[w.en]||0)+1; }
   }
   if(!copyMode) tip.onclick=()=>{
@@ -1288,6 +1355,7 @@ function bindAsk(){
 
 /* ═══ ИТОГИ ═══ */
 function finish(){
+  setTimeout(()=>UI.finish(),150);
   Store.setMeta({packsDone:(Store.meta().packsDone||0)+1}); streak=0;
   rail.innerHTML=''; stageName.textContent='';
   const prizes=[]; let comeback=null;
