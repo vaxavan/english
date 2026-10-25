@@ -114,6 +114,9 @@ h2{font:600 12px/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;c
 .welcome b{display:block;font:600 12px/1 var(--f-body);color:var(--dim);letter-spacing:.06em;margin-bottom:6px}
 .welcome p{font:400 21px/1.3 var(--f-display);margin:0 0 14px;text-wrap:balance}
 .welcome button{width:100%;padding:15px;border:0;border-radius:12px;background:var(--ink);color:var(--paper);font:16px/1 var(--f-body);cursor:pointer}
+.bk-nudge{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:13px;color:var(--dim);background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:8px 12px;margin:14px 0 0}
+.bk-nudge button{border:0;background:none;color:var(--moss);font:600 13px var(--f-body);cursor:pointer;padding:2px 4px}
+.bk-nudge[hidden]{display:none!important}
 .backup{font-size:13px;color:var(--dim);margin:14px 0 0}
 .backup button{border:0;background:none;padding:0;color:var(--dim);text-decoration:underline;font:inherit;cursor:pointer}
 .backup-msg{font-size:13px;color:var(--moss);margin:6px 0 0;min-height:1em}
@@ -131,6 +134,8 @@ h2{font:600 12px/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;c
   <div class="bubble"><b id="who">Машка</b><span id="say">Выбирай урок — я посторожу остальные.</span></div>
   <div class="pets" id="pets" aria-label="Погладь зверей"></div>
 
+  <p class="bk-nudge" id="bkNudge" hidden>Давно не отправляла маме копию прогресса — на всякий случай.
+    <button type="button" id="bkNudgeGo">Отправить</button><button type="button" id="bkNudgeX" aria-label="Скрыть">✕</button></p>
   <h2>Слова</h2>
   <div class="list" id="words"></div>
   <h2>Тексты</h2>
@@ -138,7 +143,7 @@ h2{font:600 12px/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;c
 
   <p class="note">Прогресс хранится в этом телефоне или компьютере, в браузере. Если открыть ссылку на другом устройстве, там всё начнётся сначала.
   Новые уроки появляются здесь же — ссылка не меняется.</p>
-  <p class="backup"><button id="bkSave" type="button">Сохранить прогресс в файл</button> ·
+  <p class="backup"><button id="bkSave" type="button">Отправить маме копию прогресса</button> ·
     <button id="bkLoad" type="button">Восстановить из файла</button>
     <input id="bkFile" type="file" accept=".json,application/json" hidden></p>
   <p class="backup-msg" id="bkMsg" role="status"></p>
@@ -521,6 +526,14 @@ render();
 /* ═══ СОХРАНИТЬ / ВОССТАНОВИТЬ ПРОГРЕСС ═══ страховка: прогресс живёт в браузере телефона,
    а тут его можно выгрузить в файл и вернуть обратно (на новом телефоне или после очистки). */
 const bkMsg=document.getElementById('bkMsg');
+function markBackup(){ try{ localStorage.setItem('eng-backup',Date.now()); }catch(e){} document.getElementById('bkNudge').hidden=true; }
+(function nudge(){
+  let last=0, has=false;
+  try{ last=+localStorage.getItem('eng-backup')||0; has=LESSONS.some(l=>progress(l)>0); }catch(e){}
+  if(has && Date.now()-last>7*864e5) document.getElementById('bkNudge').hidden=false;
+  document.getElementById('bkNudgeX').onclick=()=>{ try{ localStorage.setItem('eng-backup',Date.now()-5*864e5); }catch(e){} document.getElementById('bkNudge').hidden=true; };
+  document.getElementById('bkNudgeGo').onclick=()=>document.getElementById('bkSave').click();
+})();
 function dumpProgress(){ const out={}; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); out[k]=localStorage.getItem(k); } }catch(e){} return out; }
 document.getElementById('bkSave').onclick=async()=>{
   const data={app:'english-mashka',savedAt:new Date().toISOString(),store:dumpProgress()};
@@ -528,11 +541,11 @@ document.getElementById('bkSave').onclick=async()=>{
   const blob=new Blob([JSON.stringify(data)],{type:'application/json'});
   const file=new File([blob],name,{type:'application/json'});
   try{
-    if(navigator.canShare&&navigator.canShare({files:[file]})){ await navigator.share({files:[file],title:'Прогресс по английскому'}); bkMsg.textContent='Готово. Файл можно отправить маме — так надёжнее.'; return; }
+    if(navigator.canShare&&navigator.canShare({files:[file]})){ await navigator.share({files:[file],title:'Прогресс по английскому'}); markBackup(); bkMsg.textContent='Готово! Копия у мамы — теперь ничего не потеряется.'; return; }
   }catch(e){ if(e&&e.name==='AbortError') return; }
   const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; document.body.appendChild(a); a.click(); a.remove();
   setTimeout(()=>URL.revokeObjectURL(a.href),2000);
-  bkMsg.textContent='Файл сохранён в «Загрузки». Перешли его маме — так надёжнее.';
+  markBackup(); bkMsg.textContent='Файл сохранён в «Загрузки». Перешли его маме — так надёжнее.';
 };
 document.getElementById('bkLoad').onclick=()=>document.getElementById('bkFile').click();
 document.getElementById('bkFile').onchange=e=>{
