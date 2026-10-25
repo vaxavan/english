@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#12241c">
+<title>Слова 3a — Road Safety</title>
+<style>
+:root{
+  --ink:#12241c; --paper:#f2efe6; --chalk:#e8e3d5;
+  --moss:#2f6b46; --leaf:#7fae8c; --clay:#b4573a;
+  --dim:#7b8a80; --line:rgba(18,36,28,.14);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{background:var(--paper);color:var(--ink);
+  font:16px/1.5 "Georgia","Iowan Old Style",serif;display:flex;flex-direction:column;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+
+header{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.brand{font:13px/1 system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.spacer{flex:1}
+.chip{font:13px/1 system-ui,sans-serif;border:1px solid var(--line);border-radius:999px;
+  padding:7px 12px;background:#fff;color:var(--dim)}
+.chip[aria-pressed="true"]{background:var(--moss);border-color:var(--moss);color:#fff}
+
+.rail{display:flex;gap:4px;padding:12px 18px 0}
+.rail i{flex:1;height:3px;background:var(--chalk);border-radius:2px;transition:background .25s}
+.rail i.done{background:var(--moss)} .rail i.now{background:var(--ink)}
+.stage{font:12px/1 system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);padding:11px 18px 0}
+
+main{flex:1;display:flex;flex-direction:column;justify-content:center;
+  padding:8px 18px 28px;max-width:640px;width:100%;margin:0 auto}
+.eyebrow{font:12px/1 system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin:0 0 6px}
+h1{font-size:clamp(30px,8vw,42px);font-weight:400;margin:0 0 8px;line-height:1.1}
+.word{font-size:clamp(34px,9vw,52px);line-height:1.1;margin:0 0 4px}
+.word.ru{font-size:clamp(26px,7vw,38px)}
+.trans{
+  font-size:clamp(24px,6.5vw,34px);line-height:1.2;margin:2px 0 6px;
+  color:var(--moss);
+}
+.sub{color:var(--dim);font:15px/1.45 system-ui,sans-serif;margin:0 0 20px}
+.model{font-size:clamp(28px,7vw,40px);letter-spacing:.06em;margin:0 0 16px;color:var(--moss)}
+
+.speak{display:inline-flex;align-items:center;gap:8px;margin:0 0 24px;border:1px solid var(--line);
+  border-radius:999px;padding:8px 16px;background:#fff;font:14px/1 system-ui,sans-serif;color:var(--dim)}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{text-align:left;padding:15px 18px;background:#fff;border:1px solid var(--line);border-radius:12px;
+  transition:background .15s,border-color .15s}
+.opt.right{background:#e8f2ea;border-color:var(--moss);color:var(--moss)}
+.opt.wrong{background:#f6e7e2;border-color:var(--clay);color:var(--clay)}
+
+.slot{min-height:60px;display:flex;flex-wrap:wrap;align-items:center;border-bottom:2px solid var(--ink);
+  padding:0 2px 10px;margin-bottom:20px;font-size:30px}
+.ghost{color:var(--chalk)}
+.pool{display:flex;flex-wrap:wrap;gap:8px}
+.key{min-width:46px;padding:13px 4px;text-align:center;background:#fff;border:1px solid var(--line);
+  border-radius:10px;font-size:21px}
+.key.shake{animation:nudge .3s;border-color:var(--clay);color:var(--clay)}
+@keyframes nudge{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+.next{margin-top:24px;width:100%;padding:16px;border-radius:12px;background:var(--ink);color:var(--paper);
+  font:16px/1 system-ui,sans-serif}
+.ghostbtn{margin-top:12px;width:100%;padding:12px;color:var(--dim);font:14px/1.35 system-ui,sans-serif}
+.ghostbtn[disabled]{opacity:.45;cursor:default}
+.row{display:flex;gap:10px;align-items:center;margin-top:10px}
+.half{flex:1;margin-top:0}
+.size{font:14px/1 system-ui,sans-serif;color:var(--dim);text-align:center}
+.size select{font:inherit;padding:5px 6px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+
+.cat{display:flex;gap:12px;align-items:flex-start;margin:20px 0 0;cursor:pointer}
+.cat svg{flex:none}
+.bubble{
+  position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;
+  padding:12px 14px;font:15px/1.4 system-ui,sans-serif;color:var(--ink);flex:1;margin-top:8px;
+}
+.bubble::before{
+  content:'';position:absolute;left:-7px;top:16px;width:12px;height:12px;
+  background:#fff;border-left:1px solid var(--line);border-bottom:1px solid var(--line);
+  transform:rotate(45deg);
+}
+.cells{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin:0 0 6px}
+.cell{width:38px;height:48px;border-bottom:3px solid var(--line);display:flex;
+  align-items:center;justify-content:center;font-size:27px;text-transform:lowercase}
+.cell.cur{border-bottom-color:var(--ink)}
+.cell.gap{width:14px;border-bottom-color:transparent}
+.cells.long{gap:5px}.cells.long .cell{width:27px;font-size:22px}
+.cells.xlong{gap:3px}.cells.xlong .cell{width:21px;font-size:18px}.cells.xlong .cell.gap{width:10px}
+.tipline{font:15px/1.45 system-ui,sans-serif;background:#fff;border-left:3px solid var(--clay);border-radius:0 10px 10px 0;padding:10px 13px;margin:0 0 18px}
+.photo{display:block;width:100%;border-radius:14px;margin:16px 0 4px}
+.photo+.sub{margin-top:6px}
+.cells.bad .cell{border-bottom-color:var(--clay);color:var(--clay);animation:nudge .3s}
+.hidden-input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.tree{display:block;margin:0 auto 6px;max-width:270px;width:100%}
+.count{text-align:center;font:14px/1.5 system-ui,sans-serif;color:var(--dim);margin:0 0 18px}
+.count b{color:var(--ink);font-weight:600}
+
+.glossary{list-style:none;padding:0;margin:24px 0 0;border-top:1px solid var(--line)}
+.glossary li{display:flex;justify-content:space-between;gap:14px;align-items:baseline;padding:9px 10px;
+  border-bottom:1px solid var(--line);margin:0 -10px;color:var(--dim);font-size:15px}
+.glossary li.up{background:#fff;color:var(--ink);border-left:3px solid var(--moss);border-bottom-color:transparent}
+.glossary li.on{background:#fff;color:var(--ink);border-left:3px solid var(--moss)}
+.g-en{font-size:17px}
+.g-ru{text-align:right;font:14px/1.3 system-ui,sans-serif}
+.mark{font:11px/1 system-ui,sans-serif;color:var(--moss);margin-left:7px}
+.new{font-style:normal;font:10px/1 system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--clay);margin-left:8px}
+
+.more{margin-top:18px}
+.more summary{
+  list-style:none;cursor:pointer;padding:11px 0;text-align:center;
+  font:14px/1 system-ui,sans-serif;color:var(--dim);
+  border-top:1px solid var(--line);
+}
+.more summary::-webkit-details-marker{display:none}
+.more summary::after{content:' ▾';opacity:.6}
+.more[open] summary::after{content:' ▴'}
+.more .glossary{margin-top:0;border-top:0}
+
+.tally{font-size:clamp(26px,7vw,38px);margin:0 0 8px;line-height:1.15}
+.missed{list-style:none;padding:0;margin:16px 0 0;border-top:1px solid var(--line)}
+.missed li{display:flex;justify-content:space-between;gap:14px;padding:11px 2px;border-bottom:1px solid var(--line)}
+.missed li span:last-child{color:var(--dim);text-align:right}
+.prize{display:flex;gap:14px;align-items:center;background:#fff;border:1px solid var(--moss);
+  border-radius:14px;padding:14px 16px;margin:18px 0 0}
+.prize svg{flex:none}
+.prize b{display:block;font-weight:400;font-size:18px}
+.prize span{font:13px/1.4 system-ui,sans-serif;color:var(--dim)}
+.hint{color:var(--dim);font:14px/1.45 system-ui,sans-serif;margin-top:18px}
+.nudge{background:#fff;border:1px solid var(--line);border-left:3px solid var(--moss);
+  border-radius:0 12px 12px 0;padding:13px 15px;margin:0 0 18px;font:14px/1.45 system-ui,sans-serif}
+.mk{align-items:center}
+.mk-pic{width:118px;flex:none}.mk-pic svg{width:100%;height:auto;display:block}
+.mk-name{display:block;font:600 12px/1.2 system-ui,sans-serif;color:var(--dim);letter-spacing:.04em;margin-bottom:2px}
+.cat.mk .bubble{margin-top:0}
+.chip.mkbtn{padding:2px 6px}.chip.mkbtn svg{width:30px;height:28px;display:block}
+.chip.mkbtn.off{opacity:.4}
+.mk-lid{transform-box:fill-box;transform-origin:50% 0;transform:scaleY(.42);animation:mk-blink 5.5s infinite}
+@keyframes mk-blink{0%,93%,100%{transform:scaleY(.42)}96%{transform:scaleY(1.05)}}
+.mk-lid-up{transform:scaleY(.22);animation:mk-blink-up 6s infinite}
+@keyframes mk-blink-up{0%,93%,100%{transform:scaleY(.22)}96%{transform:scaleY(1.05)}}
+.mk-roll{animation:mk-roll 2.4s ease-in-out infinite}
+@keyframes mk-roll{0%,100%{transform:translate(-1.6px,.4px)}50%{transform:translate(1.6px,-.6px)}}
+.mk-z{animation:mk-z 2.6s ease-in-out infinite}.mk-z2{animation-delay:.6s}
+@keyframes mk-z{0%,100%{opacity:.2;transform:translateY(2px)}50%{opacity:1;transform:translateY(-2px)}}
+.mk-bag .mk-tail{transform-origin:0% 100%}
+.mk-tail{transform-box:fill-box;transform-origin:0% 50%;animation:mk-tail 3.4s ease-in-out infinite}
+@keyframes mk-tail{0%,100%{transform:rotate(0)}50%{transform:rotate(-7deg)}}
+.mk-ear-r{transform-box:fill-box;transform-origin:30% 100%;animation:mk-ear 8s infinite}
+@keyframes mk-ear{0%,90%,100%{transform:rotate(0)}93%{transform:rotate(-9deg)}96%{transform:rotate(3deg)}}
+.qword{font-size:clamp(30px,8vw,44px);line-height:1.15;margin:0 0 8px}
+.qtr{font:17px/1.4 system-ui,sans-serif;color:var(--moss);margin:0 0 6px}
+.mic{width:100%;padding:16px;border-radius:12px;background:var(--moss);color:#fff;font:16px/1 system-ui,sans-serif;margin-top:18px}
+.mic.on{background:var(--clay)}
+.heardline{font:15px/1.45 system-ui,sans-serif;margin:0 0 10px}
+.heardline.ok{color:var(--moss)} .heardline.no{color:var(--clay)}
+.dirs{display:flex;flex-direction:column;gap:10px;margin:8px 0 6px}
+.qbtn{margin-top:12px;width:100%;padding:16px;border-radius:12px;background:#fff;border:1.5px solid var(--moss);color:var(--moss);font:16px/1 system-ui,sans-serif}
+.scope{margin:-6px 0 14px;font:14px/1.4 system-ui,sans-serif;color:var(--dim)}
+.scope button{color:var(--moss);text-decoration:underline;font:inherit;padding:0}
+.mk-pic.small{width:72px}
+.pg-nose{transform-box:fill-box;transform-origin:50% 50%;animation:pg-nose 1.6s ease-in-out infinite}
+@keyframes pg-nose{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.2px) scale(1.08)}}
+.pg-lid{transform-box:fill-box;transform-origin:50% 0;transform:scaleY(0);animation:pg-blink 4.8s infinite}
+@keyframes pg-blink{0%,92%,100%{transform:scaleY(0)}95%{transform:scaleY(1)}}
+.pg-ear{transform-box:fill-box;transform-origin:20% 100%;animation:mk-ear 7s infinite}
+.trs{margin:0 0 14px}
+.likeru{font:14px/1.4 system-ui,sans-serif;color:var(--moss);background:#e8f2ea;border-radius:8px;padding:6px 10px;margin:0 0 12px;display:inline-block}
+.tr-ru{font:17px/1.35 system-ui,sans-serif;color:var(--moss);margin:0}
+.tr-en{font:18px/1.35 "Lucida Sans Unicode","Arial Unicode MS","DejaVu Sans","Segoe UI",sans-serif;color:var(--dim);margin:2px 0 0;letter-spacing:.02em}
+.cheer{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) + 62px);transform:translateX(-50%);z-index:60;
+  display:flex;gap:10px;align-items:center;width:min(420px,calc(100vw - 32px));background:#fff;border:1px solid var(--line);
+  border-left:4px solid var(--moss);border-radius:14px;padding:8px 14px 8px 8px;box-shadow:0 8px 24px rgba(18,36,28,.16);
+  font:15px/1.35 system-ui,sans-serif;pointer-events:none;animation:ch-in .35s cubic-bezier(.3,1.4,.5,1);transition:opacity .4s,transform .4s}
+.cheer::after{content:'коснись, чтобы закрыть';position:absolute;right:12px;bottom:-18px;font:11px system-ui,sans-serif;color:var(--dim)}
+.cheer.bye{opacity:0;transform:translateX(-50%) translateY(-8px)}
+@keyframes ch-in{from{opacity:0;transform:translateX(-50%) translateY(-10px) scale(.96)}}
+.cheer-pic{width:52px;flex:none}.cheer-pic svg{width:100%;height:auto;display:block}
+.cheer.iki .cheer-pic{width:40px}
+body.purring main,body.purring .cat{animation:purr-shake .09s linear 16}
+@keyframes purr-shake{0%{transform:translate(0,0)}25%{transform:translate(.7px,-.4px)}50%{transform:translate(-.6px,.5px)}75%{transform:translate(.5px,.6px)}100%{transform:translate(0,0)}}
+.keyrow{display:flex;justify-content:center;gap:6px;align-items:center;font:14px/1.4 system-ui,sans-serif;color:var(--dim);margin:-2px 0 6px}
+.keyrow b{color:var(--ink)}
+.tree [data-piece]{cursor:pointer}
+.tree [data-piece].opening{transition:opacity .5s,transform .5s;opacity:0;transform:scale(.9);transform-box:fill-box;transform-origin:center}
+.modal-bg{position:fixed;inset:0;background:rgba(18,36,28,.45);z-index:70;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:var(--paper);border-radius:18px;padding:18px;width:min(420px,100%);box-shadow:0 12px 40px rgba(0,0,0,.25)}
+.modal h3{margin:0 0 6px;font-weight:400;font-size:24px}
+.modal .bar{height:8px;border-radius:99px;background:var(--chalk);overflow:hidden;margin:10px 0 4px}
+.modal .bar i{display:block;height:100%;background:var(--moss)}
+.paw{position:fixed;top:-30px;z-index:65;pointer-events:none;animation:paw-fall 1.8s ease-in forwards}
+@keyframes paw-fall{0%{transform:translate(0,0) rotate(0);opacity:0}10%{opacity:1}100%{transform:translate(var(--dx),75vh) rotate(40deg);opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <span class="brand">Spotlight 6 · 3a</span><span class="spacer"></span>
+  <button class="chip mkbtn" id="catBtn" title="Машка: показать или спрятать"></button>
+  <button class="chip" id="cram" aria-pressed="false">Скоро диктант</button>
+</header>
+<div class="rail" id="rail"></div>
+<div class="stage" id="stageName"></div>
+<main id="scene"></main>
+
+<script>
+/* ═══ СЛОВАРЬ ═══
+   phrase — словосочетание, показывается ПОСЛЕ того, как слово выучено.
+   Не для запоминания слова (исследования показывают, что для этого
+   контекст не помогает), а чтобы увидеть, как оно сочетается.
+   Там, где естественной пары нет, поля просто нет. */
+const LESSON={book:'Spotlight 6',unit:'Модуль 3 · урок 3a',title:'Road Safety'};
+/* is_new — выделено в Word List зелёным (новая лексика урока).
+   tr — транскрипция русскими буквами, приблизительная: опора для слуха. */
+const WORDS=[
+ {en:"pavement",ru:"тротуар",tr:"пэ́йвмэнт",is_new:true,tip:"pave — мостить. Pavement — вымощенная дорожка для людей.",ph:"walk on the pavement",phru:"идти по тротуару"},
+ {en:"pedestrian",ru:"пешеход",tr:"пэдэ́стриэн",is_new:true,tip:"Ударение на второй слог: пэ-ДЭ-стриэн. Корень ped- — «нога», как в «педаль».",ph:"pedestrians cross here",phru:"здесь переходят пешеходы"},
+ {en:"back seat",ru:"заднее сиденье",tr:"бэк си:т",is_new:true,tip:"back — сзади, seat — сиденье. Сиденье сзади.",ph:"sit in the back seat",phru:"сидеть на заднем сиденье"},
+ {en:"bike lane",ru:"велосипедная дорожка",tr:"байк лэйн",is_new:true,tip:"bike — велосипед (байк), lane — полоса. Полоса для велосипедов.",ph:"ride in the bike lane",phru:"ехать по велодорожке"},
+ {en:"bicycle helmet",ru:"велосипедный шлем",tr:"ба́йсикл хэ́лмит",is_new:true,tip:"bi — два, cycle — круг (как «цикл»): два колеса. Читается «БАЙ-сикл».",ph:"wear a bicycle helmet",phru:"надевать велошлем"},
+ {en:"lean out of the window",ru:"высовываться из окна",tr:"ли:н а́ут ов зэ уи́ндоу",is_new:true,tip:"В the тоже межзубный звук, как в both, только звонкий: кончик языка между зубами и голос. В транскрипции это ð.",ph:"Don't lean out of the window!",phru:"Не высовывайся из окна!"},
+ {en:"look both ways",ru:"смотреть в обе стороны",tr:"лук бо́усс уэйз",is_new:true,tip:"both — «боус» с межзубным th на конце: кончик языка между зубами, без голоса. В транскрипции это θ.",ph:"look both ways before you cross",phru:"посмотри в обе стороны, прежде чем переходить"},
+ {en:"on foot",ru:"пешком",tr:"он фут",is_new:true,tip:"Именно on foot, не by foot. А на транспорте — by: by bus, by car.",ph:"go to school on foot",phru:"ходить в школу пешком"},
+ {en:"parking zone",ru:"парковка",tr:"па́:кинг зоун",is_new:true,tip:"park — парковать + zone — зона. Всё как по-русски!",ph:"park in the parking zone",phru:"парковаться на парковке"},
+ {en:"seat belt",ru:"ремень безопасности",tr:"си:т бэлт",is_new:true,tip:"seat — сиденье, belt — ремень. Ремень у сиденья.",ph:"wear a seat belt",phru:"пристёгиваться ремнём"},
+ {en:"traffic lights",ru:"светофор",tr:"трэ́фик лайтс",is_new:true,tip:"lights — огни. Огни для движения. Светофор по-английски во множественном числе: на конце s.",ph:"wait at the traffic lights",phru:"ждать у светофора"},
+ {en:"traffic sign",ru:"дорожный знак",tr:"трэ́фик сайн",is_new:true,tip:"В sign буква g не читается: «сайн».",ph:"read the traffic signs",phru:"читать дорожные знаки"},
+ {en:"traffic warden",ru:"дорожный инспектор, регулировщик",tr:"трэ́фик уо́:дн",is_new:true,tip:"warden — смотритель, сторож. Тот, кто смотрит за движением.",ph:"the traffic warden helps us",phru:"регулировщик нам помогает"},
+ {en:"zebra crossing",ru:"пешеходный переход, «зебра»",tr:"зэ́брэ кро́синг",is_new:true,tip:"Это британское слово. В Америке такой переход называют crosswalk.",ph:"cross at the zebra crossing",phru:"переходить по «зебре»"},
+
+ {en:"annoy",ru:"досаждать, раздражать",tr:"эно́й",ph:"annoy other people",phru:"раздражать других людей"},
+ {en:"block",ru:"загораживать",tr:"блок",ph:"block the road",phru:"перегородить дорогу"},
+ {en:"brakes",ru:"тормоза",tr:"брэйкс",ph:"check the brakes",phru:"проверить тормоза"},
+ {en:"check",ru:"проверять",tr:"чек",ph:"check your bike",phru:"проверь свой велосипед"},
+ {en:"clear",ru:"свободный (от транспорта); чистый",tr:"кли́э",ph:"the road is clear",phru:"дорога свободна"},
+ {en:"cross",ru:"пересекать",tr:"крос",ph:"cross the road",phru:"переходить дорогу"},
+ {en:"dangerous",ru:"опасный",tr:"дэ́йнджэрэс",tip:"danger — опасность (ДЭЙН-джэ). Dangerous — опасный. «ДЭЙН-джэ-рэс»: первая a читается как «эй».",ph:"a dangerous road",phru:"опасная дорога"},
+ {en:"driver",ru:"водитель",tr:"дра́йвэ",tip:"drive — водить машину (как «драйв»). Driver — тот, кто водит.",ph:"a careful driver",phru:"осторожный водитель"},
+ {en:"enter",ru:"входить",tr:"э́нтэ",ph:"enter the bus",phru:"войти в автобус"},
+ {en:"flow of",ru:"поток чего-либо",tr:"фло́у ов",ph:"the flow of traffic",phru:"поток машин"},
+ {en:"handgrip",ru:"поручень",tr:"хэ́ндгрип",tip:"hand — рука, grip — когда крепко держишь что-то в руке. Handgrip — то, за что держатся рукой.",ph:"hold the handgrip",phru:"держаться за поручень"},
+ {en:"kerb",ru:"обочина",tr:"кё:б",tip:"«кё:б», r не читается. Это край тротуара у дороги.",ph:"stop at the kerb",phru:"остановиться у края тротуара"},
+ {en:"park",ru:"парковать(ся)",tr:"па:к",ph:"park the car",phru:"припарковать машину"},
+ {en:"push",ru:"толкать",tr:"пуш",ph:"don't push",phru:"не толкайся"},
+ {en:"ride",ru:"ехать (верхом)",tr:"райд",ph:"ride a bike",phru:"кататься на велосипеде"},
+ {en:"safe",ru:"безопасный, в безопасности",tr:"сэйф",ph:"be safe on the road",phru:"будь осторожен на дороге"},
+ {en:"traffic",ru:"движение",tr:"трэ́фик",ph:"heavy traffic",phru:"плотное движение"},
+ {en:"use",ru:"использовать",tr:"ю:з",ph:"use the zebra crossing",phru:"пользуйся пешеходным переходом"},
+ {en:"tyre",ru:"шина",tr:"та́йэ",tip:"«ТАЙ-э». Британское написание tyre, американское tire.",ph:"a flat tyre",phru:"спущенная шина"}
+];
+
+/* английская транскрипция: у слов — как в Word List учебника, у словосочетаний — британская по словарю */
+const IPA={"annoy":"əˈnɔɪ","block":"blɒk","brakes":"breɪks","check":"tʃek","clear":"klɪə","cross":"krɒs",
+ "dangerous":"ˈdeɪndʒərəs","driver":"ˈdraɪvə","enter":"ˈentə","flow of":"fləʊ əv","handgrip":"ˈhændɡrɪp",
+ "kerb":"kɜːb","park":"pɑːk","pavement":"ˈpeɪvmənt","pedestrian":"pəˈdestriən","push":"pʊʃ","ride":"raɪd",
+ "safe":"seɪf","traffic":"ˈtræfɪk","use":"juːz","tyre":"ˈtaɪə",
+ "back seat":"ˌbæk ˈsiːt","bike lane":"ˈbaɪk leɪn","bicycle helmet":"ˈbaɪsɪkl ˈhelmɪt",
+ "lean out of the window":"liːn ˈaʊt əv ðə ˈwɪndəʊ","look both ways":"lʊk ˈbəʊθ ˈweɪz","on foot":"ɒn ˈfʊt",
+ "parking zone":"ˈpɑːkɪŋ zəʊn","seat belt":"ˈsiːt belt","traffic lights":"ˈtræfɪk laɪts",
+ "traffic sign":"ˈtræfɪk saɪn","traffic warden":"ˈtræfɪk ˌwɔːdn","zebra crossing":"ˌzebrə ˈkrɒsɪŋ"};
+WORDS.forEach(w=>{w.ipa=IPA[w.en]||'';});
+/* похожие на русские — учатся легко, поэтому считаем их лёгкими.
+   k — во сколько раз легче, ru — на что похоже (показываем подсказкой) */
+const LIKE_RU={"zebra crossing":{k:.45,ru:"зебра"},"parking zone":{k:.55,ru:"паркинг, зона"},"park":{k:.6,ru:"парковать"},
+  "bike lane":{k:.65,ru:"байк"},"block":{k:.6,ru:"блокировать"},"cross":{k:.65,ru:"кросс — бег через"},
+  "check":{k:.7,ru:"чек, проверить"},"traffic":{k:.75,ru:"трафик"},"traffic lights":{k:.8,ru:"трафик"},
+  "traffic sign":{k:.8,ru:"трафик"},"traffic warden":{k:.85,ru:"трафик"},"driver":{k:.75,ru:"драйвер, драйв"},
+  "pedestrian":{k:.85,ru:"педаль — от ped, «нога»"}};
+WORDS.forEach(w=>{const l=LIKE_RU[w.en]; if(l){w.likeK=l.k; w.likeRu=l.ru;}});
+/* русская транскрипция и сразу под ней английская — чтобы видеть соответствие */
+function trBlock(w){ return (w.tr||w.ipa)?`<div class="trs">${w.tr?`<p class="tr-ru">${w.tr}</p>`:''}${w.ipa?`<p class="tr-en">/${w.ipa}/</p>`:''}</div>`:''; }
+
+/* картинки для пазла — только то, что различимо рисунком */
+const ART={
+  "parking zone":`<g stroke="#12241c" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="46" y="20" width="108" height="108" rx="14" fill="#2f5fa8"/>
+    <path d="M84 108V44h22a18 18 0 0 1 0 36H84" fill="none" stroke="#fff" stroke-width="12"/>
+    <path d="M100 128v54M80 182h40" fill="none"/></g>`,
+  "bike lane":`<g stroke="#12241c" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="56" cy="120" r="30"/><circle cx="148" cy="120" r="30"/>
+    <path d="M56 120l26-46h50l16 46M82 74l22 46h-48M104 120l28-46M76 60h16M124 60l8 14h14"/>
+    <path d="M10 170h180" stroke-dasharray="14 10"/></g>`,
+  "traffic lights":`<g stroke="#12241c" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="72" y="22" width="56" height="132" rx="12"/>
+    <circle cx="100" cy="50" r="15" fill="#d9534f"/><circle cx="100" cy="88" r="15" fill="#f0ad4e"/><circle cx="100" cy="126" r="15" fill="#5cb85c"/>
+    <path d="M100 154v32M80 186h40"/></g>`,
+  "zebra crossing":`<g stroke="#12241c" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M10 40h180M10 160h180" fill="none"/>
+    <rect x="24" y="52" width="22" height="96" fill="#12241c"/><rect x="62" y="52" width="22" height="96" fill="#12241c"/>
+    <rect x="100" y="52" width="22" height="96" fill="#12241c"/><rect x="138" y="52" width="22" height="96" fill="#12241c"/></g>`,
+  "bicycle helmet":`<g stroke="#12241c" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M30 128c0-50 32-78 74-78s68 30 68 72l-18 6H30z"/>
+    <path d="M70 58l-6 30M104 52v34M138 60l6 30M52 88h108"/>
+    <path d="M58 128c2 18 10 30 22 36M150 128c-2 18-10 30-22 36M80 164h48"/></g>`,
+  "traffic sign":`<g stroke="#12241c" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M100 20L168 132H32z" stroke-width="5"/>
+    <circle cx="100" cy="66" r="7" fill="#12241c"/>
+    <path d="M100 76v24l-12 18M100 100l12 18M86 88h28"/>
+    <path d="M100 132v52M78 184h44"/></g>`
+};
+</script>
+
+<script>
+/* ═══ ХРАНИЛИЩЕ ═══
+   На слово — одна запись, отдельно метаданные.
+   Формат рассчитан на перенос в БД без переделок. */
+const DAY=864e5;
+const LADDER=[1,3,7,14,30];      // ступени созревания, в днях
+const CONFIRM_GAP=45*6e4;        // 45 мин — раньше это не повторение, а тот же заход
+
+const Store={
+  k:'sp6-3a',
+  all(){ try{return JSON.parse(localStorage.getItem(this.k))||{}}catch(e){return{}} },
+  save(d){ try{localStorage.setItem(this.k,JSON.stringify(d))}catch(e){} },
+  w(en){ return this.all()[en]||{err:0,seen:0,learned:0,open:0,step:-1,due:0,lastOk:0}; },
+  set(en,p){ const d=this.all(); d[en]={...this.w(en),...p}; this.save(d); },
+
+  meta(){ try{return JSON.parse(localStorage.getItem(this.k+'-m'))||{days:[],badges:[],size:5,picked:[]}}
+          catch(e){return{days:[],badges:[],size:5,picked:[]}} },
+  setMeta(p){ try{localStorage.setItem(this.k+'-m',JSON.stringify({...this.meta(),...p}))}catch(e){} },
+
+  /* дни занятий копятся и НЕ обнуляются при пропуске */
+  touchDay(){ const t=new Date().toISOString().slice(0,10), m=this.meta();
+    if(!m.days.includes(t)) this.setMeta({days:[...m.days,t]}); },
+  lastDay(){ const d=this.meta().days; return d.length?d[d.length-1]:null; },
+
+  ok(en){
+    const w=this.w(en), now=Date.now();
+    const first=!w.learned;
+    const confirming = w.learned && (now-w.lastOk)>=CONFIRM_GAP;
+    const step = confirming ? Math.min(w.step+1,LADDER.length-1) : Math.max(w.step,0);
+    this.set(en,{firstAt:w.firstAt||now,seen:w.seen+1,learned:1,open:w.open||(confirming?1:0),
+                 step,due:now+LADDER[step]*DAY,lastOk:now});
+    return {first,confirming};
+  },
+  fail(en){ const w=this.w(en); this.set(en,{err:w.err+1,step:0,due:Date.now()+LADDER[0]*DAY}); },
+  due(en){ const w=this.w(en); return !!w.learned && Date.now()>=w.due; }
+};
+
+/* ═══ КОТ ═══
+   Появляется на итогах и в игре, не на каждом экране —
+   иначе примелькается. Говорит по-русски, если в системе
+   есть русский голос; иначе просто показывает реплику. */
+function catOn(){ return Store.meta().cat!==false; }
+/* звери не говорят синтезатором — только звуки, фраза остаётся подписью */
+function catSpeak(){}
+/* «экран мурчит»: мелкая дрожь страницы + лёгкая вибрация телефона */
+function purrFx(){
+  if(!catOn()) return;
+  purr();
+  try{ navigator.vibrate&&navigator.vibrate([25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25,25]); }catch(e){}
+  const b=document.body; b.classList.remove('purring'); void b.offsetWidth; b.classList.add('purring');
+  setTimeout(()=>b.classList.remove('purring'),1500);
+}
+/* ═══ МАШКА ═══ рыже-белая кошка из «Над чертой»: моргает, машет хвостом, мурлычет */
+const Sound={ac:null,out:null,ensure(){try{if(!this.ac){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;
+  this.ac=new AC();const comp=this.ac.createDynamicsCompressor();comp.threshold.value=-10;comp.ratio.value=6;
+  this.out=this.ac.createGain();this.out.gain.value=1;this.out.connect(comp);comp.connect(this.ac.destination);}
+  if(this.ac.state==="suspended")this.ac.resume();return this.ac;}catch(e){return null;}}};
+let mkN = 0;
+/* moods: calm, grumpy, roll (eye-roll), happy, sleepy */
+function mashkaEyes(id, mood) {
+  const G = "#E0853F";
+  if (mood === "happy") return `<path d="M28.5 54 q6.5 -6.5 13 0 M58.5 54 q6.5 -6.5 13 0" stroke="#5A3A22" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  if (mood === "sleepy") return `<path d="M28.5 52 q6.5 4 13 0 M58.5 52 q6.5 4 13 0" stroke="#5A3A22" stroke-width="2" fill="none" stroke-linecap="round"/><text x="84" y="22" font-size="11" font-family="Comfortaa, sans-serif" fill="#8C9AA8" class="mk-z">z</text><text x="91" y="13" font-size="8" font-family="Comfortaa, sans-serif" fill="#8C9AA8" class="mk-z mk-z2">z</text>`;
+  const roll = mood === "roll", grumpy = mood === "grumpy";
+  const pupY = roll ? 49.2 : 54, pupR = roll ? "mk-roll" : "";
+  const lid = (cx, rot, cls) => `<g transform="rotate(${rot} ${cx} 46)"><rect class="${cls}" x="${cx - 9.5}" y="45.5" width="19" height="14" fill="${G}"/></g>`;
+  const lidCls = roll ? "mk-lid mk-lid-up" : "mk-lid";
+  const rot = grumpy ? 13 : 0;
+  let brows = "";
+  if (grumpy) brows = `<path d="M28.5 46.6 L42.5 50.2 M71.5 46.6 L57.5 50.2" stroke="#8C5A33" stroke-width="1.4" fill="none" stroke-linecap="round"/>`;
+  else if (roll) brows = `<path d="M29 43.5 q6 -3 12 0 M59 43.5 q6 -3 12 0" stroke="#8C5A33" stroke-width="1.3" fill="none" stroke-linecap="round"/>`;
+  return `<clipPath id="mkL${id}"><ellipse cx="35" cy="52" rx="6.6" ry="5.8"/></clipPath><clipPath id="mkR${id}"><ellipse cx="65" cy="52" rx="6.6" ry="5.8"/></clipPath>
+  <ellipse cx="35" cy="52" rx="6.6" ry="5.8" fill="#C9CF8C"/><ellipse cx="65" cy="52" rx="6.6" ry="5.8" fill="#C9CF8C"/>
+  <g class="${pupR}"><ellipse cx="36" cy="${pupY}" rx="2.3" ry="3.4" fill="#2A2A1F"/><ellipse cx="64" cy="${pupY}" rx="2.3" ry="3.4" fill="#2A2A1F"/>
+  <circle cx="37.4" cy="${pupY - 1.4}" r="1" fill="#FFF"/><circle cx="65.4" cy="${pupY - 1.4}" r="1" fill="#FFF"/></g>
+  <g clip-path="url(#mkL${id})">${lid(35, rot, lidCls)}</g><g clip-path="url(#mkR${id})">${lid(65, -rot, lidCls)}</g>${brows}`;
+}
+function mashkaHead(id, line, mood) {
+  mood = mood || "calm";
+  const ol = line ? 'stroke="#B9652B" stroke-width="1.5"' : '';
+  const mouth = mood === "happy" ? `<path d="M50 65.3 q-1 4 -5.5 3.6 M50 65.3 q1 4 5.5 3.6" stroke="#A07468" stroke-width="1.3" fill="none" stroke-linecap="round"/>`
+    : mood === "grumpy" ? `<path d="M46.4 69 q3.6 -2.6 7.2 0" stroke="#A07468" stroke-width="1.2" fill="none" stroke-linecap="round"/>`
+    : `<path d="M50 65.3 q0 3 -3.6 3.3 M50 65.3 q0 3 3.6 3.3" stroke="#A07468" stroke-width="1.1" fill="none" stroke-linecap="round"/>`;
+  return `<g class="mk-ear-l"><path d="M19 47 L9 15 L41 30 Z" fill="#E0853F" ${ol} stroke-linejoin="round"/><path d="M22 41 L15 22 L35 31 Z" fill="#F3C2AA"/><path d="M15 24 l4 3 M17 29 l4 2" stroke="#FBF7F1" stroke-width="1" stroke-linecap="round"/></g>
+  <g class="mk-ear-r"><path d="M81 47 L91 15 L59 30 Z" fill="#E0853F" ${ol} stroke-linejoin="round"/><path d="M78 41 L85 22 L65 31 Z" fill="#F3C2AA"/><path d="M85 24 l-4 3 M83 29 l-4 2" stroke="#FBF7F1" stroke-width="1" stroke-linecap="round"/></g>
+  <ellipse cx="50" cy="57" rx="38" ry="28.5" fill="#FBF7F1"/>
+  <path d="M12.6 62 C11.5 42 26 28.6 46.5 28.4 C46.4 34 46.6 39 47 43 C44 47 42.5 52 41 57 C38 61 31 64 24 66 C18 66.5 14 65 12.6 62 Z" fill="#E0853F"/>
+  <path d="M87.6 60 C88.6 41 74 28.6 53.5 28.4 C53.6 34 53.4 39 53 43 C56 47 57.5 51 59 55.5 C62 58.5 69 60.5 76 61.5 C81.5 62 85.5 61.5 87.6 60 Z" fill="#E0853F"/>
+  ${line ? '<ellipse cx="50" cy="57" rx="38" ry="28.5" fill="none" stroke="#B9652B" stroke-width="1.5"/>' : ""}
+  <path d="M31 35 q4 3 8 1 M61 36 q4 2 8 -1" stroke="#C96F32" stroke-width="2" fill="none" stroke-linecap="round"/>
+  ${mashkaEyes(id, mood)}
+  <path d="M47 62 L53 62 L50 65.3 Z" fill="#EBB0AE" stroke="#CF9290" stroke-width=".8" stroke-linejoin="round"/>
+  ${mouth}
+  <g stroke="#C9BFB0" stroke-width=".9" stroke-linecap="round" opacity=".95"><path d="M40 65 L11 60 M40 67.5 L11 70 M41 69.5 L15 77 M60 65 L89 60 M60 67.5 L89 70 M59 69.5 L85 77"/></g>`;
+}
+function mashkaSVG(kind, mood) {
+  const id = ++mkN;
+  if (kind === "head") return `<svg class="mashka mk-head" viewBox="8 6 86 82" aria-hidden="true">${mashkaHead(id, true, mood)}</svg>`;
+  if (kind === "bag") return `<svg class="mashka mk-bag" viewBox="0 0 170 120" aria-hidden="true">
+    <g class="mk-tail"><path d="M128 102 C150 100 156 84 146 74" fill="none" stroke="#E0853F" stroke-width="10" stroke-linecap="round"/>
+    <path d="M146 74 c-3 -4 -8 -3 -9 1" fill="none" stroke="#F2B57F" stroke-width="7" stroke-linecap="round"/></g>
+    <path d="M30 56 L132 56 L136 118 L26 118 Z" fill="#B98A55"/>
+    <g transform="translate(31 -2) scale(.96)">${mashkaHead(id, false, mood)}</g>
+    <path d="M24 62 L134 62 L138 118 L22 118 Z" fill="#D2A66F"/>
+    <path d="M24 62 L34 70 L44 62 L54 70 L64 62 L74 70 L84 62 L94 70 L104 62 L114 70 L124 62 L134 70 L134 62 Z" fill="#E2BC88"/>
+    <path d="M40 84 H120 M44 98 H116" stroke="#BF925A" stroke-width="2" stroke-linecap="round" opacity=".7"/>
+    <ellipse cx="62" cy="64" rx="9" ry="5.5" fill="#FBF7F1" stroke="#E2D9CC"/><ellipse cx="96" cy="64" rx="9" ry="5.5" fill="#FBF7F1" stroke="#E2D9CC"/>
+    <text x="80" y="104" text-anchor="middle" font-size="10" font-family="Caveat, cursive" fill="#8A6236">шурх-шурх</text>
+  </svg>`;
+  return `<svg class="mashka mk-loaf" viewBox="0 0 170 120" aria-hidden="true">
+    <g class="mk-tail"><path d="M150 96 C170 92 168 112 140 112 C120 112 104 110 96 108" fill="none" stroke="#E0853F" stroke-width="11" stroke-linecap="round"/>
+    <path d="M152 96 c8 -1 12 4 6 9" fill="none" stroke="#F2B57F" stroke-width="7" stroke-linecap="round"/></g>
+    <clipPath id="mkBody${id}"><ellipse cx="102" cy="82" rx="58" ry="30"/></clipPath>
+    <ellipse cx="102" cy="82" rx="58" ry="30" fill="#FBF7F1"/>
+    <path clip-path="url(#mkBody${id})" d="M40 40 H170 V92 C150 80 128 74 104 74 C84 74 66 70 52 62 Z" fill="#E0853F"/>
+    <path d="M78 64 C94 62 112 66 126 74" stroke="#C96F32" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".55"/>
+    <ellipse cx="102" cy="82" rx="58" ry="30" fill="none" stroke="#E6C3A2" stroke-width="1"/>
+    <ellipse cx="64" cy="90" rx="34" ry="22" fill="#FBF7F1"/>
+    <ellipse cx="52" cy="108" rx="12" ry="6.5" fill="#FBF7F1" stroke="#E2D9CC" stroke-width="1"/>
+    <ellipse cx="76" cy="109" rx="12" ry="6.5" fill="#FBF7F1" stroke="#E2D9CC" stroke-width="1"/>
+    <ellipse cx="47" cy="108" rx="5" ry="4" fill="#E0853F"/>
+    <g transform="translate(14 0) scale(1.02)">${mashkaHead(id, false, mood)}</g>
+    <path d="M38 81 Q65 99.5 92 81" fill="none" stroke="#E2D5C4" stroke-width="2" stroke-linecap="round"/>
+  </svg>`;
+}
+function purr() {
+  const ac = Sound.ensure(); if (!ac) return;
+  if (!Sound.brown) {
+    const len = Math.floor(ac.sampleRate * 2), buf = ac.createBuffer(1, len, ac.sampleRate), d = buf.getChannelData(0); let last = 0;
+    for (let i = 0; i < len; i++) { last = (last + 0.02 * (Math.random() * 2 - 1)) / 1.02; d[i] = last * 3.5; }
+    Sound.brown = buf;
+  }
+  /* a soft, slow purr: breathy low noise pulsing about 20 times a second, out-breath and in-breath */
+  const t0 = ac.currentTime + 0.03;
+  [[0, 1.35, 1.6, 19], [1.5, 1.0, 0.9, 21.5], [2.65, 1.35, 1.5, 19]].forEach(([st, dur, vol, rate]) => {
+    const s0 = t0 + st, src = ac.createBufferSource(); src.buffer = Sound.brown; src.loop = true;
+    const bp = ac.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 170; bp.Q.value = 0.8;
+    const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 520;
+    const am = ac.createGain(); am.gain.value = 0.5; const lfo = ac.createOscillator(); lfo.type = "sine"; lfo.frequency.value = rate;
+    const lg = ac.createGain(); lg.gain.value = 0.5; lfo.connect(lg); lg.connect(am.gain);
+    const env = ac.createGain(); env.gain.setValueAtTime(0.0001, s0); env.gain.linearRampToValueAtTime(vol, s0 + 0.3); env.gain.setValueAtTime(vol, s0 + dur - 0.35); env.gain.linearRampToValueAtTime(0.0001, s0 + dur);
+    src.connect(bp); bp.connect(lp); lp.connect(am); am.connect(env); env.connect(Sound.out);
+    src.start(s0); lfo.start(s0); src.stop(s0 + dur + 0.05); lfo.stop(s0 + dur + 0.05);
+  });
+}
+const MK_TAP=["Мур. Ещё разок — и запомнишь.","Мяу. Это значит «ты молодец».","Я в пакете. Меня тут нет. Учи.",
+  "Look both ways! Я всегда смотрю в обе стороны. Вдруг там колбаса.","Pedestrian — это ты. А я — кошка. Мне можно где угодно.",
+  "*закатывает глаза* Zebra crossing — это переход, а не зоопарк.","Seat belt — пристегнись. Меня в переноске тоже пристёгивают.",
+  "Не торопись. Я вот никогда не тороплюсь.","Ты справишься. Я в тебя верю. Мур.","Фрр. Хватит гладить, повторяй."];
+function mkTap(box){
+  purrFx();
+  const t=MK_TAP[Math.floor(Math.random()*MK_TAP.length)];
+  const pose=t.includes('пакете')?'bag':'loaf', mood=t.includes('закатывает')?'roll':t.startsWith('Фрр')?'grumpy':'calm';
+  box.querySelector('.mk-pic').innerHTML=mashkaSVG(pose,mood);
+  box.querySelector('.mk-say').textContent=t;
+}
+/* ═══ НИКО ═══ морская свинка, мальчик. В стиле Машки: мягкий контур, без белого. чёрная мордочка, три рыжие полоски, чёрная попка */
+let pgN=0;
+function pigSVG(mood){
+  const id=++pgN, K='#221c18', O='#e0853f';
+  const BODY='M18 74 C16 52 30 34 52 30 C60 22 76 20 90 24 C130 24 166 40 168 74 C170 98 150 110 104 110 C60 111 20 102 18 74 Z';
+  const eye = mood==='happy'
+    ? '<path d="M41 54 q5.5 -5.5 11 0" stroke="#e0853f" stroke-width="2.2" fill="none" stroke-linecap="round"/>'
+    : '<circle cx="46" cy="53" r="5.2" fill="#0b0908" stroke="#6b5040" stroke-width="1.2"/><circle cx="47.8" cy="51.2" r="1.6" fill="#c9cf8c"/><rect class="pg-lid" x="40" y="47" width="12" height="12" fill="#221c18"/>';
+  /* полосы от мордочки к попке: чёрная мордочка, рыжая, чёрная, рыжая, чёрная, рыжая, чёрная попка */
+  /* фон тела чёрный, поверх три рыжие волнистые полоски — без щелей */
+  const wave=(x,dir)=>dir>0?`M${x} 0 C${x+6} 30 ${x-6} 60 ${x+4} 90 S${x-3} 120 ${x} 130`:`L${x} 130 C${x-3} 120 ${x+4} 100 ${x-2} 80 S${x+6} 30 ${x} 0 Z`;
+  const strip=`<rect x="0" y="0" width="200" height="130" fill="${K}"/>`+
+    [[64,84],[100,120],[134,150]].map(([a,b])=>`<path d="${wave(a,1)} ${wave(b,-1)}" fill="${O}"/>`).join('');
+  const fur=[[70,40],[92,34],[112,38],[132,44],[150,56],[96,60],[126,64],[78,70],[140,80]]
+    .map(([x,y])=>`<path d="M${x} ${y} q3 4 0 8 M${x+5} ${y+1} q3 4 0 8" />`).join('');
+  return `<svg class="piggy" viewBox="0 0 180 122" aria-hidden="true">
+    <clipPath id="pgB${id}"><path d="${BODY}"/></clipPath>
+    <ellipse cx="58" cy="110" rx="9" ry="5" fill="#e8a7a0"/><ellipse cx="132" cy="110" rx="10" ry="5" fill="#e8a7a0"/>
+    <g clip-path="url(#pgB${id})">${strip}
+      </g>
+    <path d="${BODY}" fill="none" stroke="#8a5a3a" stroke-width="1.2"/>
+    <path class="pg-ear" d="M60 34 c-2 -12 13 -16 18 -5 c-6 1 -12 3 -18 5 Z" fill="#E0853F" stroke="#8a5a3a" stroke-width="1"/>
+    ${eye}
+    <ellipse class="pg-nose" cx="22" cy="74" rx="4.5" ry="3.6" fill="#c98a82"/>
+    <path d="M24 81 q4 4 8 1" stroke="#c98a82" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <g stroke="#8c7a6c" stroke-width=".9" stroke-linecap="round"><path d="M28 74 L4 66 M28 77 L3 78 M28 80 L6 88"/></g>
+    ${mood==='happy'?'<text x="2" y="26" font-size="14" font-family="system-ui,sans-serif" font-weight="600" fill="#c96f32" class="pg-wheek">уи-уи!</text>':''}
+  </svg>`;
+}
+/* «уи-уи»: два-три коротких писка вверх, как у настоящей свинки */
+function wheek(){
+  const ac=Sound.ensure(); if(!ac) return;
+  const t0=ac.currentTime+0.02;
+  [0,0.22,0.44].forEach(st=>{
+    const o=ac.createOscillator(), g=ac.createGain(), s=t0+st;
+    o.type='triangle'; o.frequency.setValueAtTime(1100,s); o.frequency.exponentialRampToValueAtTime(2300,s+0.15);
+    g.gain.setValueAtTime(0.0001,s); g.gain.exponentialRampToValueAtTime(0.25,s+0.02); g.gain.exponentialRampToValueAtTime(0.0001,s+0.17);
+    o.connect(g); g.connect(Sound.out); o.start(s); o.stop(s+0.2);
+  });
+}
+
+/* ═══ ИКИ ═══ джунгарский хомячок: почти белый, серая клякса на спинке, белый животик. Совсем маленький. */
+let ikN=0;
+function ikiSVG(mood){
+  const id=++ikN, W='#f7f4ef', G='#9b9aa0', GD='#7d7c83';
+  const eye = mood==='happy'
+    ? '<path d="M33 40 q4 -4 8 0" stroke="#2a2420" stroke-width="2" fill="none" stroke-linecap="round"/>'
+    : '<circle cx="37" cy="40" r="3.6" fill="#1a1512"/><circle cx="38.3" cy="38.7" r="1.2" fill="#fff"/><rect class="pg-lid" x="32.5" y="36" width="9" height="9" fill="#f7f4ef"/>';
+  return `<svg class="iki" viewBox="0 0 110 86" aria-hidden="true">
+    <clipPath id="ikB${id}"><ellipse cx="58" cy="50" rx="40" ry="30"/></clipPath>
+    <ellipse cx="40" cy="78" rx="6" ry="3.5" fill="#efb8b0"/><ellipse cx="70" cy="79" rx="6" ry="3.5" fill="#efb8b0"/>
+    <ellipse cx="58" cy="50" rx="40" ry="30" fill="${W}"/>
+    <g clip-path="url(#ikB${id})">
+      <path d="M44 22 C58 12 84 14 96 30 C102 42 94 50 84 48 C74 46 70 40 60 40 C50 40 42 34 44 22 Z" fill="${G}"/>
+      <path d="M58 20 C72 22 86 30 94 42" stroke="${GD}" stroke-width="3" fill="none" stroke-linecap="round"/>
+    </g>
+    <ellipse cx="58" cy="50" rx="40" ry="30" fill="none" stroke="#c9c3ba" stroke-width="1"/>
+    <path d="M30 30 c-3 -9 6 -14 11 -6 Z" fill="#e7c9c4" stroke="#c9c3ba" stroke-width="1"/>
+    <path d="M44 25 c0 -9 9 -11 12 -3 Z" fill="#e7c9c4" stroke="#c9c3ba" stroke-width="1"/>
+    ${eye}
+    <ellipse class="pg-nose" cx="20" cy="50" rx="3" ry="2.4" fill="#e79c97"/>
+    <path d="M22 55 q3 3 6 0" stroke="#c98a82" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+    <g stroke="#b3aca3" stroke-width=".8" stroke-linecap="round"><path d="M25 50 L6 45 M25 52 L5 54 M25 54 L8 61"/></g>
+    <ellipse cx="34" cy="64" rx="5" ry="3.4" fill="#f2c9c2"/>
+    ${mood==='happy'?'<text x="66" y="12" font-size="10" font-family="system-ui,sans-serif" font-weight="600" fill="#7d7c83">пи-пи!</text>':''}
+  </svg>`;
+}
+/* тоненький «пи-пи» */
+function squeak(){
+  const ac=Sound.ensure(); if(!ac) return;
+  const t0=ac.currentTime+0.02;
+  [0,0.13].forEach(st=>{
+    const o=ac.createOscillator(), g=ac.createGain(), s=t0+st;
+    o.type='sine'; o.frequency.setValueAtTime(3200,s); o.frequency.exponentialRampToValueAtTime(3900,s+0.07);
+    g.gain.setValueAtTime(0.0001,s); g.gain.exponentialRampToValueAtTime(0.12,s+0.01); g.gain.exponentialRampToValueAtTime(0.0001,s+0.09);
+    o.connect(g); g.connect(Sound.out); o.start(s); o.stop(s+0.1);
+  });
+}
+
+const IKI={
+  clean:['Пи! Ни одной ошибки! Я маленький, но заметил.','Пи-пи! Чисто-чисто.'],
+  comeback:['Пи! Трудное слово — твоё! Я спрятал за щёку на память.'],
+  hard:['Пи. Было трудно. Но ты дошла. Я бы уже спал в опилках.'],
+  ok:['Пи! Ещё чуть-чуть слов в норку.','Пи-пи. Хорошо идём.'],
+  done:['Пи-пи-пи! Весь урок! Я сейчас лопну от гордости.'],
+  puzzle:['Пи! Угадала! А я думал, это семечка.'],
+  miss:['Пи. Не то. Я тоже путаю, где у меня колесо.']
+};
+const IKI_TAP=["Пи! Я Ики. Я маленький, но всё слышу.","Пи-пи. Спрятал слово за щёку — потом достану.",
+  "Zebra crossing — полосатый, как Нико. Пи!","Look both ways! Я всегда смотрю. Вдруг Машка.","Пи. Кручу колесо, а ты — слова."];
+function ikiTap(box){
+  squeak();
+  box.querySelector('.mk-pic').innerHTML=ikiSVG(Math.random()<.5?'happy':'calm');
+  box.querySelector('.mk-say').textContent=IKI_TAP[Math.floor(Math.random()*IKI_TAP.length)];
+}
+const NIKO={
+  clean:['Уи-уи! Ни одной ошибки. Я даже морковку не успел догрызть.','Чисто! Нико доволен. Уи!'],
+  comeback:['Уи-уи-уи! Ты его победила! Я подпрыгнул, честно.','Это слово было трудное. А теперь — твоё. Уи!'],
+  hard:['Было трудно, но ты не сдалась. Хрум. Это главное.','Много ошибок? Зато все слова пройдены. Я горжусь. Уи.'],
+  ok:['Уи! Идём дальше.','Хрум-хрум. Ещё немного слов в копилку.'],
+  done:['Урок выучен! Уи-уи-уи! Это надо отметить морковкой.'],
+  puzzle:['Уи-уи! Угадала! Я бы ни за что.','Глазастая! Как я, когда шуршит пакет с сеном.'],
+  miss:['Не то. Но я тоже иногда путаю огурец с кабачком. Уи.','Мимо. Выучи ещё слово — откроется кусочек.']
+};
+const NIKO_TAP=["Уи-уи! Я Нико.","Хрум. Это я морковку. Учи дальше.","Pedestrian — это ты. А я — pet. Уи!",
+  "Traffic lights! Красный — стой. Как я перед огурцом.","Не трогай мои полоски. Трогай слова. Уи.","Уи-уи-уи! Это значит «молодец»."];
+let SPK='mashka';
+function nikoTap(box){
+  wheek();
+  const t=NIKO_TAP[Math.floor(Math.random()*NIKO_TAP.length)];
+  box.querySelector('.mk-pic').innerHTML=pigSVG(Math.random()<.5?'happy':'calm');
+  box.querySelector('.mk-say').textContent=t;
+}
+function catBlock(mood,phrase){
+  if(!catOn()) return '';
+  const m=mood==='cheer'?'happy':mood==='warm'?'calm':mood==='happy'?'calm':mood==='think'?'roll':(mood||'calm');
+  const who=SPK; SPK='mashka';
+  if(who==='iki'){ setTimeout(squeak,350);
+    return `<div class="cat mk" onclick="ikiTap(this)">
+    <div class="mk-pic small">${ikiSVG(mood==='cheer'?'happy':'calm')}</div>
+    <div class="bubble"><b class="mk-name">Ики</b><span class="mk-say">${phrase}</span></div></div>`; }
+  if(who==='niko'){ setTimeout(wheek,350);
+    return `<div class="cat mk" onclick="nikoTap(this)">
+    <div class="mk-pic">${pigSVG(mood==='cheer'?'happy':'calm')}</div>
+    <div class="bubble"><b class="mk-name">Нико</b><span class="mk-say">${phrase}</span></div></div>`; }
+  setTimeout(purrFx,350);
+  return `<div class="cat mk" onclick="mkTap(this)">
+    <div class="mk-pic">${mashkaSVG('loaf',m)}</div>
+    <div class="bubble"><b class="mk-name">Машка</b><span class="mk-say">${phrase}</span></div></div>`;
+}
+const CAT={
+  clean:['Ни одной ошибки. Я даже мяукнуть не успела.','Чисто. Вообще не за что зацепиться.'],
+  comeback:['Ты его дожала. Я, честно, сомневалась.','Вот это слово тебя мучило. И всё, больше не мучает.'],
+  hard:['Тяжело шло. Но ты досидела до конца — это и считается.','Много ошибок, ну и что. Главное, не закрыла и не ушла.'],
+  ok:['Нормально идём.','Ещё несколько слов позади. Мур.'],
+  done:['Урок закрыт. Весь. Я в шоке, если честно. Мур-р.'],
+  puzzle:['Угадала! Глаз-алмаз.','Вот это ты быстро разглядела.'],
+  miss:['Не оно. Но идея была хорошая.','Мимо. Открой ещё кусочек, и попробуем снова.']
+};
+/* иногда вместо Машки приходит Нико (свинка) или Ики (хомячок) */
+const catPick=k=>{const r=Math.random(); SPK=r<.25&&NIKO[k]?'niko':r<.42&&IKI[k]?'iki':'mashka'; const a=SPK==='niko'?NIKO[k]:SPK==='iki'?IKI[k]:CAT[k]; return a[Math.floor(Math.random()*a.length)];};
+
+
+/* ═══ ОЗВУЧКА ═══ */
+let voice=null;
+const pickVoice=()=>{const v=speechSynthesis.getVoices();
+  voice=v.find(x=>x.lang==='en-GB')||v.find(x=>x.lang.startsWith('en'))||null;};
+pickVoice(); speechSynthesis.onvoiceschanged=pickVoice;
+function say(t){ if(!('speechSynthesis'in window))return; speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t); u.lang='en-GB'; u.rate=.85;
+  if(voice)u.voice=voice; speechSynthesis.speak(u); }
+
+/* ═══ НАГРАДЫ ═══ Мало, и все за настоящие вехи. Сувениры, не оценки. */
+const BADGES={
+  first_leaf:{t:'Первое слово', d:'Первое слово выучено'},
+  comeback:  {t:'Взяла своё',  d:'Слово, которое не давалось, сделано без ошибок'},
+  clean:     {t:'Ни одной ошибки', d:'Подход пройден начисто'},
+  tower:     {t:'Безопасный пешеход',  d:'Все слова урока 3a выучены'}
+};
+function award(id){ const m=Store.meta();
+  if(m.badges.includes(id))return null;
+  Store.setMeta({badges:[...m.badges,id]}); return BADGES[id]; }
+function badgeArt(id){
+  const s='fill="none" stroke="#2f6b46" stroke-width="1.6" stroke-linecap="round"';
+  if(id==='tower') return `<svg width="44" height="44" viewBox="0 0 44 44" ${s}>
+    <path d="M4 37h36M7 37V22l7-6 7 6v15M23 37V18h14v19M11 37v-7h6v7M27 23h6M27 29h6M7 22h14"/></svg>`;
+  if(id==='comeback') return `<svg width="44" height="44" viewBox="0 0 44 44" ${s}>
+    <path d="M22 37V17"/><path d="M22 23c-7 0-11-4-11-10 7 0 11 4 11 10z"/>
+    <path d="M22 27c7 0 11-4 11-10-7 0-11 4-11 10z"/><path d="M13 37h18"/></svg>`;
+  if(id==='clean') return `<svg width="44" height="44" viewBox="0 0 44 44" ${s}>
+    <circle cx="22" cy="22" r="14"/><path d="M15 22l5 5 9-10"/></svg>`;
+  return `<svg width="44" height="44" viewBox="0 0 44 44" ${s}>
+    <path d="M22 37V18"/><path d="M22 24c-6 0-9-3-9-9 6 0 9 3 9 9z"/><path d="M15 37h14"/></svg>`;
+}
+
+/* ═══ ПАЗЛ ═══
+   Каждые 5 выученных слов дают ключик 🔑. Она сама нажимает на любой закрытый кусочек
+   и открывает его ключиком. Нет ключика — окошко «выучи ещё N слов».
+   Угадать картинку можно в любой момент, когда открыт хоть один кусочек.
+   Загадано слово, которое она уже выучила раньше всех (из тех, что можно нарисовать). */
+const PIECES=4, PER_KEY=5, COLS=2, ROWS=2;
+const PUZZLE_WORDS=Object.keys(ART);
+
+function puzzleState(){
+  const m=Store.meta();
+  let riddle=m.riddle;
+  if(!riddle || !ART[riddle] || (m.solved||[]).includes(riddle)){
+    const unsolved=PUZZLE_WORDS.filter(w=>!(m.solved||[]).includes(w));
+    const learnedArt=unsolved.filter(w=>Store.w(w).learned).sort((a,b)=>(Store.w(a).firstAt||0)-(Store.w(b).firstAt||0));
+    const inPack=unsolved.filter(w=>pack.some(p=>p.en===w));
+    riddle=learnedArt[0]||inPack[0]||unsolved[0]||PUZZLE_WORDS[0];
+    Store.setMeta({riddle});
+  }
+  const opened=m.opened||[], L=learnedCount();
+  const keys=Math.max(0, Math.floor(L/PER_KEY)-(m.keysUsed||0));
+  return {riddle, opened, open:opened.length, keys, done:opened.length>=PIECES, toNext:PER_KEY-(L%PER_KEY)};
+}
+
+/* настоящий пазл: у кусков выступы и впадины, соседние совпадают */
+const JH=[[1,-1]];            // горизонтальный шов между рядами: +1 — выступ вниз
+const JV=[[-1],[1]];          // вертикальные швы в каждом ряду: +1 — выступ вправо
+function jigEdge(x0,y0,x1,y1,s){
+  if(!s) return `L${x1} ${y1}`;
+  const dx=x1-x0, dy=y1-y0, L=Math.hypot(dx,dy), nx=dy/L, ny=-dx/L;
+  const P=(t,u)=>`${(x0+dx*t+nx*u*L*s).toFixed(1)} ${(y0+dy*t+ny*u*L*s).toFixed(1)}`;
+  return `L${P(.36,0)} C${P(.30,.16)} ${P(.34,.30)} ${P(.5,.30)} C${P(.66,.30)} ${P(.70,.16)} ${P(.64,0)} L${x1} ${y1}`;
+}
+function jigPiece(c,r){
+  const cw=200/COLS, ch=200/ROWS, x=c*cw, y=r*ch;
+  const top=r?-JH[r-1][c]:0, right=c<COLS-1?JV[r][c]:0, bottom=r<ROWS-1?JH[r][c]:0, left=c?-JV[r][c-1]:0;
+  return `M${x} ${y} ${jigEdge(x,y,x+cw,y,top)} ${jigEdge(x+cw,y,x+cw,y+ch,right)} ${jigEdge(x+cw,y+ch,x,y+ch,bottom)} ${jigEdge(x,y+ch,x,y,left)} Z`;
+}
+function bindPuzzle(root,onOpen){
+  root.querySelectorAll('[data-piece]').forEach(g=>g.onclick=()=>{
+    const st=puzzleState();
+    if(!st.keys) return keyModal(st);
+    const i=+g.dataset.piece, m=Store.meta();
+    Store.setMeta({opened:[...(m.opened||[]),i], keysUsed:(m.keysUsed||0)+1});
+    g.classList.add('opening'); squeakOrPurr();
+    setTimeout(onOpen,520);
+  });
+}
+function squeakOrPurr(){ const r=Math.random(); if(r<.5) purrFx(); else if(r<.75) wheek(); else squeak(); }
+function keyModal(st){
+  const L=learnedCount(), have=L%PER_KEY;
+  const d=document.createElement('div'); d.className='modal-bg';
+  d.innerHTML=`<div class="modal">
+    <h3>Нужен ключик 🔑</h3>
+    <p class="sub" style="margin:0">Каждые ${PER_KEY} выученных слов — один ключик. Им можно открыть любой кусочек пазла.</p>
+    <div class="bar"><i style="width:${have/PER_KEY*100}%"></i></div>
+    <p class="sub" style="margin:0 0 4px">Выучено ${have} из ${PER_KEY}. Выучи ещё ${st.toNext} ${plural(st.toNext)} — и откроешь кусочек.</p>
+    ${catBlock('happy',pickC(['Учи слова — я посторожу пазл.','Ещё немного слов — и откроем кусочек вместе.','Пазл никуда не денется. Слова — вперёд!']))}
+    <button class="next" id="mok">Понятно, учу</button></div>`;
+  document.body.appendChild(d);
+  d.querySelector('#mok').onclick=()=>d.remove();
+  d.onclick=e=>{if(e.target===d)d.remove();};
+}
+function puzzle(){
+  const st=puzzleState();
+  const opened=new Set(st.opened);
+  let mask='', lines='';
+  for(let i=0;i<PIECES;i++){
+    const d=jigPiece(i%COLS, Math.floor(i/COLS));
+    if(opened.has(i)) lines+=`<path d="${d}" fill="none" stroke="#12241c" stroke-opacity=".12" stroke-width="1"/>`;
+    else mask+=`<g data-piece="${i}"><path d="${d}" fill="#e3dccb" stroke="#f2efe6" stroke-width="2.2"/>
+      <path d="${d}" fill="none" stroke="#c9bfa8" stroke-width=".8" transform="translate(1.2 1.2)"/>
+      <text x="${(i%COLS+.5)*200/COLS}" y="${(Math.floor(i/COLS)+.5)*200/ROWS+8}" text-anchor="middle" font-size="22" ${st.keys?'':'opacity=".45"'}>${st.keys?'🔑':'🔒'}</text></g>`;
+  }
+  return `<svg class="tree" viewBox="-14 -14 228 228" aria-hidden="true">
+    <rect x="0" y="0" width="200" height="200" fill="#fff" rx="6"/>
+    ${ART[st.riddle]}${lines}${mask}</svg>`;
+}
+
+/* ═══ ОТГАДКА ═══
+   Клетки по числу букв, буквы НЕ подсказываются.
+   Не угадала — картинка остаётся открытой, можно попробовать снова. */
+function guessScreen(){
+  rail.innerHTML=''; stageName.textContent='';
+  const st=puzzleState(), target=st.riddle;
+  const word=WORDS.find(w=>w.en===target);
+  scene.innerHTML=`
+    <p class="eyebrow">Картинка открыта</p>
+    <h1>Что это за слово?</h1>
+    ${puzzle()}
+    <p class="sub">Это слово ты уже учила: ${target.replace(/ /g,'').length} букв${target.includes(' ')?', два слова':''}. Напиши по-английски.</p>
+    <div class="cells${target.length>11?' xlong':target.length>8?' long':''}" id="cells"></div>
+    <input id="typed" class="hidden-input" autocomplete="off" autocapitalize="off"
+      autocorrect="off" spellcheck="false" maxlength="${target.length}">
+    <button class="next" id="check">Проверить</button>
+    <button class="ghostbtn" id="back">Вернуться к словам</button>`;
+
+  const cells=document.getElementById('cells'), inp=document.getElementById('typed');
+  const paint=()=>{
+    cells.innerHTML='';
+    for(let i=0;i<target.length;i++){
+      const c=document.createElement('span');
+      c.className='cell'+(i===inp.value.length?' cur':'')+(target[i]===' '?' gap':'');
+      c.textContent=target[i]===' '?'':(inp.value[i]||'');
+      cells.appendChild(c);
+    }
+  };
+  cells.onclick=()=>inp.focus();
+  inp.oninput=()=>{ let v=inp.value.replace(/[^a-zA-Z ]/g,'').toLowerCase().replace(/ /g,'');
+    // пробел ставится сам — ребёнку не надо думать, где он
+    let out=''; for(const ch of v){ while(target[out.length]===' ') out+=' '; out+=ch; }
+    inp.value=out.slice(0,target.length); paint(); };
+  inp.onkeydown=e=>{ if(e.key==='Enter') check(); };
+  paint(); setTimeout(()=>inp.focus(),80);
+
+  function check(){
+    if(inp.value.trim()===target){
+      const m=Store.meta();
+      Store.setMeta({solved:[...(m.solved||[]),target], riddle:null, triedAt:-1, opened:[]});
+      say(target);
+      const ln=catPick('puzzle'); setTimeout(()=>catSpeak(ln),700);
+      scene.innerHTML=`
+        <p class="tally">Это ${target}</p>
+        <p class="trans">${word?word.ru:''}</p>
+        <p class="sub">Угадала по картинке — значит слово держится не только на переводе.</p>
+        ${catBlock('cheer',ln)}
+        <svg class="tree" viewBox="0 0 200 200" aria-hidden="true">
+          <rect width="200" height="200" fill="#fff" rx="10"/>${ART[target]}</svg>
+        <button class="next" id="go2">Дальше</button>`;
+      go2.onclick=()=>{buildPack();intro();};
+    }else{
+      cells.classList.add('bad');
+      setTimeout(()=>cells.classList.remove('bad'),400);
+      Store.setMeta({triedAt:st.open});
+      const left=PIECES-st.open;
+      const lm=catPick('miss'); setTimeout(()=>catSpeak(lm),400);
+      scene.innerHTML=`
+        <p class="tally">Не это слово</p>
+        ${catBlock('warm',lm)}
+        <p class="sub">${left
+          ? `Ничего не потеряно. Открой ещё кусочек ключиком (каждые ${PER_KEY} слов — ключик) и попробуй снова.`
+          : 'Картинка открыта полностью — посмотри внимательнее и попробуй ещё раз.'}</p>
+        ${puzzle()}
+        <button class="next" id="go3">Вернуться к словам</button>`;
+      document.getElementById('go3').onclick=()=>{buildPack();intro();};
+    }
+  }
+  document.getElementById('check').onclick=check;
+  document.getElementById('back').onclick=()=>{buildPack();intro();};
+}
+
+/* ═══ ФРАЗЫ ПО СЦЕНАРИЯМ ═══
+   Хвалим за вложенное усилие, а не за способности.
+   «Осталось чуть-чуть» — только когда подход прошёл неплохо. */
+function plural(n){const t=n%10,h=n%100;
+  if(t===1&&h!==11)return'слово'; if(t>=2&&t<=4&&(h<12||h>14))return'слова'; return'слов';}
+
+function verdict({errs,retries,comeback,left,lessonDone,hardWord}){
+  if(lessonDone) return {big:'Урок закрыт целиком',
+    sub:`Все ${WORDS.length} ${plural(WORDS.length)} пройдены. Дальше они будут возвращаться на повторение — понемногу и не каждый день.`};
+  if(comeback) return {big:`Ты взяла «${comeback}»`,
+    sub:'Это слово не давалось несколько раз. Ты возвращалась к нему и сделала — так и запоминается.'};
+  if(errs===0&&retries===0) return {big:'Ни одной ошибки',
+    sub: left<=4 ? `В уроке осталось ${left} ${plural(left)}.` : 'Эти слова держатся крепко.'};
+  if(errs>=5) return {big:'Трудный подход',
+    sub:`Ошибок было много, но ты дошла до конца${hardWord?`, даже с «${hardWord}»`:''}. Это и есть работа.`};
+  if(errs>=2) return {big:'Со скрипом, но сделано',
+    sub:'Слова с ошибками вернутся первыми — специально, чтобы добить.'};
+  return {big:'Подход пройден',
+    sub: left<=4 ? `Осталось ${left} ${plural(left)} — почти всё.` : 'Одна ошибка не в счёт.'};
+}
+
+/* ═══ СОСТОЯНИЕ ═══ */
+const STAGES=[{id:'look',name:'Знакомство'},{id:'en2ru',name:'Выбери перевод'},{id:'ru2en',name:'Выбери слово'},{id:'build',name:'Собери из букв'},{id:'phrase',name:'Как это говорят'}];
+let PACK=5, cram=false, picking=false;
+let pack=[], stageIx=0, queue=[], mistakes=[], stuck={}, retriesTotal=0;
+
+const scene=document.getElementById('scene'),
+      rail=document.getElementById('rail'),
+      stageName=document.getElementById('stageName');
+
+function pool(){ const p=Store.meta().picked;
+  return p.length?WORDS.filter(w=>p.includes(w.en)):WORDS; }
+function learnedCount(){ return WORDS.filter(w=>Store.w(w.en).learned).length; }
+function dueList(){ return pool().filter(w=>Store.due(w.en)); }
+
+/* ═══ РАЗДАЧА ПО СЛОЖНОСТИ ═══ (договорились в чате про 1a)
+   Сложность — число букв без пробелов и апострофов, словосочетание чуть труднее,
+   а слово, похожее на русское (зебра, паркинг, байк), — легче.
+   Первый заход: самые лёгкие слова + одно среднее, чтобы не все были крошечные
+   и было ощущение «я могу».
+   Остальные заходы: в каждом слова из всех трёх уровней — лёгкое, среднее, трудное,
+   внутри уровня порядок перемешан (но одинаково при каждом открытии). */
+function hardness(w){ const L=w.en.replace(/[^a-z]/gi,'').length, n=w.en.trim().split(/\s+/).length; return +((L+(n-1)*1.5)*(w.likeK||1)).toFixed(1); }
+function avg(p){return p.reduce((s,w)=>s+hardness(w),0)/(p.length||1)}
+function hashR(str){let h=2166136261; for(const c of str) h=Math.imul(h^c.charCodeAt(0),16777619); return (h>>>0)/4294967296;}
+function mixedPacks(by,size){
+  if(!by.length) return [];
+  const n=by.length, t1=Math.ceil(n/3), t2=Math.ceil(2*n/3);
+  const sh=a=>[...a].sort((x,y)=>hashR(x.en)-hashR(y.en));
+  const easy=sh(by.slice(0,t1)), mid=sh(by.slice(t1,t2)), hard=sh(by.slice(t2));
+  const seq=[]; let k=0;
+  while(easy.length||mid.length||hard.length){
+    const order=[[easy,mid,hard],[mid,hard,easy],[hard,easy,mid]][k%3]; k++;
+    for(const t of order) if(t.length) seq.push(t.shift());
+  }
+  const packs=[]; for(let i=0;i<seq.length;i+=size) packs.push(seq.slice(i,i+size));
+  // хвост из 1–2 слов не оставляем одиноким
+  if(packs.length>1&&packs[packs.length-1].length<Math.ceil(size/2)) packs[packs.length-2].push(...packs.pop());
+  return packs;
+}
+function dealPacks(list,size,firstTime){
+  const by=[...list].sort((a,b)=>hardness(a)-hardness(b)||a.en.localeCompare(b.en));
+  if(!firstTime||by.length<=size) return mixedPacks(by,size);
+  const first=by.slice(0,size-1);
+  const rest=by.slice(size-1);
+  const medium=rest[Math.floor(rest.length/3)];
+  first.push(medium);
+  return [first, ...mixedPacks(rest.filter(w=>w!==medium),size)];
+}
+
+function buildPack(){
+  streakCheered=false; streak=0; packCheers=0;
+  const list=pool();
+  // 1. недоученное, где уже спотыкалась  2. созревшее для повторения  3. новое
+  const shaky=list.filter(w=>Store.w(w.en).err>0&&!Store.w(w.en).learned)
+                  .sort((a,b)=>Store.w(b.en).err-Store.w(a.en).err);
+  const ripe = cram?[]:dueList();
+  const fresh=list.filter(w=>!Store.w(w.en).learned&&Store.w(w.en).err===0);
+  const known= cram?list.filter(w=>Store.w(w.en).learned):[];
+  const firstTime=list.every(w=>!Store.w(w.en).learned&&!Store.w(w.en).err&&!Store.w(w.en).seen);
+  const packs=[...dealPacks(fresh,PACK,firstTime),...dealPacks(known,PACK)];
+  pack=[...shaky,...ripe,...(packs[0]||[])]
+        .filter((w,i,a)=>a.indexOf(w)===i)
+        .slice(0,Math.min(PACK,list.length));
+  if(!pack.length) pack=(dealPacks(list,PACK)[0]||[]);
+  // в подходе должно быть хотя бы одно слово с картинкой — его потом и загадаем
+  const solvedP=Store.meta().solved||[];
+  // но так, чтобы не сломать раздачу по сложности: меняем слово близкой сложности
+  const hasArt=pack.some(w=>ART[w.en]&&!solvedP.includes(w.en));
+  const artFresh=fresh.filter(w=>ART[w.en]&&!solvedP.includes(w.en)&&!pack.includes(w))
+                      .sort((a,b)=>hardness(a)-hardness(b))[0];
+  if(!hasArt&&artFresh&&pack.length&&!solvedP.length&&!learnedCount()){
+    let j=pack.length-1, best=1e9;
+    pack.forEach((w,i)=>{const d=Math.abs(hardness(w)-hardness(artFresh)); if(i>0&&d<best){best=d;j=i;}});
+    if(best<=3) pack[j]=artFresh;
+  }
+  stageIx=0; mistakes=[]; stuck={}; retriesTotal=0; queue=[...pack];
+}
+
+/* ═══ ЭКРАН ПОДГОТОВКИ ═══ */
+function intro(){
+  rail.innerHTML=''; stageName.textContent='';
+  const m=Store.meta(), picked=m.picked;
+
+  if(picking){
+    scene.innerHTML=`<p class="eyebrow">${LESSON.book} · ${LESSON.unit}</p><h1>${LESSON.title}</h1>
+      <p class="sub">Отметь слова, которые задали. Выбрано: <b>${picked.length}</b>.</p>
+      <button class="next" id="donePick">Готово</button>
+      <button class="ghostbtn" id="clearPick">Снять всё — тренировать весь урок</button>
+      <ul class="glossary">${WORDS.map(w=>`
+        <li class="${picked.includes(w.en)?'on':''}" data-en="${w.en}">
+          <span class="g-en">${picked.includes(w.en)?'✓ ':'○ '}${w.en}</span>
+          <span class="g-ru">${w.ru}</span></li>`).join('')}</ul>`;
+    scene.querySelectorAll('li').forEach(li=>li.onclick=()=>{
+      const en=li.dataset.en,p=Store.meta().picked;
+      Store.setMeta({picked:p.includes(en)?p.filter(x=>x!==en):[...p,en]});
+      buildPack(); intro();
+    });
+    donePick.onclick=()=>{picking=false;buildPack();intro();};
+    clearPick.onclick=()=>{Store.setMeta({picked:[]});buildPack();intro();};
+    return;
+  }
+
+  const learned=learnedCount(), ripe=dueList().length;
+  const inPack=new Set(pack.map(w=>w.en));
+  const lastOk=Math.max(0,...WORDS.map(w=>Store.w(w.en).lastOk||0));
+  const mins=lastOk?(Date.now()-lastOk)/6e4:1e9;
+  const last=Store.lastDay(), today=new Date().toISOString().slice(0,10);
+  const afterBreak = last&&last!==today&&(Date.now()-new Date(last).getTime())>2*DAY;
+
+  let nudge='';
+  if(mins>=45&&mins<720&&learned)
+    nudge=`<p class="nudge">Ты учила слова ${mins<90?'меньше часа':Math.round(mins/60)+' ч'} назад.
+      Повторить их сегодня же — самый надёжный способ перевести в долгую память.</p>`;
+  else if(afterBreak&&learned)
+    nudge=`<p class="nudge">Перерыв был несколько дней — ничего не пропало.
+      Выученное на месте, просто пора освежить.</p>`;
+  else if(ripe&&!cram)
+    nudge=`<p class="nudge">${ripe} ${plural(ripe)} пора повторить — ${ripe===1?'оно ждёт':'они ждут'} в этом подходе.</p>`;
+
+  scene.innerHTML=`
+    <p class="eyebrow">${LESSON.book} · ${LESSON.unit}</p><h1>${LESSON.title}</h1>
+    ${(()=>{const st=puzzleState(); return st.done?'':`<p class="keyrow">🔑 <b>${st.keys}</b> · следующий ключик через ${st.toNext} ${plural(st.toNext)}</p>`;})()}
+    ${puzzle()}
+    <p class="count">${(()=>{const st=puzzleState();
+      if(st.done) return '<b>Картинка открыта.</b> Что на ней?';
+      const solvedN=(m.solved||[]).length;
+      const keyLine=st.keys?`<br><b>🔑 Ключиков: ${st.keys}.</b> Нажми на любой кусочек — он откроется.`
+        :'';
+      if(!solvedN) return `<b>Каждые ${PER_KEY} выученных слов — ключик 🔑.</b> Им открываешь любой кусочек пазла.<br>
+        Угадать картинку можно в любой момент.${st.open?` Открыто ${st.open} из ${PIECES}.`:''}${keyLine}`;
+      return `Открыто ${st.open} из ${PIECES} · картинок разгадано: ${solvedN}${keyLine}`;})()}${
+      m.days.length?`<br>занималась ${m.days.length} ${m.days.length===1?'день':'дн.'}`:''}</p>
+    ${(()=>{const st=puzzleState(), m2=Store.meta();
+      if(!st.open) return '';
+      const locked=(m2.triedAt||-1)===st.open;   // уже пробовала на этом куске
+      return `<button class="ghostbtn" id="guess" ${locked?'disabled':''}>${
+        locked ? 'Попробуешь снова, когда откроется ещё кусочек'
+               : (st.done?'Назвать картинку':'Уже догадалась? Назови')}</button>`;})()}
+    ${nudge}
+    <p class="sub">${cram
+      ? `Перед диктантом: гоняем без ограничений, по ${pack.length} ${plural(pack.length)}.`
+      : `Сейчас ${pack.length} ${plural(pack.length)} — ${pack.length===1?'оно отмечено':'они отмечены'} ниже.`}</p>
+    <p class="scope">${onlyNew()?`Учим <b>новые слова</b> урока — ${NEW_EN.length} (в учебнике они зелёные). <button id="scope">Взять все ${WORDS.length}</button>`
+      : Store.meta().picked.length?`Выбрано слов: ${Store.meta().picked.length}. <button id="scope">Только новые (${NEW_EN.length})</button>`
+      : `Учим все слова урока — ${WORDS.length}. <button id="scope">Только новые (${NEW_EN.length})</button>`}</p>
+    <button class="next" id="go">${learned?'Продолжить':'Начать'}</button>
+    <button class="qbtn" id="quizBtn">🎤 Устный опрос — как на уроке</button>
+    <div class="row">
+      <button class="ghostbtn half" id="pick">Выбрать слова</button>
+      <label class="half size">По <select id="size">
+        ${[3,5,7,10].map(n=>`<option ${n===PACK?'selected':''}>${n}</option>`).join('')}
+      </select> за подход</label>
+    </div>
+    ${m.badges.length?`<p class="hint">Награды: ${m.badges.map(b=>BADGES[b].t).join(' · ')}</p>`:''}
+    <ul class="glossary">${pack.map(w=>{
+      const s=Store.w(w.en);
+      const mk=s.open?'<span class="mark">✓ в памяти</span>':s.learned?'<span class="mark">выучено</span>':'';
+      return `<li class="up">
+        <span class="g-en">${w.en}${w.is_new?'<i class="new">новое</i>':''}${mk}</span>
+        <span class="g-ru">${w.ru}</span></li>`;}).join('')}</ul>
+    <details class="more"><summary>Показать весь урок${
+      learned?` — выучено ${learned} из ${pool().length}`:''}</summary>
+      <ul class="glossary">${pool().filter(w=>!inPack.has(w.en)).map(w=>{
+        const s=Store.w(w.en);
+        const mk=s.open?'<span class="mark">✓ в памяти</span>':s.learned?'<span class="mark">выучено</span>':'';
+        return `<li><span class="g-en">${w.en}${w.is_new?'<i class="new">новое</i>':''}${mk}</span>
+          <span class="g-ru">${w.ru}</span></li>`;}).join('')}</ul>
+    </details>`;
+
+  go.onclick=()=>{Store.touchDay(); stageIx=0; queue=[...pack]; render(); cheer('start');};
+  const gb=document.getElementById('guess'); if(gb) gb.onclick=guessScreen;
+  bindPuzzle(scene,intro);
+  pick.onclick=()=>{picking=true;intro();};
+  document.getElementById('quizBtn').onclick=quizStart;
+  const sc=document.getElementById('scope'); if(sc) sc.onclick=()=>{Store.setMeta({picked:onlyNew()?[]:NEW_EN}); buildPack(); intro();};
+  size.onchange=e=>{PACK=+e.target.value; Store.setMeta({size:PACK}); buildPack(); intro();};
+}
+
+/* ═══ ПОДДЕРЖКА ═══ (договорились 25.10.2026)
+   Хвалим за УСИЛИЕ, редко и по делу — чтобы не отвлекать. Только три повода:
+   1) села учить в первый раз — начать самое трудное;
+   2) вернулась после перерыва (больше часа) — снова себя заставила; после перерыва
+      в несколько дней — с маленьким салютом из лапок;
+   3) слово сначала не давалось, а она вернулась к нему и сделала верно.
+   За подход — не больше одной фразы про слово. Без обещаний результата
+   («ты добьёшься цели») — хвалим то, что она уже сделала.
+   Подсказка висит, пока не коснёшься экрана; касание её только закрывает. */
+let streak=0, lastCheer=0, streakCheered=false, packCheers=0;
+const HOUR=36e5;
+function touchActive(){ Store.setMeta({lastActive:Date.now()}); }
+function cheer(ev,arg){
+  const m=Store.meta(), now=Date.now();
+  let text=null, party=false;
+  if(ev==='start'){
+    const gap=m.lastActive?now-m.lastActive:Infinity;
+    touchActive();
+    if(gap===Infinity) text=pickC(['Молодец, что села учить! Начать — самое трудное, и это уже позади.',
+                                    'Ты взялась за слова — это самое сложное. Поехали!']);
+    else if(gap>=2*DAY){ party=true; text=pickC(['Ты вернулась! После перерыва сесть снова — это сила. Слова тебя ждали.',
+                                    'Перерыв был, а ты всё равно пришла. Это и есть настоящее усилие.']); }
+    else if(gap>=HOUR) text=pickC(['Снова за слова — молодец, что заставила себя сесть ещё раз.',
+                                    'Второй заход — это то, что отличает тех, кто выучит. Ты это сделала.',
+                                    'Вернулась к словам — хорошо. Повторение через время держит слова крепче.']);
+    if(gap===Infinity) party=true;
+  }
+  else if(ev==='comeback'&&arg&&packCheers<1&&now-lastCheer>15000)
+    text=pickC([`«${arg.en}» сначала не давалось, а ты вернулась к нему — и получилось!`,
+                `С «${arg.en}» была ошибка, а теперь — верно. Вот так слова и запоминаются.`]);
+  if(text&&party) setTimeout(paws,250);
+  if(!text||!catOn()) return;
+  lastCheer=now; packCheers++; showCheer(text);
+}
+const pickC=a=>a[Math.floor(Math.random()*a.length)];
+/* маленький салют из лапок */
+function paws(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  for(let i=0;i<18;i++){
+    const p=document.createElement('span'); p.className='paw'; p.textContent=pickC(['🐾','🐾','✨','🧡']);
+    p.style.left=(10+Math.random()*80)+'vw'; p.style.animationDelay=(Math.random()*.4)+'s';
+    p.style.setProperty('--dx',(Math.random()*60-30)+'px'); p.style.fontSize=(16+Math.random()*14)+'px';
+    document.body.appendChild(p); setTimeout(()=>p.remove(),2200);
+  }
+}
+function showCheer(text){
+  const r=Math.random(), who=r<.6?'mashka':r<.82?'niko':'iki';
+  const pic= who==='mashka'?mashkaSVG('head','happy'): who==='niko'?pigSVG('happy'):ikiSVG('happy');
+  document.querySelectorAll('.cheer').forEach(x=>x.remove());
+  const d=document.createElement('div'); d.className='cheer '+who;
+  d.innerHTML=`<span class="cheer-pic">${pic}</span><span>${text}</span>`;
+  document.body.appendChild(d);
+  if(who==='mashka') purrFx(); else if(who==='niko') wheek(); else squeak();
+  const close=e=>{ e.stopPropagation(); e.preventDefault();
+    document.removeEventListener('click',close,true); document.removeEventListener('pointerdown',block,true);
+    d.classList.add('bye'); setTimeout(()=>d.remove(),400); };
+  const block=e=>{ e.stopPropagation(); };
+  setTimeout(()=>{ document.addEventListener('pointerdown',block,true); document.addEventListener('click',close,true); },250);
+}
+
+/* ═══ ОЧЕРЕДЬ ЭТАПА ═══
+   Верно — слово уходит. Ошибка — возвращается через два других,
+   этап не закрывается, пока все слова не сделаны. */
+function solved(){touchActive();queue.shift();step();}
+function retry(){const w=queue.shift();queue.splice(Math.min(2,queue.length),0,w);retriesTotal++;step();}
+function step(){ if(!queue.length){stageIx++;queue=[...pack]; if(stageIx<STAGES.length) cheer('stageDone',STAGES[stageIx-1]);} render(); }
+
+function drawRail(){
+  rail.innerHTML='';
+  STAGES.forEach((_,i)=>{const b=document.createElement('i');
+    if(i<stageIx)b.className='done'; if(i===stageIx)b.className='now'; rail.appendChild(b);});
+  stageName.textContent=stageIx<STAGES.length?STAGES[stageIx].name:'';
+}
+function distractors(w,f){
+  const src=WORDS.filter(x=>x.en!==w.en).sort(()=>Math.random()-.5).slice(0,3);
+  return [...src.map(x=>x[f]),w[f]].sort(()=>Math.random()-.5);
+}
+function note(w){ Store.fail(w.en); if(!mistakes.find(m=>m.en===w.en)) mistakes.push(w); }
+
+function render(){
+  drawRail();
+  if(stageIx>=STAGES.length) return finish();
+  const w=queue[0], stage=STAGES[stageIx].id;
+
+  if(stage==='look'){
+    const s=Store.w(w.en);
+    scene.innerHTML=`
+      <p class="eyebrow">${s.learned?'Уже знакомое — повторяем':'Новое слово'}</p>
+      <p class="word">${w.en}</p>
+      <p class="trans">${w.ru}</p>
+      ${trBlock(w)}
+      ${w.likeRu?`<p class="likeru">Похоже на русское: <b>${w.likeRu}</b></p>`:''}
+      ${w.tip?`<p class="tipline">${w.tip}</p>`:''}
+      <button class="speak" id="sp">🔊 Послушать ещё раз</button>
+      <button class="next" id="go">Дальше</button>`;
+    say(w.en);
+    sp.onclick=()=>say(w.en);
+    go.onclick=solved;
+    return;
+  }
+
+  if(stage==='phrase'){
+    if(!w.ph) return solved();          // нет естественной пары — пропускаем
+    scene.innerHTML=`
+      <p class="eyebrow">${w.en} — как это говорят</p>
+      <p class="word">${w.ph}</p>
+      <p class="trans">${w.phru}</p>
+      <p class="sub">Учить не нужно — просто посмотри, как это слово используют в речи.</p>
+      <button class="speak" id="sp">🔊 Послушать ещё раз</button>
+      <button class="next" id="go">Дальше</button>`;
+    say(w.ph);
+    sp.onclick=()=>say(w.ph);
+    go.onclick=solved;
+    return;
+  }
+
+  if(stage==='en2ru'||stage==='ru2en'){
+    const askEn=stage==='en2ru', answer=askEn?w.ru:w.en, field=askEn?'ru':'en';
+    scene.innerHTML=`<p class="word ${askEn?'':'ru'}">${askEn?w.en:w.ru}</p>
+      <p class="sub">${askEn?'Что это значит?':'Как это по-английски?'}</p>
+      ${askEn?'<button class="speak" id="sp">🔊 Послушать</button>':''}
+      <div class="opts" id="opts"></div>`;
+    if(askEn) sp.onclick=()=>say(w.en);
+    distractors(w,field).forEach(t=>{
+      const b=document.createElement('button'); b.className='opt'; b.textContent=t;
+      b.onclick=()=>{
+        if(opts.dataset.lock)return; opts.dataset.lock='1';
+        if(t===answer){ b.classList.add('right'); say(w.en); streak++;
+          cheer(!Store.meta().everRight?'firstRight':(mistakes.find(m=>m.en===w.en)?'comeback':'streak'),w); setTimeout(solved,650); }
+        else{ b.classList.add('wrong');
+          [...opts.children].forEach(c=>{if(c.textContent===answer)c.classList.add('right')});
+          note(w); streak=0; say(w.en); setTimeout(retry,1600); }
+      };
+      opts.appendChild(b);
+    });
+    return;
+  }
+
+  const target=w.en, tries=stuck[w.en]||0, copyMode=tries>=3;
+  scene.innerHTML=`<p class="word ru">${w.ru}</p>
+    <p class="sub">${copyMode?'Наберём вместе — слово перед тобой':'Собери английское слово'}</p>
+    ${copyMode?`<p class="model">${target}</p>`:''}
+    <button class="speak" id="sp">🔊 Послушать</button>
+    <div class="slot" id="slot"></div><div class="pool" id="keys"></div>
+    ${copyMode?'':'<button class="ghostbtn" id="tip">Подсказать букву</button>'}`;
+  sp.onclick=()=>say(target);
+  const L=target.split(''); let typed=1, errNow=false;
+  const paint=()=>slot.innerHTML=L.slice(0,typed).map(c=>c===' '?'&nbsp;&nbsp;':c).join('')
+    +`<span class="ghost">${'·'.repeat(L.length-typed)}</span>`;
+  /* каждая буква — своя кнопка: в cross две s — значит, и кнопок с s две.
+     Порядок перемешан один раз и не прыгает; нажатая буква исчезает. */
+  const refresh=()=>{ keys.innerHTML='';
+    L.slice(typed).sort(()=>Math.random()-.5).forEach(ch=>{
+      const k=document.createElement('button'); k.className='key'; k.dataset.ch=ch;
+      k.textContent=ch===' '?'пробел':ch; if(ch===' ')k.style.minWidth='90px'; k.onclick=()=>tap(ch,k); keys.appendChild(k); }); };
+  const dropKey=ch=>{ const k=[...keys.children].find(x=>x.dataset.ch===ch); if(k) k.remove(); };
+  const done=()=>{ say(target);
+    if(!errNow&&!copyMode){ streak++; cheer(Store.meta().everBuilt?'streak':'firstBuilt'); } else streak=0;
+    setTimeout((copyMode||!errNow)?solved:retry,700); };
+  function tap(ch,k){
+    if(ch===L[typed]){ typed++; k.remove(); paint(); if(typed===L.length) done(); }
+    else{ k.classList.add('shake'); setTimeout(()=>k.classList.remove('shake'),300);
+      errNow=true; if(!stuck[w.en])note(w); stuck[w.en]=(stuck[w.en]||0)+1; }
+  }
+  if(!copyMode) tip.onclick=()=>{
+    if(typed>=L.length)return;
+    dropKey(L[typed]); typed++; errNow=true; if(!stuck[w.en])note(w); stuck[w.en]=(stuck[w.en]||0)+1;
+    paint(); if(typed===L.length) done();
+  };
+  paint(); refresh();
+}
+
+/* ═══ ИТОГИ ═══ */
+function finish(){
+  Store.setMeta({packsDone:(Store.meta().packsDone||0)+1}); streak=0;
+  rail.innerHTML=''; stageName.textContent='';
+  const prizes=[]; let comeback=null;
+
+  pack.forEach(w=>{
+    const before=Store.w(w.en);
+    const wasHard = before.err>=3 && !mistakes.find(m=>m.en===w.en);
+    Store.ok(w.en);
+    if(wasHard && !comeback) comeback=w.en;
+  });
+
+  const errs=mistakes.length;
+  const learned=learnedCount(), left=WORDS.length-learned, lessonDone=left===0;
+  const hardWord=Object.entries(stuck).sort((a,b)=>b[1]-a[1])[0]?.[0]||null;
+
+  const add=id=>{const b=award(id); if(b)prizes.push([id,b]);};
+  if(learned>=1) add('first_leaf');
+  if(comeback) add('comeback');
+  if(errs===0&&retriesTotal===0) add('clean');
+  if(lessonDone) add('tower');
+
+  const v=verdict({errs,retries:retriesTotal,comeback,left,lessonDone,hardWord});
+  const mood = lessonDone?'cheer' : comeback?'cheer' : (errs===0&&!retriesTotal)?'cheer'
+             : errs>=5?'warm' : 'happy';
+  const line = lessonDone?catPick('done') : comeback?catPick('comeback')
+             : (errs===0&&!retriesTotal)?catPick('clean') : errs>=5?catPick('hard') : catPick('ok');
+  setTimeout(()=>catSpeak(line),400);
+  scene.innerHTML=`
+    <p class="tally">${v.big}</p><p class="sub">${v.sub}</p>
+    ${catBlock(mood,line)}
+    ${prizes.map(([id,b])=>`<div class="prize">${badgeArt(id)}
+      <div><b>${b.t}</b><span>${b.d}</span></div></div>`).join('')}
+    ${errs?`<ul class="missed">${mistakes.map(m=>`<li><span>${m.en}</span><span>${m.ru}</span></li>`).join('')}</ul>`:''}
+    <button class="next" id="again">Дальше</button>
+    <button class="ghostbtn" id="share">Отправить маме</button>
+    <p class="hint">Выучено ${pool().filter(w=>Store.w(w.en).learned).length} из ${pool().length}.${
+      left?' Вернуться к этим словам через час или завтра — и они закрепятся надолго.':''}</p>`;
+  again.onclick=()=>{buildPack();intro();};
+  share.onclick=()=>{
+    const t=`${LESSON.book}, ${LESSON.unit} — ${new Date().toLocaleDateString('ru-RU')}\n`
+      +`Выучено ${pool().filter(w=>Store.w(w.en).learned).length} из ${pool().length}. `
+      +(errs?`Ошибки: ${mistakes.map(m=>m.en).join(', ')}`:'Подход без ошибок.');
+    if(navigator.share) navigator.share({text:t});
+    else{ navigator.clipboard?.writeText(t); share.textContent='Скопировано'; }
+  };
+}
+
+/* ═══ УСТНЫЙ ОПРОС ═══
+   Как на уроке: слово по-русски — ответ вслух по-английски (или наоборот).
+   Микрофон проверяет, вспомнила ли слово; не расслышал — самопроверка, без оценки. */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition||null;
+let QZ=null;
+const normW=t=>t.toLowerCase().replace(/[^a-z ]+/g,' ').split(/\s+/).filter(Boolean);
+function heardOk(target,alts){
+  const T=normW(target);
+  return alts.some(a=>{const H=normW(a); return T.filter(w=>H.includes(w)).length/T.length>=0.75;});
+}
+function quizStart(){
+  stopAll();
+  rail.innerHTML=''; stageName.textContent='Устный опрос';
+  const n=pool().length;
+  scene.innerHTML=`<p class="eyebrow">${LESSON.book} · ${LESSON.unit}</p><h1>Устный опрос</h1>
+    <p class="sub">Как на уроке: я показываю слово — ты отвечаешь вслух. Слов: ${n}, вперемешку.</p>
+    <div class="dirs">
+      <button class="next" data-d="ru2en" style="margin:0">Русский → English</button>
+      <button class="qbtn" data-d="en2ru" style="margin:0">English → русский</button>
+      <button class="qbtn" data-d="mix" style="margin:0">Вперемешку</button>
+    </div>
+    ${catBlock('happy','Учитель обычно спрашивает по-русски, а отвечать надо по-английски. С этого и начни.')}
+    <button class="ghostbtn" id="qback">Вернуться к словам</button>`;
+  scene.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{
+    QZ={list:[...pool()].sort(()=>Math.random()-.5),i:0,ok:[],miss:[],dir:b.dataset.d}; qStep();});
+  qback.onclick=()=>{buildPack();intro();};
+}
+function stopAll(){ try{speechSynthesis.cancel()}catch(e){} }
+function qStep(){
+  if(QZ.i>=QZ.list.length) return qEnd();
+  const w=QZ.list[QZ.i], d=QZ.dir==='mix'?(Math.random()<.5?'ru2en':'en2ru'):QZ.dir;
+  rail.innerHTML=''; QZ.list.forEach((_,k)=>{const b=document.createElement('i'); if(k<QZ.i)b.className='done'; if(k===QZ.i)b.className='now'; rail.appendChild(b);});
+  const ask=d==='ru2en';
+  scene.innerHTML=`<p class="eyebrow">Слово ${QZ.i+1} из ${QZ.list.length}</p>
+    <p class="qword">${ask?w.ru:w.en}</p>
+    <p class="sub">${ask?'Скажи по-английски вслух.':'Что это значит? Скажи вслух по-русски.'}</p>
+    ${!ask?'<button class="speak" id="sp">🔊 Послушать</button>':''}
+    <p class="heardline" id="hl"></p>
+    ${ask&&SR?'<button class="mic" id="mic">🎤 Ответить</button>':''}
+    <button class="${ask&&SR?'ghostbtn':'next'}" id="show">Показать ответ</button>`;
+  if(!ask){ say(w.en); sp.onclick=()=>say(w.en); }
+  show.onclick=()=>qReveal(w,null);
+  if(ask&&SR) mic.onclick=()=>{
+    const hl=document.getElementById('hl'), btn=document.getElementById('mic');
+    let r; try{r=new SR();}catch(e){hl.textContent='Микрофон тут не работает — нажми «Показать ответ».';return;}
+    r.lang='en-GB'; r.maxAlternatives=4; r.interimResults=false;
+    btn.classList.add('on'); btn.textContent='🎤 Слушаю… говори'; let got=false;
+    r.onresult=e=>{got=true; const alts=[...e.results[0]].map(a=>a.transcript); qReveal(w,{ok:heardOk(w.en,alts),text:alts[0]});};
+    r.onerror=e=>{btn.classList.remove('on'); btn.textContent='🎤 Ответить';
+      hl.className='heardline'; hl.textContent=e.error==='network'?'Без интернета я не расслышу — скажи вслух и нажми «Показать ответ».'
+        :e.error==='not-allowed'?'Микрофон не разрешён — скажи вслух и нажми «Показать ответ».':'Не расслышала. Попробуй ещё раз.';};
+    r.onend=()=>{if(!got&&btn.isConnected){btn.classList.remove('on');btn.textContent='🎤 Ответить';}};
+    r.start();
+  };
+}
+function qReveal(w,res){
+  say(w.en);
+  const verdict=res?(res.ok?`<p class="heardline ok">Я услышала: «${res.text}». Верно!</p>`
+                           :`<p class="heardline no">Я услышала: «${res.text}». Не совсем — послушай, как надо.</p>`):'';
+  if(res&&res.ok) purr();
+  scene.innerHTML=`<p class="eyebrow">Слово ${QZ.i+1} из ${QZ.list.length}</p>
+    ${verdict}
+    <p class="qword">${w.en}</p>
+    ${trBlock(w)}
+    <p class="trans" style="font-size:22px">${w.ru}</p>
+    <button class="speak" id="sp">🔊 Послушать ещё раз</button>
+    ${res&&res.ok?'<button class="next" id="yes">Дальше</button>'
+      :`<p class="sub" style="margin:6px 0 0">${res?'':'Так и сказала?'}</p>
+        <button class="next" id="yes">✓ Знаю</button><button class="ghostbtn" id="no">Ещё учить</button>`}`;
+  sp.onclick=()=>say(w.en);
+  yes.onclick=()=>{QZ.ok.push(w); QZ.i++; qStep();};
+  const no=document.getElementById('no'); if(no) no.onclick=()=>{QZ.miss.push(w); Store.fail(w.en); QZ.i++; qStep();};
+}
+function qEnd(){
+  rail.innerHTML=''; stageName.textContent='';
+  const n=QZ.list.length, k=QZ.ok.length, all=k===n;
+  const line= all?'Все слова! На уроке будешь как дома. Мур-р.'
+    : k>=n*0.7?'Почти всё. Осталось добить несколько — я посторожу.'
+    : 'Ничего. Теперь мы знаем, какие слова учить. Это и было смыслом.';
+  if(Math.random()<.4){SPK='niko';} else if(all) purr();
+  scene.innerHTML=`<p class="tally">${all?'Знаешь все слова':`Знаешь ${k} из ${n}`}</p>
+    ${catBlock(all?'cheer':'warm',line)}
+    ${QZ.miss.length?`<p class="sub" style="margin-top:16px">Эти ещё учить:</p><ul class="missed">${QZ.miss.map(m=>`<li><span>${m.en}</span><span>${m.ru}</span></li>`).join('')}</ul>
+      <button class="next" id="train">Потренировать эти ${QZ.miss.length}</button>`:''}
+    <button class="${QZ.miss.length?'ghostbtn':'next'}" id="again">Ещё раз опрос</button>
+    <button class="ghostbtn" id="back">Вернуться к словам</button>`;
+  const tr=document.getElementById('train');
+  if(tr) tr.onclick=()=>{Store.setMeta({picked:QZ.miss.map(m=>m.en)}); buildPack(); intro();};
+  again.onclick=quizStart; back.onclick=()=>{buildPack();intro();};
+}
+
+const cb=document.getElementById('catBtn');
+cb.innerHTML=mashkaSVG('head','calm'); cb.classList.toggle('off',!catOn());
+cb.onclick=function(){
+  Store.setMeta({cat:!catOn()}); this.classList.toggle('off',!catOn());
+  if(catOn()) purrFx(); intro();
+};
+document.getElementById('cram').onclick=function(){
+  cram=!cram; this.setAttribute('aria-pressed',cram); buildPack(); intro();
+};
+
+PACK=Store.meta().size||5;
+const NEW_EN=WORDS.filter(w=>w.is_new).map(w=>w.en);
+if(!Store.meta().init) Store.setMeta({init:1,picked:NEW_EN});
+const onlyNew=()=>{const p=Store.meta().picked; return p.length===NEW_EN.length&&NEW_EN.every(e=>p.includes(e));};
+buildPack();
+intro();
+</script>
+</body>
+</html>

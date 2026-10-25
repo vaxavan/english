@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#12241c">
+<title>Слова 1c — Spotlight 6</title>
+<style>
+:root{
+  --ink:#12241c; --paper:#f2efe6; --chalk:#e8e3d5;
+  --moss:#2f6b46; --leaf:#7fae8c; --clay:#b4573a;
+  --dim:#7b8a80; --line:rgba(18,36,28,.14);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{background:var(--paper);color:var(--ink);
+  font:16px/1.5 "Georgia","Iowan Old Style",serif;display:flex;flex-direction:column;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+
+header{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.brand{font:13px/1 system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.spacer{flex:1}
+.chip{font:13px/1 system-ui,sans-serif;border:1px solid var(--line);border-radius:999px;
+  padding:7px 12px;background:#fff;color:var(--dim)}
+.chip[aria-pressed="true"]{background:var(--moss);border-color:var(--moss);color:#fff}
+
+.rail{display:flex;gap:4px;padding:12px 18px 0}
+.rail i{flex:1;height:3px;background:var(--chalk);border-radius:2px;transition:background .25s}
+.rail i.done{background:var(--moss)} .rail i.now{background:var(--ink)}
+.stage{font:12px/1 system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);padding:11px 18px 0}
+
+main{flex:1;display:flex;flex-direction:column;justify-content:center;
+  padding:8px 18px 28px;max-width:640px;width:100%;margin:0 auto}
+.eyebrow{font:12px/1 system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin:0 0 6px}
+h1{font-size:clamp(30px,8vw,42px);font-weight:400;margin:0 0 8px;line-height:1.1}
+.word{font-size:clamp(34px,9vw,52px);line-height:1.1;margin:0 0 4px}
+.word.ru{font-size:clamp(26px,7vw,38px)}
+.trans{
+  font-size:clamp(24px,6.5vw,34px);line-height:1.2;margin:2px 0 6px;
+  color:var(--moss);
+}
+.sub{color:var(--dim);font:15px/1.45 system-ui,sans-serif;margin:0 0 20px}
+.model{font-size:clamp(28px,7vw,40px);letter-spacing:.06em;margin:0 0 16px;color:var(--moss)}
+
+.speak{display:inline-flex;align-items:center;gap:8px;margin:0 0 24px;border:1px solid var(--line);
+  border-radius:999px;padding:8px 16px;background:#fff;font:14px/1 system-ui,sans-serif;color:var(--dim)}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opt{text-align:left;padding:15px 18px;background:#fff;border:1px solid var(--line);border-radius:12px;
+  transition:background .15s,border-color .15s}
+.opt.right{background:#e8f2ea;border-color:var(--moss);color:var(--moss)}
+.opt.wrong{background:#f6e7e2;border-color:var(--clay);color:var(--clay)}
+
+.slot{min-height:60px;display:flex;flex-wrap:wrap;align-items:center;border-bottom:2px solid var(--ink);
+  padding:0 2px 10px;margin-bottom:20px;font-size:30px}
+.ghost{color:var(--chalk)}
+.pool{display:flex;flex-wrap:wrap;gap:8px}
+.key{min-width:46px;padding:13px 4px;text-align:center;background:#fff;border:1px solid var(--line);
+  border-radius:10px;font-size:21px}
+.key.shake{animation:nudge .3s;border-color:var(--clay);color:var(--clay)}
+@keyframes nudge{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+.next{margin-top:24px;width:100%;padding:16px;border-radius:12px;background:var(--ink);color:var(--paper);
+  font:16px/1 system-ui,sans-serif}
+.ghostbtn{margin-top:12px;width:100%;padding:12px;color:var(--dim);font:14px/1.35 system-ui,sans-serif}
+.ghostbtn[disabled]{opacity:.45;cursor:default}
+.row{display:flex;gap:10px;align-items:center;margin-top:10px}
+.half{flex:1;margin-top:0}
+.size{font:14px/1 system-ui,sans-serif;color:var(--dim);text-align:center}
+.size select{font:inherit;padding:5px 6px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--ink)}
+
+.cat{display:flex;gap:12px;align-items:flex-start;margin:20px 0 0;cursor:pointer}
+.cat svg{flex:none}
+.bubble{
+  position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;
+  padding:12px 14px;font:15px/1.4 system-ui,sans-serif;color:var(--ink);flex:1;margin-top:8px;
+}
+.bubble::before{
+  content:'';position:absolute;left:-7px;top:16px;width:12px;height:12px;
+  background:#fff;border-left:1px solid var(--line);border-bottom:1px solid var(--line);
+  transform:rotate(45deg);
+}
+.cells{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin:0 0 6px}
+.cell{width:38px;height:48px;border-bottom:3px solid var(--line);display:flex;
+  align-items:center;justify-content:center;font-size:27px;text-transform:lowercase}
+.cell.cur{border-bottom-color:var(--ink)}
+.cells.bad .cell{border-bottom-color:var(--clay);color:var(--clay);animation:nudge .3s}
+.hidden-input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+.tree{display:block;margin:0 auto 6px;max-width:270px;width:100%}
+.count{text-align:center;font:14px/1.5 system-ui,sans-serif;color:var(--dim);margin:0 0 18px}
+.count b{color:var(--ink);font-weight:600}
+
+.glossary{list-style:none;padding:0;margin:24px 0 0;border-top:1px solid var(--line)}
+.glossary li{display:flex;justify-content:space-between;gap:14px;align-items:baseline;padding:9px 10px;
+  border-bottom:1px solid var(--line);margin:0 -10px;color:var(--dim);font-size:15px}
+.glossary li.up{background:#fff;color:var(--ink);border-left:3px solid var(--moss);border-bottom-color:transparent}
+.glossary li.on{background:#fff;color:var(--ink);border-left:3px solid var(--moss)}
+.g-en{font-size:17px}
+.g-ru{text-align:right;font:14px/1.3 system-ui,sans-serif}
+.mark{font:11px/1 system-ui,sans-serif;color:var(--moss);margin-left:7px}
+.new{font-style:normal;font:10px/1 system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--clay);margin-left:8px}
+
+.more{margin-top:18px}
+.more summary{
+  list-style:none;cursor:pointer;padding:11px 0;text-align:center;
+  font:14px/1 system-ui,sans-serif;color:var(--dim);
+  border-top:1px solid var(--line);
+}
+.more summary::-webkit-details-marker{display:none}
+.more summary::after{content:' ▾';opacity:.6}
+.more[open] summary::after{content:' ▴'}
+.more .glossary{margin-top:0;border-top:0}
+
+.tally{font-size:clamp(26px,7vw,38px);margin:0 0 8px;line-height:1.15}
+.missed{list-style:none;padding:0;margin:16px 0 0;border-top:1px solid var(--line)}
+.missed li{display:flex;justify-content:space-between;gap:14px;padding:11px 2px;border-bottom:1px solid var(--line)}
+.missed li span:last-child{color:var(--dim);text-align:right}
+.prize{display:flex;gap:14px;align-items:center;background:#fff;border:1px solid var(--moss);
+  border-radius:14px;padding:14px 16px;margin:18px 0 0}
+.prize svg{flex:none}
+.prize b{display:block;font-weight:400;font-size:18px}
+.prize span{font:13px/1.4 system-ui,sans-serif;color:var(--dim)}
+.hint{color:var(--dim);font:14px/1.45 system-ui,sans-serif;margin-top:18px}
+.nudge{background:#fff;border:1px solid var(--line);border-left:3px solid var(--moss);
+  border-radius:0 12px 12px 0;padding:13px 15px;margin:0 0 18px;font:14px/1.45 system-ui,sans-serif}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <span class="brand">Spotlight 6 · 1c</span><span class="spacer"></span>
+  <button class="chip" id="catBtn" title="Кот">🐱</button>
+  <button class="chip" id="cram" aria-pressed="false">Скоро диктант</button>
+</header>
+<div class="rail" id="rail"></div>
+<div class="stage" id="stageName"></div>
+<main id="scene"></main>
+
+<script>
+/* ═══ СЛОВАРЬ ═══
+   phrase — словосочетание, показывается ПОСЛЕ того, как слово выучено.
+   Не для запоминания слова (исследования показывают, что для этого
+   контекст не помогает), а чтобы увидеть, как оно сочетается.
+   Там, где естественной пары нет, поля просто нет. */
+const LESSON={book:'Spotlight 6',unit:'Модуль 1 · урок 1c',title:'My Country'};
+const WORDS=[
+ {en:"Brazil",ru:"Бразилия",pos:"n",is_new:true,ph:"from Brazil",phru:"из Бразилии"},
+ {en:"Brazilian",ru:"бразильский; бразилец",pos:"adj; n",is_new:true,ph:"a Brazilian city",phru:"бразильский город"},
+ {en:"Britain",ru:"Великобритания",pos:"n",is_new:true,ph:"in Britain",phru:"в Великобритании"},
+ {en:"British",ru:"британский; британец",pos:"adj; n",is_new:false,ph:"British food",phru:"британская еда"},
+ {en:"Chile",ru:"Чили",pos:"n",is_new:true,ph:"in Chile",phru:"в Чили"},
+ {en:"Chilean",ru:"чилийский; чилиец",pos:"adj; n",is_new:true,ph:"Chilean mountains",phru:"чилийские горы"},
+ {en:"compass",ru:"компас",pos:"n",is_new:false,ph:"use a compass",phru:"пользоваться компасом"},
+ {en:"desert",ru:"пустыня",pos:"n",is_new:false,ph:"a hot desert",phru:"жаркая пустыня"},
+ {en:"east",ru:"восток",pos:"n",is_new:false,ph:"in the east",phru:"на востоке"},
+ {en:"exactly",ru:"точно",pos:"adv",is_new:false,ph:"exactly here",phru:"именно здесь"},
+ {en:"German",ru:"немецкий; немец",pos:"adj; n",is_new:true,ph:"German cars",phru:"немецкие машины"},
+ {en:"Germany",ru:"Германия",pos:"n",is_new:true,ph:"from Germany",phru:"из Германии"},
+ {en:"include",ru:"включать",pos:"v",is_new:false,ph:"include everything",phru:"включать всё"},
+ {en:"Japan",ru:"Япония",pos:"n",is_new:false,ph:"in Japan",phru:"в Японии"},
+ {en:"Japanese",ru:"японский; японец",pos:"adj; n",is_new:false,ph:"Japanese food",phru:"японская еда"},
+ {en:"location",ru:"местонахождение",pos:"n",is_new:false,ph:"a good location",phru:"удачное расположение"},
+ {en:"mountains",ru:"горы",pos:"n pl",is_new:false,ph:"high mountains",phru:"высокие горы"},
+ {en:"north",ru:"север",pos:"n",is_new:false,ph:"in the north",phru:"на севере"},
+ {en:"north-east",ru:"северо-восток",pos:"n",is_new:false,ph:"to the north-east",phru:"на северо-восток"},
+ {en:"north-west",ru:"северо-запад",pos:"n",is_new:false,ph:"to the north-west",phru:"на северо-запад"},
+ {en:"Poland",ru:"Польша",pos:"n",is_new:true,ph:"we live in Poland",phru:"мы живём в Польше"},
+ {en:"Polish",ru:"польский; поляк",pos:"adj; n",is_new:true,ph:"the Polish language",phru:"польский язык"},
+ {en:"Russia",ru:"Россия",pos:"n",is_new:false,ph:"in Russia",phru:"в России"},
+ {en:"Russian",ru:"русский; русский",pos:"adj; n",is_new:false,ph:"Russian books",phru:"русские книги"},
+ {en:"south",ru:"юг",pos:"n",is_new:false,ph:"in the south",phru:"на юге"},
+ {en:"Spain",ru:"Испания",pos:"n",is_new:true,ph:"from Spain",phru:"из Испании"},
+ {en:"Spanish",ru:"испанский; испанец",pos:"adj; n",is_new:true,ph:"Spanish food",phru:"испанская еда"},
+ {en:"valley",ru:"долина",pos:"n",is_new:false,ph:"a green valley",phru:"зелёная долина"},
+ {en:"west",ru:"запад",pos:"n",is_new:false,ph:"in the west",phru:"на западе"}
+];
+
+/* картинки — только то, что различимо рисунком */
+const ART={
+  compass:`<g stroke="#12241c" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="100" cy="100" r="62"/><circle cx="100" cy="100" r="52"/>
+    <path d="M100 62l14 38 38 14-38 14-14 38-14-38-38-14 38-14z"/>
+    <path d="M100 30v10M100 160v10M30 100h10M160 100h10"/></g>`,
+  mountains:`<g stroke="#12241c" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 148L74 58l30 48 22-32 56 74z"/>
+    <path d="M60 82l14 10 12-8M112 84l10 7 9-6"/>
+    <circle cx="146" cy="48" r="14"/></g>`,
+  Japan:`<g stroke="#12241c" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="28" y="56" width="144" height="96" rx="4"/>
+    <circle cx="100" cy="104" r="30" fill="#12241c" stroke="none"/>
+    <path d="M28 56V38M28 152v10"/></g>`,
+  desert:`<g stroke="#12241c" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="150" cy="46" r="17"/>
+    <path d="M14 154c26-16 46-16 70 0M84 154c26-16 60-16 88 0"/>
+    <path d="M74 154V78a10 10 0 0 1 20 0v76"/>
+    <path d="M74 112H56a10 10 0 0 1-10-10V88M94 100h18a10 10 0 0 1 10 10v14"/>
+    <path d="M46 88v-6M122 124v8"/></g>`
+};
+</script>
+
+<script>
+/* ═══ ХРАНИЛИЩЕ ═══
+   На слово — одна запись, отдельно метаданные.
+   Формат рассчитан на перенос в БД без переделок. */
+const DAY=864e5;
+const LADDER=[1,3,7,14,30];      // ступени созревания, в днях
+const CONFIRM_GAP=45*6e4;        // 45 мин — раньше это не повторение, а тот же заход
+
+const Store={
+  k:'sp6-1c',
+  all(){ try{return JSON.parse(localStorage.getItem(this.k))||{}}catch(e){return{}} },
+  save(d){ try{localStorage.setItem(this.k,JSON.stringify(d))}catch(e){} },
+  w(en){ return this.all()[en]||{err:0,seen:0,learned:0,open:0,step:-1,due:0,lastOk:0}; },
+  set(en,p){ const d=this.all(); d[en]={...this.w(en),...p}; this.save(d); },
+
+  meta(){ try{return JSON.parse(localStorage.getItem(this.k+'-m'))||{days:[],badges:[],size:5,picked:[]}}
+          catch(e){return{days:[],badges:[],size:5,picked:[]}} },
+  setMeta(p){ try{localStorage.setItem(this.k+'-m',JSON.stringify({...this.meta(),...p}))}catch(e){} },
+
+  /* дни занятий копятся и НЕ обнуляются при пропуске */
+  touchDay(){ const t=new Date().toISOString().slice(0,10), m=this.meta();
+    if(!m.days.includes(t)) this.setMeta({days:[...m.days,t]}); },
+  lastDay(){ const d=this.meta().days; return d.length?d[d.length-1]:null; },
+
+  ok(en){
+    const w=this.w(en), now=Date.now();
+    const first=!w.learned;
+    const confirming = w.learned && (now-w.lastOk)>=CONFIRM_GAP;
+    const step = confirming ? Math.min(w.step+1,LADDER.length-1) : Math.max(w.step,0);
+    this.set(en,{seen:w.seen+1,learned:1,open:w.open||(confirming?1:0),
+                 step,due:now+LADDER[step]*DAY,lastOk:now});
+    return {first,confirming};
+  },
+  fail(en){ const w=this.w(en); this.set(en,{err:w.err+1,step:0,due:Date.now()+LADDER[0]*DAY}); },
+  due(en){ const w=this.w(en); return !!w.learned && Date.now()>=w.due; }
+};
+
+/* ═══ КОТ ═══
+   Появляется на итогах и в игре, не на каждом экране —
+   иначе примелькается. Говорит по-русски, если в системе
+   есть русский голос; иначе просто показывает реплику. */
+let ruVoice=null;
+const pickRu=()=>{const v=speechSynthesis.getVoices();
+  ruVoice=v.find(x=>x.lang==='ru-RU')||v.find(x=>x.lang.startsWith('ru'))||null;};
+pickRu(); speechSynthesis.addEventListener('voiceschanged',pickRu);
+
+function catOn(){ return Store.meta().cat!==false; }
+function catSpeak(text){
+  if(!catOn()||!('speechSynthesis'in window)||!ruVoice) return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='ru-RU'; u.rate=1; u.pitch=1.35; u.voice=ruVoice;
+  speechSynthesis.speak(u);
+}
+function catArt(mood){
+  const s='fill="none" stroke="#12241c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"';
+  const eyes = mood==='cheer' ? '<path d="M34 40c2.5-3.5 7-3.5 9.5 0M50.5 40c2.5-3.5 7-3.5 9.5 0"/>'
+             : mood==='warm'  ? '<path d="M35 41.5c2-2.5 6-2.5 8 0M53 41.5c2-2.5 6-2.5 8 0"/>'
+             : mood==='think' ? '<circle cx="39" cy="40" r="3" fill="#12241c"/><path d="M52 40h9"/>'
+             : '<circle cx="39" cy="40" r="3" fill="#12241c"/><circle cx="57" cy="40" r="3" fill="#12241c"/>';
+  const mouth = mood==='warm' ? '<path d="M43 52c2 2.5 6 2.5 8 0"/>'
+              : mood==='think'? '<path d="M42 53h10"/>'
+              : '<path d="M47 48.5l-2.5 2h5z" fill="#12241c" stroke="none"/><path d="M47 51v2M47 53c-2 2.5-5.5 1.5-5.5-1M47 53c2 2.5 5.5 1.5 5.5-1"/>';
+  const paws = mood==='cheer' ? '<path d="M25 74l-8-8M69 74l8-8"/>' : '<path d="M35 88h7M52 88h7"/>';
+  return `<svg viewBox="0 0 94 100" width="66" height="70" ${s}>
+    <path d="M27 24L24 9l14 7M67 24l3-15-14 7"/>
+    <circle cx="47" cy="40" r="23"/>
+    ${eyes}${mouth}
+    <path d="M23 42H11M23 47l-11 3M71 42h12M71 47l11 3"/>
+    <path d="M31 63c-4 4-6 10-6 16v14h44V79c0-6-2-12-6-16"/>
+    ${paws}
+    <path d="M69 93c10-1 13-9 10-15"/></svg>`;
+}
+function catBlock(mood,phrase){
+  if(!catOn()) return '';
+  return `<div class="cat" onclick="catSpeak(this.dataset.p)" data-p="${phrase.replace(/"/g,'&quot;')}">
+    ${catArt(mood)}<div class="bubble">${phrase}</div></div>`;
+}
+const CAT={
+  clean:['Ни одной ошибки. Я даже подсказать не успел.','Чисто. Вообще не за что зацепиться.'],
+  comeback:['Ты его дожала. Я, честно, сомневался.','Вот это слово тебя мучило. И всё, больше не мучает.'],
+  hard:['Тяжело шло. Но ты досидела до конца — это и считается.','Много ошибок, ну и что. Главное, не закрыла и не ушла.'],
+  ok:['Нормально идём.','Ещё пять слов позади.'],
+  done:['Урок закрыт. Весь. Я в шоке, если честно.'],
+  puzzle:['Угадала! Глаз-алмаз.','Вот это ты быстро разглядела.'],
+  miss:['Не она. Но идея была хорошая.','Мимо. Открой ещё кусочек, и попробуем снова.']
+};
+const catPick=k=>CAT[k][Math.floor(Math.random()*CAT[k].length)];
+
+
+/* ═══ ОЗВУЧКА ═══ */
+let voice=null;
+const pickVoice=()=>{const v=speechSynthesis.getVoices();
+  voice=v.find(x=>x.lang==='en-GB')||v.find(x=>x.lang.startsWith('en'))||null;};
+pickVoice(); speechSynthesis.onvoiceschanged=pickVoice;
+function say(t){ if(!('speechSynthesis'in window))return; speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t); u.lang='en-GB'; u.rate=.85;
+  if(voice)u.voice=voice; speechSynthesis.speak(u); }
+
+/* ═══ НАГРАДЫ ═══ Мало, и все за настоящие вехи. Сувениры, не оценки. */
+const BADGES={
+  first_leaf:{t:'Первый лист', d:'Первое слово выучено'},
+  comeback:  {t:'Взяла своё',  d:'Слово, которое не давалось, сделано без ошибок'},
+  clean:     {t:'Ни одной ошибки', d:'Подход пройден начисто'},
+  tower:     {t:'Тауэрский мост',  d:'Весь урок 1c выучен'}
+};
+function award(id){ const m=Store.meta();
+  if(m.badges.includes(id))return null;
+  Store.setMeta({badges:[...m.badges,id]}); return BADGES[id]; }
+function badgeArt(id){
+  const s='fill="none" stroke="#2f6b46" stroke-width="1.6" stroke-linecap="round"';
+  if(id==='tower') return `<svg width="44" height="44" viewBox="0 0 44 44" ${s}>
+    <path d="M11 37V19M33 37V19M11 19h5v-6h-5zM28 19h5v-6h-5zM11 13l2.5-4 2.5 4M28 13l2.5-4 2.5 4"/>
+    <path d="M16 21h12M16 27h12M4 37h36"/><path d="M16 21c3-3 9-3 12 0"/></svg>`;
+  if(id==='comeback') return `<svg width="44" height="44" viewBox="0 0 44 44" ${s}>
+    <path d="M22 37V17"/><path d="M22 23c-7 0-11-4-11-10 7 0 11 4 11 10z"/>
+    <path d="M22 27c7 0 11-4 11-10-7 0-11 4-11 10z"/><path d="M13 37h18"/></svg>`;
+  if(id==='clean') return `<svg width="44" height="44" viewBox="0 0 44 44" ${s}>
+    <circle cx="22" cy="22" r="14"/><path d="M15 22l5 5 9-10"/></svg>`;
+  return `<svg width="44" height="44" viewBox="0 0 44 44" ${s}>
+    <path d="M22 37V18"/><path d="M22 24c-6 0-9-3-9-9 6 0 9 3 9 9z"/><path d="M15 37h14"/></svg>`;
+}
+
+/* ═══ ПАЗЛ ═══
+   Каждые PIECE_COST выученных слов открывают кусок картинки.
+   Загадано слово урока, которое различимо на рисунке.
+   Открылось всё — можно вписать ответ. Картинка не отбирается. */
+const PIECES=9, PIECE_COST=1;
+const PUZZLE_WORDS=Object.keys(ART);
+
+function puzzleState(){
+  const m=Store.meta();
+  let riddle=m.riddle;
+  if(!riddle || !ART[riddle]){
+    const left=PUZZLE_WORDS.filter(w=>!(m.solved||[]).includes(w));
+    riddle=(left.length?left:PUZZLE_WORDS)[Math.floor(Math.random()*(left.length||PUZZLE_WORDS.length))];
+    Store.setMeta({riddle});
+  }
+  const earned=Math.min(PIECES, Math.floor((learnedCount()-(m.spent||0))/PIECE_COST));
+  return {riddle, open:Math.max(0,earned), done:earned>=PIECES};
+}
+
+function puzzle(){
+  const st=puzzleState();
+  const cell=200/3;
+  let mask='';
+  for(let i=0;i<PIECES;i++){
+    if(i<st.open) continue;                 // кусок открыт
+    const x=(i%3)*cell, y=Math.floor(i/3)*cell;
+    mask+=`<rect x="${x}" y="${y}" width="${cell}" height="${cell}"
+      fill="#e8e3d5" stroke="#f2efe6" stroke-width="2"/>`;
+  }
+  return `<svg class="tree" viewBox="0 0 200 200" aria-hidden="true">
+    <rect width="200" height="200" fill="#fff" rx="10"/>
+    ${ART[st.riddle]}${mask}</svg>`;
+}
+
+/* ═══ ОТГАДКА ═══
+   Клетки по числу букв, буквы НЕ подсказываются.
+   Не угадала — картинка остаётся открытой, можно попробовать снова. */
+function guessScreen(){
+  rail.innerHTML=''; stageName.textContent='';
+  const st=puzzleState(), target=st.riddle;
+  const word=WORDS.find(w=>w.en===target);
+  scene.innerHTML=`
+    <p class="eyebrow">Картинка открыта</p>
+    <h1>Что это за слово?</h1>
+    ${puzzle()}
+    <p class="sub">Слово из этого урока, ${target.length} ${target.length<5?'буквы':'букв'}. Напиши по-английски.</p>
+    <div class="cells" id="cells"></div>
+    <input id="typed" class="hidden-input" autocomplete="off" autocapitalize="off"
+      autocorrect="off" spellcheck="false" maxlength="${target.length}">
+    <button class="next" id="check">Проверить</button>
+    <button class="ghostbtn" id="back">Вернуться к словам</button>`;
+
+  const cells=document.getElementById('cells'), inp=document.getElementById('typed');
+  const paint=()=>{
+    cells.innerHTML='';
+    for(let i=0;i<target.length;i++){
+      const c=document.createElement('span');
+      c.className='cell'+(i===inp.value.length?' cur':'');
+      c.textContent=inp.value[i]||'';
+      cells.appendChild(c);
+    }
+  };
+  cells.onclick=()=>inp.focus();
+  inp.oninput=()=>{ inp.value=inp.value.replace(/[^a-zA-Z ]/g,'').toLowerCase(); paint(); };
+  inp.onkeydown=e=>{ if(e.key==='Enter') check(); };
+  paint(); setTimeout(()=>inp.focus(),80);
+
+  function check(){
+    if(inp.value.trim()===target){
+      const m=Store.meta();
+      Store.setMeta({solved:[...(m.solved||[]),target], riddle:null, triedAt:-1,
+                     spent:(m.spent||0)+st.open*PIECE_COST});
+      say(target);
+      const ln=catPick('puzzle'); setTimeout(()=>catSpeak(ln),700);
+      scene.innerHTML=`
+        <p class="tally">Это ${target}</p>
+        <p class="trans">${word?word.ru:''}</p>
+        <p class="sub">Угадала по картинке — значит слово держится не только на переводе.</p>
+        ${catBlock('cheer',ln)}
+        ${puzzle()}
+        <button class="next" id="go2">Дальше</button>`;
+      go2.onclick=()=>{buildPack();intro();};
+    }else{
+      cells.classList.add('bad');
+      setTimeout(()=>cells.classList.remove('bad'),400);
+      Store.setMeta({triedAt:st.open});
+      const left=PIECES-st.open;
+      const lm=catPick('miss'); setTimeout(()=>catSpeak(lm),400);
+      scene.innerHTML=`
+        <p class="tally">Не это слово</p>
+        ${catBlock('warm',lm)}
+        <p class="sub">${left
+          ? 'Ничего не потеряно. Выучи ещё слово — откроется кусочек, и попробуешь снова.'
+          : 'Картинка открыта полностью — посмотри внимательнее и попробуй ещё раз.'}</p>
+        ${puzzle()}
+        <button class="next" id="go3">Вернуться к словам</button>`;
+      document.getElementById('go3').onclick=()=>{buildPack();intro();};
+    }
+  }
+  document.getElementById('check').onclick=check;
+  document.getElementById('back').onclick=()=>{buildPack();intro();};
+}
+
+/* ═══ ФРАЗЫ ПО СЦЕНАРИЯМ ═══
+   Хвалим за вложенное усилие, а не за способности.
+   «Осталось чуть-чуть» — только когда подход прошёл неплохо. */
+function plural(n){const t=n%10,h=n%100;
+  if(t===1&&h!==11)return'слово'; if(t>=2&&t<=4&&(h<12||h>14))return'слова'; return'слов';}
+
+function verdict({errs,retries,comeback,left,lessonDone,hardWord}){
+  if(lessonDone) return {big:'Урок закрыт целиком',
+    sub:`Все ${WORDS.length} ${plural(WORDS.length)} пройдены. Дальше они будут возвращаться на повторение — понемногу и не каждый день.`};
+  if(comeback) return {big:`Ты взяла «${comeback}»`,
+    sub:'Это слово не давалось несколько раз. Ты возвращалась к нему и сделала — так и запоминается.'};
+  if(errs===0&&retries===0) return {big:'Ни одной ошибки',
+    sub: left<=4 ? `В уроке осталось ${left} ${plural(left)}.` : 'Эти слова держатся крепко.'};
+  if(errs>=5) return {big:'Трудный подход',
+    sub:`Ошибок было много, но ты дошла до конца${hardWord?`, даже с «${hardWord}»`:''}. Это и есть работа.`};
+  if(errs>=2) return {big:'Со скрипом, но сделано',
+    sub:'Слова с ошибками вернутся первыми — специально, чтобы добить.'};
+  return {big:'Подход пройден',
+    sub: left<=4 ? `Осталось ${left} ${plural(left)} — почти всё.` : 'Одна ошибка не в счёт.'};
+}
+
+/* ═══ СОСТОЯНИЕ ═══ */
+const STAGES=[{id:'look',name:'Знакомство'},{id:'en2ru',name:'Выбери перевод'},{id:'ru2en',name:'Выбери слово'},{id:'build',name:'Собери из букв'},{id:'phrase',name:'Как это говорят'}];
+let PACK=5, cram=false, picking=false;
+let pack=[], stageIx=0, queue=[], mistakes=[], stuck={}, retriesTotal=0;
+
+const scene=document.getElementById('scene'),
+      rail=document.getElementById('rail'),
+      stageName=document.getElementById('stageName');
+
+function pool(){ const p=Store.meta().picked;
+  return p.length?WORDS.filter(w=>p.includes(w.en)):WORDS; }
+function learnedCount(){ return WORDS.filter(w=>Store.w(w.en).learned).length; }
+function dueList(){ return pool().filter(w=>Store.due(w.en)); }
+
+function hardness(w){return w.en.length}
+function avg(p){return p.reduce((s,w)=>s+hardness(w),0)/(p.length||1)}
+function dealPacks(list,size){
+  const by=[...list].sort((a,b)=>hardness(a)-hardness(b));
+  const count=Math.max(1,Math.ceil(by.length/size));
+  const packs=Array.from({length:count},()=>[]);
+  let i=0,dir=1;
+  while(by.length){
+    const w=dir>0?by.shift():by.pop();
+    let t=i; for(let k=0;k<count&&packs[t].length>=size;k++) t=(t+1)%count;
+    packs[t].push(w); i++; if(i>=count){i=0;dir*=-1;}
+  }
+  packs.sort((a,b)=>avg(a)-avg(b));
+  return packs.filter(p=>p.length);
+}
+
+function buildPack(){
+  const list=pool();
+  // 1. недоученное, где уже спотыкалась  2. созревшее для повторения  3. новое
+  const shaky=list.filter(w=>Store.w(w.en).err>0&&!Store.w(w.en).learned)
+                  .sort((a,b)=>Store.w(b.en).err-Store.w(a.en).err);
+  const ripe = cram?[]:dueList();
+  const fresh=list.filter(w=>!Store.w(w.en).learned&&Store.w(w.en).err===0);
+  const known= cram?list.filter(w=>Store.w(w.en).learned):[];
+  const packs=[...dealPacks(fresh,PACK),...dealPacks(known,PACK)];
+  pack=[...shaky,...ripe,...(packs[0]||[])]
+        .filter((w,i,a)=>a.indexOf(w)===i)
+        .slice(0,Math.min(PACK,list.length));
+  if(!pack.length) pack=(dealPacks(list,PACK)[0]||[]);
+  stageIx=0; mistakes=[]; stuck={}; retriesTotal=0; queue=[...pack];
+}
+
+/* ═══ ЭКРАН ПОДГОТОВКИ ═══ */
+function intro(){
+  rail.innerHTML=''; stageName.textContent='';
+  const m=Store.meta(), picked=m.picked;
+
+  if(picking){
+    scene.innerHTML=`<p class="eyebrow">${LESSON.book} · ${LESSON.unit}</p><h1>${LESSON.title}</h1>
+      <p class="sub">Отметь слова, которые задали. Выбрано: <b>${picked.length}</b>.</p>
+      <button class="next" id="donePick">Готово</button>
+      <button class="ghostbtn" id="clearPick">Снять всё — тренировать весь урок</button>
+      <ul class="glossary">${WORDS.map(w=>`
+        <li class="${picked.includes(w.en)?'on':''}" data-en="${w.en}">
+          <span class="g-en">${picked.includes(w.en)?'✓ ':'○ '}${w.en}</span>
+          <span class="g-ru">${w.ru}</span></li>`).join('')}</ul>`;
+    scene.querySelectorAll('li').forEach(li=>li.onclick=()=>{
+      const en=li.dataset.en,p=Store.meta().picked;
+      Store.setMeta({picked:p.includes(en)?p.filter(x=>x!==en):[...p,en]});
+      buildPack(); intro();
+    });
+    donePick.onclick=()=>{picking=false;buildPack();intro();};
+    clearPick.onclick=()=>{Store.setMeta({picked:[]});buildPack();intro();};
+    return;
+  }
+
+  const learned=learnedCount(), ripe=dueList().length;
+  const inPack=new Set(pack.map(w=>w.en));
+  const lastOk=Math.max(0,...WORDS.map(w=>Store.w(w.en).lastOk||0));
+  const mins=lastOk?(Date.now()-lastOk)/6e4:1e9;
+  const last=Store.lastDay(), today=new Date().toISOString().slice(0,10);
+  const afterBreak = last&&last!==today&&(Date.now()-new Date(last).getTime())>2*DAY;
+
+  let nudge='';
+  if(mins>=45&&mins<720&&learned)
+    nudge=`<p class="nudge">Ты учила слова ${mins<90?'меньше часа':Math.round(mins/60)+' ч'} назад.
+      Повторить их сегодня же — самый надёжный способ перевести в долгую память.</p>`;
+  else if(afterBreak&&learned)
+    nudge=`<p class="nudge">Перерыв был несколько дней — ничего не пропало.
+      Выученное на месте, просто пора освежить.</p>`;
+  else if(ripe&&!cram)
+    nudge=`<p class="nudge">${ripe} ${plural(ripe)} пора повторить — ${ripe===1?'оно ждёт':'они ждут'} в этом подходе.</p>`;
+
+  scene.innerHTML=`
+    <p class="eyebrow">${LESSON.book} · ${LESSON.unit}</p><h1>${LESSON.title}</h1>
+    ${puzzle()}
+    <p class="count">${(()=>{const st=puzzleState();
+      if(st.done) return '<b>Картинка открыта.</b> Что на ней?';
+      const solvedN=(m.solved||[]).length;
+      if(!solvedN) return `<b>Каждое выученное слово открывает кусочек.</b><br>
+        Угадай, что на картинке — можно в любой момент, не дожидаясь всех ${PIECES}.${
+        st.open?`<br>Открыто ${st.open} из ${PIECES}.`:''}`;
+      return `Открыто ${st.open} из ${PIECES} · картинок разгадано: ${solvedN}`;})()}${
+      m.days.length?`<br>занималась ${m.days.length} ${m.days.length===1?'день':'дн.'}`:''}</p>
+    ${(()=>{const st=puzzleState(), m2=Store.meta();
+      if(!st.open) return '';
+      const locked=(m2.triedAt||-1)===st.open;   // уже пробовала на этом куске
+      return `<button class="ghostbtn" id="guess" ${locked?'disabled':''}>${
+        locked ? 'Попробуешь снова, когда откроется ещё кусочек'
+               : (st.done?'Назвать картинку':'Уже догадалась? Назови')}</button>`;})()}
+    ${nudge}
+    <p class="sub">${cram
+      ? `Перед диктантом: гоняем без ограничений, по ${pack.length} ${plural(pack.length)}.`
+      : `Сейчас ${pack.length} ${plural(pack.length)} — ${pack.length===1?'оно отмечено':'они отмечены'} ниже.`}</p>
+    <button class="next" id="go">${learned?'Продолжить':'Начать'}</button>
+    <div class="row">
+      <button class="ghostbtn half" id="pick">Выбрать слова</button>
+      <label class="half size">По <select id="size">
+        ${[3,5,7,10].map(n=>`<option ${n===PACK?'selected':''}>${n}</option>`).join('')}
+      </select> за подход</label>
+    </div>
+    ${m.badges.length?`<p class="hint">Награды: ${m.badges.map(b=>BADGES[b].t).join(' · ')}</p>`:''}
+    <ul class="glossary">${pack.map(w=>{
+      const s=Store.w(w.en);
+      const mk=s.open?'<span class="mark">✓ в памяти</span>':s.learned?'<span class="mark">выучено</span>':'';
+      return `<li class="up">
+        <span class="g-en">${w.en}${w.is_new?'<i class="new">новое</i>':''}${mk}</span>
+        <span class="g-ru">${w.ru}</span></li>`;}).join('')}</ul>
+    <details class="more"><summary>Показать весь урок${
+      learned?` — выучено ${learned} из ${pool().length}`:''}</summary>
+      <ul class="glossary">${pool().filter(w=>!inPack.has(w.en)).map(w=>{
+        const s=Store.w(w.en);
+        const mk=s.open?'<span class="mark">✓ в памяти</span>':s.learned?'<span class="mark">выучено</span>':'';
+        return `<li><span class="g-en">${w.en}${w.is_new?'<i class="new">новое</i>':''}${mk}</span>
+          <span class="g-ru">${w.ru}</span></li>`;}).join('')}</ul>
+    </details>`;
+
+  go.onclick=()=>{Store.touchDay(); stageIx=0; queue=[...pack]; render();};
+  const gb=document.getElementById('guess'); if(gb) gb.onclick=guessScreen;
+  pick.onclick=()=>{picking=true;intro();};
+  size.onchange=e=>{PACK=+e.target.value; Store.setMeta({size:PACK}); buildPack(); intro();};
+}
+
+/* ═══ ОЧЕРЕДЬ ЭТАПА ═══
+   Верно — слово уходит. Ошибка — возвращается через два других,
+   этап не закрывается, пока все слова не сделаны. */
+function solved(){queue.shift();step();}
+function retry(){const w=queue.shift();queue.splice(Math.min(2,queue.length),0,w);retriesTotal++;step();}
+function step(){ if(!queue.length){stageIx++;queue=[...pack];} render(); }
+
+function drawRail(){
+  rail.innerHTML='';
+  STAGES.forEach((_,i)=>{const b=document.createElement('i');
+    if(i<stageIx)b.className='done'; if(i===stageIx)b.className='now'; rail.appendChild(b);});
+  stageName.textContent=stageIx<STAGES.length?STAGES[stageIx].name:'';
+}
+function distractors(w,f){
+  const src=WORDS.filter(x=>x.en!==w.en).sort(()=>Math.random()-.5).slice(0,3);
+  return [...src.map(x=>x[f]),w[f]].sort(()=>Math.random()-.5);
+}
+function note(w){ Store.fail(w.en); if(!mistakes.find(m=>m.en===w.en)) mistakes.push(w); }
+
+function render(){
+  drawRail();
+  if(stageIx>=STAGES.length) return finish();
+  const w=queue[0], stage=STAGES[stageIx].id;
+
+  if(stage==='look'){
+    const s=Store.w(w.en);
+    scene.innerHTML=`
+      <p class="eyebrow">${s.learned?'Уже знакомое — повторяем':'Новое слово'}</p>
+      <p class="word">${w.en}</p>
+      <p class="trans">${w.ru}</p>
+      <p class="sub">${w.pos||''}</p>
+      <button class="speak" id="sp">🔊 Послушать ещё раз</button>
+      <button class="next" id="go">Дальше</button>`;
+    say(w.en);
+    sp.onclick=()=>say(w.en);
+    go.onclick=solved;
+    return;
+  }
+
+  if(stage==='phrase'){
+    if(!w.ph) return solved();          // нет естественной пары — пропускаем
+    scene.innerHTML=`
+      <p class="eyebrow">${w.en} — как это говорят</p>
+      <p class="word">${w.ph}</p>
+      <p class="trans">${w.phru}</p>
+      <p class="sub">Запоминать не нужно — просто посмотри, с чем это слово ходит.</p>
+      <button class="speak" id="sp">🔊 Послушать ещё раз</button>
+      <button class="next" id="go">Дальше</button>`;
+    say(w.ph);
+    sp.onclick=()=>say(w.ph);
+    go.onclick=solved;
+    return;
+  }
+
+  if(stage==='en2ru'||stage==='ru2en'){
+    const askEn=stage==='en2ru', answer=askEn?w.ru:w.en, field=askEn?'ru':'en';
+    scene.innerHTML=`<p class="word ${askEn?'':'ru'}">${askEn?w.en:w.ru}</p>
+      <p class="sub">${askEn?'Что это значит?':'Как это по-английски?'}</p>
+      ${askEn?'<button class="speak" id="sp">🔊 Послушать</button>':''}
+      <div class="opts" id="opts"></div>`;
+    if(askEn) sp.onclick=()=>say(w.en);
+    distractors(w,field).forEach(t=>{
+      const b=document.createElement('button'); b.className='opt'; b.textContent=t;
+      b.onclick=()=>{
+        if(opts.dataset.lock)return; opts.dataset.lock='1';
+        if(t===answer){ b.classList.add('right'); say(w.en); setTimeout(solved,650); }
+        else{ b.classList.add('wrong');
+          [...opts.children].forEach(c=>{if(c.textContent===answer)c.classList.add('right')});
+          note(w); say(w.en); setTimeout(retry,1600); }
+      };
+      opts.appendChild(b);
+    });
+    return;
+  }
+
+  const target=w.en, tries=stuck[w.en]||0, copyMode=tries>=3;
+  scene.innerHTML=`<p class="word ru">${w.ru}</p>
+    <p class="sub">${copyMode?'Наберём вместе — слово перед тобой':'Собери английское слово'}</p>
+    ${copyMode?`<p class="model">${target}</p>`:''}
+    <button class="speak" id="sp">🔊 Послушать</button>
+    <div class="slot" id="slot"></div><div class="pool" id="keys"></div>
+    ${copyMode?'':'<button class="ghostbtn" id="tip">Подсказать букву</button>'}`;
+  sp.onclick=()=>say(target);
+  const L=target.split(''); let typed=1, errNow=false;
+  const paint=()=>slot.innerHTML=L.slice(0,typed).map(c=>c===' '?'&nbsp;&nbsp;':c).join('')
+    +`<span class="ghost">${'·'.repeat(L.length-typed)}</span>`;
+  const refresh=()=>{ keys.innerHTML='';
+    [...new Set(L.slice(typed))].sort(()=>Math.random()-.5).forEach(ch=>{
+      const k=document.createElement('button'); k.className='key';
+      k.textContent=ch===' '?'␣':ch; k.onclick=()=>tap(ch,k); keys.appendChild(k); }); };
+  const done=()=>{ say(target); setTimeout((copyMode||!errNow)?solved:retry,700); };
+  function tap(ch,k){
+    if(ch===L[typed]){ typed++; paint(); refresh(); if(typed===L.length) done(); }
+    else{ k.classList.add('shake'); setTimeout(()=>k.classList.remove('shake'),300);
+      errNow=true; if(!stuck[w.en])note(w); stuck[w.en]=(stuck[w.en]||0)+1; }
+  }
+  if(!copyMode) tip.onclick=()=>{
+    if(typed>=L.length)return;
+    typed++; errNow=true; if(!stuck[w.en])note(w); stuck[w.en]=(stuck[w.en]||0)+1;
+    paint(); refresh(); if(typed===L.length) done();
+  };
+  paint(); refresh();
+}
+
+/* ═══ ИТОГИ ═══ */
+function finish(){
+  rail.innerHTML=''; stageName.textContent='';
+  const prizes=[]; let comeback=null;
+
+  pack.forEach(w=>{
+    const before=Store.w(w.en);
+    const wasHard = before.err>=3 && !mistakes.find(m=>m.en===w.en);
+    Store.ok(w.en);
+    if(wasHard && !comeback) comeback=w.en;
+  });
+
+  const errs=mistakes.length;
+  const learned=learnedCount(), left=WORDS.length-learned, lessonDone=left===0;
+  const hardWord=Object.entries(stuck).sort((a,b)=>b[1]-a[1])[0]?.[0]||null;
+
+  const add=id=>{const b=award(id); if(b)prizes.push([id,b]);};
+  if(learned>=1) add('first_leaf');
+  if(comeback) add('comeback');
+  if(errs===0&&retriesTotal===0) add('clean');
+  if(lessonDone) add('tower');
+
+  const v=verdict({errs,retries:retriesTotal,comeback,left,lessonDone,hardWord});
+  const mood = lessonDone?'cheer' : comeback?'cheer' : (errs===0&&!retriesTotal)?'cheer'
+             : errs>=5?'warm' : 'happy';
+  const line = lessonDone?catPick('done') : comeback?catPick('comeback')
+             : (errs===0&&!retriesTotal)?catPick('clean') : errs>=5?catPick('hard') : catPick('ok');
+  setTimeout(()=>catSpeak(line),400);
+  scene.innerHTML=`
+    <p class="tally">${v.big}</p><p class="sub">${v.sub}</p>
+    ${catBlock(mood,line)}
+    ${prizes.map(([id,b])=>`<div class="prize">${badgeArt(id)}
+      <div><b>${b.t}</b><span>${b.d}</span></div></div>`).join('')}
+    ${errs?`<ul class="missed">${mistakes.map(m=>`<li><span>${m.en}</span><span>${m.ru}</span></li>`).join('')}</ul>`:''}
+    <button class="next" id="again">Дальше</button>
+    <button class="ghostbtn" id="share">Отправить маме</button>
+    <p class="hint">Выучено ${learned} из ${WORDS.length}.${
+      left?' Вернуться к этим словам через час или завтра — и они закрепятся надолго.':''}</p>`;
+  again.onclick=()=>{buildPack();intro();};
+  share.onclick=()=>{
+    const t=`Spotlight 6, урок 1c — ${new Date().toLocaleDateString('ru-RU')}\n`
+      +`Выучено ${learned} из ${WORDS.length}. `
+      +(errs?`Ошибки: ${mistakes.map(m=>m.en).join(', ')}`:'Подход без ошибок.');
+    if(navigator.share) navigator.share({text:t});
+    else{ navigator.clipboard?.writeText(t); share.textContent='Скопировано'; }
+  };
+}
+
+const cb=document.getElementById('catBtn');
+cb.setAttribute('aria-pressed', catOn());
+cb.onclick=function(){
+  Store.setMeta({cat:!catOn()});
+  this.setAttribute('aria-pressed', catOn());
+  intro();
+};
+document.getElementById('cram').onclick=function(){
+  cram=!cram; this.setAttribute('aria-pressed',cram); buildPack(); intro();
+};
+
+PACK=Store.meta().size||5;
+buildPack();
+intro();
+</script>
+</body>
+</html>

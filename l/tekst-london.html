@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#12241c">
+<title>Текст: London</title>
+<style>
+:root{--ink:#12241c;--paper:#f2efe6;--chalk:#e8e3d5;--moss:#2f6b46;--clay:#b4573a;
+  --dim:#7b8a80;--line:rgba(18,36,28,.14)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{background:var(--paper);color:var(--ink);font:16px/1.5 Georgia,serif;
+  display:flex;flex-direction:column;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+header{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.brand{font:13px/1 system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.spacer{flex:1}
+.chip{font:13px/1 system-ui,sans-serif;border:1px solid var(--line);border-radius:999px;
+  padding:7px 12px;background:#fff;color:var(--dim)}
+.rail{display:flex;gap:4px;padding:12px 18px 0}
+.rail i{flex:1;height:3px;background:var(--chalk);border-radius:2px}
+.rail i.done{background:var(--moss)} .rail i.now{background:var(--ink)}
+.stage{font:12px/1 system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--dim);padding:11px 18px 0}
+main{flex:1;display:flex;flex-direction:column;justify-content:center;
+  padding:10px 18px 28px;max-width:660px;width:100%;margin:0 auto}
+.eyebrow{font:12px/1 system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--dim);margin:0 0 8px}
+h1{font-size:clamp(28px,7.5vw,40px);font-weight:400;margin:0 0 10px;line-height:1.15}
+.en{font-size:clamp(22px,5.6vw,30px);line-height:1.35;margin:0 0 10px}
+.tr{font:15px/1.4 system-ui,sans-serif;color:var(--moss);margin:0 0 6px}
+.ru{font:16px/1.45 system-ui,sans-serif;color:var(--ink);margin:0 0 18px}
+.sub{color:var(--dim);font:15px/1.45 system-ui,sans-serif;margin:0 0 18px}
+.speak{display:inline-flex;gap:8px;margin:0 0 20px;border:1px solid var(--line);border-radius:999px;
+  padding:8px 16px;background:#fff;font:14px/1 system-ui,sans-serif;color:var(--dim)}
+.next{margin-top:22px;width:100%;padding:16px;border-radius:12px;background:var(--ink);
+  color:var(--paper);font:16px/1 system-ui,sans-serif}
+.ghostbtn{margin-top:12px;width:100%;padding:12px;color:var(--dim);font:14px/1.35 system-ui,sans-serif}
+.line{min-height:64px;border-bottom:2px solid var(--ink);padding:4px 2px 12px;margin-bottom:18px;
+  font-size:clamp(19px,4.8vw,25px);line-height:1.5}
+.line.bad{border-color:var(--clay);animation:nudge .3s}
+@keyframes nudge{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.ghost{color:var(--chalk)}
+.sent{font-size:clamp(21px,5.4vw,29px);line-height:1.7;margin:0 0 14px}
+.wd{}
+.box{background:var(--chalk);border:1px solid var(--line);border-radius:7px;
+  padding:1px 13px;font-size:inherit;color:var(--dim);vertical-align:baseline}
+.box:active{transform:scale(.95)}
+.ctl{display:flex;gap:8px;margin:0 0 10px;flex-wrap:wrap}
+.ctl .speak{margin:0}
+.speak.on{background:var(--moss);border-color:var(--moss);color:#fff}
+.spd{border:1px solid var(--line);border-radius:999px;padding:7px 14px;background:#fff;
+  font:13px/1 system-ui,sans-serif;color:var(--dim)}
+.spd.on{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.bank{display:flex;flex-wrap:wrap;gap:8px}
+.chipw{padding:10px 13px;background:#fff;border:1px solid var(--line);border-radius:10px;
+  font-size:18px;font-family:Georgia,serif}
+.chipw.used{opacity:.25;pointer-events:none}
+.chipw.shake{animation:nudge .3s;border-color:var(--clay);color:var(--clay)}
+.blank{border-bottom:2px solid var(--moss);padding:0 14px;color:var(--moss)}
+.cat{display:flex;gap:12px;align-items:flex-start;margin:20px 0 0;cursor:pointer}
+.cat svg{flex:none}
+.bubble{position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;
+  padding:12px 14px;font:15px/1.4 system-ui,sans-serif;flex:1;margin-top:8px}
+.bubble::before{content:'';position:absolute;left:-7px;top:16px;width:12px;height:12px;background:#fff;
+  border-left:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}
+.blocks{list-style:none;padding:0;margin:20px 0 0;border-top:1px solid var(--line)}
+.blocks li{display:flex;justify-content:space-between;gap:12px;padding:13px 10px;margin:0 -10px;
+  border-bottom:1px solid var(--line);cursor:pointer}
+.blocks li.ok{color:var(--moss)}
+.blocks li b{font-weight:400}
+.blocks li span{font:13px/1 system-ui,sans-serif;color:var(--dim)}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<header><span class="brand">Текст · London</span><span class="spacer"></span>
+  <button class="chip" id="catBtn">🐱</button></header>
+<div class="rail" id="rail"></div>
+<div class="stage" id="stageName"></div>
+<main id="scene"></main>
+
+<script>
+/* Текст учебника — только для личной подготовки.
+   В продаваемое приложение не переносить. */
+const TEXT=[
+ {t:'London', s:[
+  {en:"London is the capital of England.", tr:"Ла́ндэн из зэ кэ́питл ов И́нглэнд.", ru:"Лондон — столица Англии."},
+  {en:"It is a very big city.", tr:"Ит из э вэ́ри биг си́ти.", ru:"Это очень большой город."}]},
+ {t:'Trafalgar Square', s:[
+  {en:"There are lots of things to see in London.", tr:"Зэр а лотс ов сингз ту си: ин Ла́ндэн.", ru:"В Лондоне много интересного."},
+  {en:"Trafalgar Square is popular with tourists.", tr:"Трэфэ́лгэ Скуэ́э из по́пьюлэ уиз ту́эристс.", ru:"Трафальгарская площадь популярна у туристов."},
+  {en:"There is a statue of Lord Nelson there, and two beautiful fountains.", tr:"Зэр из э стэ́чу ов Ло:д Нэлсн зэ́э, энд ту: бью́тифул фа́унтинз.", ru:"Там есть статуя лорда Нельсона и два красивых фонтана."}]},
+ {t:'Oxford Street', s:[
+  {en:"Oxford Street is a very busy place.", tr:"О́ксфэд Стри:т из э вэ́ри би́зи плэйс.", ru:"Оксфорд-стрит — очень оживлённое место."},
+  {en:"It is famous for its shops and restaurants.", tr:"Ит из фэ́ймэс фо итс шопс энд рэ́стронтс.", ru:"Она знаменита своими магазинами и ресторанами."}]},
+ {t:'The River Thames', s:[
+  {en:"The River Thames is in the middle of London.", tr:"Зэ Ри́вэ Тэмз из ин зэ мидл ов Ла́ндэн.", ru:"Река Темза находится в центре Лондона."},
+  {en:"It is 200 miles long.", tr:"Ит из ту: ха́ндрэд ма́йлз лонг.", ru:"Её длина 200 миль."},
+  {en:"Tower Bridge is over the River Thames.", tr:"Та́уэ Бридж из о́увэ зэ Ри́вэ Тэмз.", ru:"Тауэрский мост находится над Темзой."},
+  {en:"It's next to the Tower of London.", tr:"Итс нэкст ту зэ Та́уэр ов Ла́ндэн.", ru:"Он рядом с Лондонским Тауэром."}]},
+ {t:'Buckingham Palace', s:[
+  {en:"Buckingham Palace is where the monarch of England lives.", tr:"Ба́кингэм Пэ́лэс из уэ́э зэ мо́нэк ов И́нглэнд ливз.", ru:"Букингемский дворец — это место, где живёт монарх Англии."},
+  {en:"It is very big and beautiful.", tr:"Ит из вэ́ри биг энд бью́тифул.", ru:"Он очень большой и красивый."}]},
+ {t:'Конец', s:[
+  {en:"London is a wonderful city.", tr:"Ла́ндэн из э уа́ндэфул си́ти.", ru:"Лондон — чудесный город."},
+  {en:"It is a great place for a trip.", tr:"Ит из э грэйт плэйс фор э трип.", ru:"Это отличное место для поездки."}]}
+];
+</script>
+
+<script>
+/* ═══ ХРАНИЛИЩЕ ═══ */
+const Store={k:'london-text',
+  all(){try{return JSON.parse(localStorage.getItem(this.k))||{done:[],cat:true}}catch(e){return{done:[],cat:true}}},
+  save(d){try{localStorage.setItem(this.k,JSON.stringify(d))}catch(e){}},
+  isDone(i){return this.all().done.includes(i)},
+  mark(i){const d=this.all(); if(!d.done.includes(i)){d.done.push(i);this.save(d);}},
+  catOn(){return this.all().cat!==false},
+  toggleCat(){const d=this.all();d.cat=!this.catOn();this.save(d);}
+};
+
+/* ═══ ОЗВУЧКА ═══ */
+let enV=null, ruV=null;
+const pick=()=>{const v=speechSynthesis.getVoices();
+  enV=v.find(x=>x.lang==='en-GB')||v.find(x=>x.lang.startsWith('en'))||null;
+  ruV=v.find(x=>x.lang.startsWith('ru'))||null;};
+pick(); speechSynthesis.addEventListener('voiceschanged',pick);
+function say(t){ if(!('speechSynthesis'in window))return; speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t); u.lang='en-GB';
+  u.rate=(typeof rate!=='undefined')?rate:.85;
+  if(enV)u.voice=enV; speechSynthesis.speak(u); }
+function catSay(t){ if(!Store.catOn()||!ruV)return; speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t); u.lang='ru-RU'; u.pitch=1.35; u.voice=ruV;
+  speechSynthesis.speak(u); }
+
+function catArt(m){
+  const s='fill="none" stroke="#12241c" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"';
+  const eyes=m==='cheer'?'<path d="M34 40c2.5-3.5 7-3.5 9.5 0M50.5 40c2.5-3.5 7-3.5 9.5 0"/>'
+    :m==='warm'?'<path d="M35 41.5c2-2.5 6-2.5 8 0M53 41.5c2-2.5 6-2.5 8 0"/>'
+    :'<circle cx="39" cy="40" r="3" fill="#12241c"/><circle cx="57" cy="40" r="3" fill="#12241c"/>';
+  const mouth=m==='warm'?'<path d="M43 52c2 2.5 6 2.5 8 0"/>'
+    :'<path d="M47 48.5l-2.5 2h5z" fill="#12241c" stroke="none"/><path d="M47 51v2M47 53c-2 2.5-5.5 1.5-5.5-1M47 53c2 2.5 5.5 1.5 5.5-1"/>';
+  return `<svg viewBox="0 0 94 100" width="64" height="68" ${s}>
+   <path d="M27 24L24 9l14 7M67 24l3-15-14 7"/><circle cx="47" cy="40" r="23"/>${eyes}${mouth}
+   <path d="M23 42H11M23 47l-11 3M71 42h12M71 47l11 3"/>
+   <path d="M31 63c-4 4-6 10-6 16v14h44V79c0-6-2-12-6-16"/>
+   <path d="M35 88h7M52 88h7"/><path d="M69 93c10-1 13-9 10-15"/></svg>`;
+}
+function cat(m,p){ if(!Store.catOn())return'';
+  return `<div class="cat" onclick="catSay(this.dataset.p)" data-p="${p.replace(/"/g,'&quot;')}">
+    ${catArt(m)}<div class="bubble">${p}</div></div>`; }
+
+/* ═══ РАЗБОР ПРЕДЛОЖЕНИЯ ═══ */
+const words=s=>s.split(/\s+/);
+const bare=w=>w.replace(/[.,!?;:]/g,'');
+const firstLetters=s=>words(s).map(w=>{
+  const b=bare(w); const tail=w.slice(b.length);
+  return b[0]+'·'.repeat(Math.max(0,b.length-1))+tail;}).join(' ');
+
+const STAGES=[
+ {id:'shadow',n:'Повторяй за диктором'},
+ {id:'order', n:'Собери предложение'},
+ {id:'gaps',  n:'Заполни пропуски'},
+ {id:'recall',n:'Вспомни по первым буквам'}
+];
+
+/* служебные слова прячем первыми — смысл держится дольше */
+const FUNC=new Set(['a','an','the','is','are','of','in','on','to','for','and','it',"it's",
+  'its','with','there','very','this','that','at','as','be','where','over','next','but']);
+function hideOrder(W){
+  const f=[],c=[];
+  W.forEach((w,i)=>(FUNC.has(w.replace(/[.,!?;:]/g,'').toLowerCase())?f:c).push(i));
+  return [...f,...c];
+}
+
+let looping=false, rate=.8;
+function stopLoop(){ looping=false; speechSynthesis.cancel(); }
+function loopSay(text){
+  if(!looping) return;
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='en-GB'; u.rate=rate; if(enV)u.voice=enV;
+  u.onend=()=>{ if(looping) setTimeout(()=>loopSay(text), 400+text.split(/\s+/).length*260); };
+  speechSynthesis.speak(u);
+}
+
+let block=-1, st=0, si=0;
+const scene=document.getElementById('scene'), rail=document.getElementById('rail'),
+      stageName=document.getElementById('stageName');
+
+/* ═══ ОГЛАВЛЕНИЕ ═══ */
+function menu(){
+  stopLoop();
+  block=-1; rail.innerHTML=''; stageName.textContent='';
+  const done=Store.all().done.length;
+  scene.innerHTML=`
+    <p class="eyebrow">Spotlight 6 · текст</p><h1>London</h1>
+    <p class="sub">Шесть кусочков. В каждом: прочитать → собрать → заполнить пропуски →
+      вспомнить по первым буквам. Учится по одному, не всё сразу.${
+      done?`<br>Пройдено: ${done} из ${TEXT.length}.`:''}</p>
+    <ul class="blocks">${TEXT.map((b,i)=>`
+      <li class="${Store.isDone(i)?'ok':''}" data-i="${i}">
+        <b>${i+1}. ${b.t}</b>
+        <span>${Store.isDone(i)?'✓ пройдено':b.s.length+' предл.'}</span></li>`).join('')}</ul>
+    ${done===TEXT.length?`<button class="next" id="whole">Рассказать весь текст</button>`:''}
+    <button class="ghostbtn" id="listen">🔊 Послушать текст целиком</button>`;
+  scene.querySelectorAll('.blocks li').forEach(li=>li.onclick=()=>{
+    block=+li.dataset.i; st=0; si=0; render();});
+  document.getElementById('listen').onclick=()=>
+    say(TEXT.flatMap(b=>b.s.map(x=>x.en)).join(' '));
+  const wh=document.getElementById('whole'); if(wh) wh.onclick=whole;
+}
+
+function drawRail(){
+  rail.innerHTML='';
+  STAGES.forEach((_,i)=>{const b=document.createElement('i');
+    if(i<st)b.className='done'; if(i===st)b.className='now'; rail.appendChild(b);});
+  stageName.textContent=STAGES[st]?STAGES[st].n:'';
+}
+function nextSentence(){
+  stopLoop();
+  si++;
+  if(si>=TEXT[block].s.length){ si=0; st++; }
+  if(st>=STAGES.length) return finishBlock();
+  render();
+}
+
+function render(){
+  if(block<0) return menu();
+  if(st>=STAGES.length) return finishBlock();
+  drawRail();
+  const b=TEXT[block], S=b.s[si], stage=STAGES[st].id;
+  const head=`<p class="eyebrow">${b.t} · ${si+1} из ${b.s.length}</p>`;
+
+  if(stage==='shadow'){
+    const W=words(S.en), ord=hideOrder(W);
+    let n=0;                       // сколько слов закрыто
+    const shown=new Set();         // открытые вручную
+    scene.innerHTML=`${head}
+      <div class="sent" id="sent"></div>
+      <p class="tr">${S.tr}</p><p class="ru">${S.ru}</p>
+      <div class="ctl">
+        <button class="speak" id="play">🔊 Всё предложение</button>
+        <button class="speak" id="loop">🔁 Повтор</button>
+      </div>
+      <div class="ctl">
+        ${[['0.6','🐢'],['0.8','обычно'],['1','быстрее']].map(([v,l])=>
+          `<button class="spd${+v===rate?' on':''}" data-r="${v}">${l}</button>`).join('')}
+      </div>
+      <button class="next" id="more"></button>
+      <button class="ghostbtn" id="skip">Дальше</button>`;
+
+    const sent=document.getElementById('sent');
+    const hidden=()=>new Set(ord.slice(0,n).filter(i=>!shown.has(i)));
+    function paint(){
+      const H=hidden();
+      sent.innerHTML=W.map((w,i)=>H.has(i)
+        ? `<button class="box" data-i="${i}">${'▢'}</button>`
+        : `<span class="wd">${w}</span>`).join(' ');
+      sent.querySelectorAll('.box').forEach(b=>b.onclick=()=>{
+        shown.add(+b.dataset.i); paint();
+        say(W[+b.dataset.i]);
+      });
+      document.getElementById('more').textContent =
+        n>=W.length ? 'Всё закрыто — дальше' : 'Закрыть ещё пару слов';
+    }
+    paint();
+
+    document.getElementById('play').onclick=()=>{stopLoop(); say(S.en, rate<.7);};
+    const lb=document.getElementById('loop');
+    lb.onclick=()=>{
+      if(looping){ stopLoop(); lb.classList.remove('on'); lb.textContent='🔁 Повтор'; }
+      else{ looping=true; lb.classList.add('on'); lb.textContent='⏹ Стоп'; loopSay(S.en); }
+    };
+    scene.querySelectorAll('.spd').forEach(b=>b.onclick=()=>{
+      rate=+b.dataset.r;
+      scene.querySelectorAll('.spd').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      if(looping){ speechSynthesis.cancel(); loopSay(S.en); }
+    });
+    document.getElementById('more').onclick=()=>{
+      if(n>=W.length){ stopLoop(); return nextSentence(); }
+      n=Math.min(W.length, n+2); paint();
+    };
+    document.getElementById('skip').onclick=()=>{stopLoop(); nextSentence();};
+    say(S.en, rate<.7);
+    return;
+  }
+
+  if(stage==='order'){
+    const W=words(S.en), shuf=[...W.keys()].sort(()=>Math.random()-.5);
+    scene.innerHTML=`${head}<p class="ru">${S.ru}</p>
+      <div class="line" id="line"></div><div class="bank" id="bank"></div>
+      <button class="ghostbtn" id="sp2">🔊 Подсказать на слух</button>`;
+    let at=0;
+    const line=document.getElementById('line'), bank=document.getElementById('bank');
+    const paint=()=>line.innerHTML=W.slice(0,at).join(' ')+
+      (at<W.length?` <span class="ghost">${'·'.repeat(3)}</span>`:'');
+    shuf.forEach(idx=>{
+      const c=document.createElement('button'); c.className='chipw'; c.textContent=W[idx];
+      c.onclick=()=>{
+        if(W[idx]===W[at]){ at++; c.classList.add('used'); paint();
+          if(at===W.length){ say(S.en); setTimeout(nextSentence,800);} }
+        else{ c.classList.add('shake'); setTimeout(()=>c.classList.remove('shake'),300); }
+      };
+      bank.appendChild(c);
+    });
+    document.getElementById('sp2').onclick=()=>say(S.en);
+    paint(); return;
+  }
+
+  if(stage==='gaps'){
+    const W=words(S.en);
+    // прячем каждое третье слово, но не первое
+    const hide=W.map((_,i)=>i>0&&i%3===0);
+    if(!hide.some(Boolean)) hide[W.length-1]=true;
+    const need=W.filter((_,i)=>hide[i]);
+    scene.innerHTML=`${head}<p class="ru">${S.ru}</p>
+      <div class="line" id="line"></div><div class="bank" id="bank"></div>
+      <button class="ghostbtn" id="sp3">🔊 Подсказать на слух</button>`;
+    let k=0;
+    const line=document.getElementById('line'), bank=document.getElementById('bank');
+    const paint=()=>{
+      let n=0;
+      line.innerHTML=W.map((w,i)=>{
+        if(!hide[i]) return w;
+        const j=n++; return j<k ? w : '<span class="blank">&nbsp;</span>';
+      }).join(' ');
+    };
+    [...need].sort(()=>Math.random()-.5).forEach(w=>{
+      const c=document.createElement('button'); c.className='chipw'; c.textContent=w;
+      c.onclick=()=>{
+        if(w===need[k]){ k++; c.classList.add('used'); paint();
+          if(k===need.length){ say(S.en); setTimeout(nextSentence,800);} }
+        else{ c.classList.add('shake'); setTimeout(()=>c.classList.remove('shake'),300); }
+      };
+      bank.appendChild(c);
+    });
+    document.getElementById('sp3').onclick=()=>say(S.en);
+    paint(); return;
+  }
+
+  if(stage==='recall'){
+    scene.innerHTML=`${head}<p class="ru">${S.ru}</p>
+      <p class="en" id="hint">${firstLetters(S.en)}</p>
+      <p class="sub">Скажи вслух целиком, потом проверь себя.</p>
+      <button class="next" id="show">Показать</button>
+      <button class="ghostbtn" id="sp4">🔊 Послушать</button>`;
+    document.getElementById('sp4').onclick=()=>say(S.en);
+    document.getElementById('show').onclick=()=>{
+      say(S.en);
+      scene.innerHTML=`${head}<p class="en">${S.en}</p><p class="ru">${S.ru}</p>
+        <p class="sub">Так же и сказала?</p>
+        <button class="next" id="yes">Да, получилось</button>
+        <button class="ghostbtn" id="no">Не совсем — ещё раз</button>`;
+      document.getElementById('yes').onclick=nextSentence;
+      document.getElementById('no').onclick=render;
+    };
+    return;
+  }
+}
+
+function finishBlock(){
+  Store.mark(block);
+  rail.innerHTML=''; stageName.textContent='';
+  const left=TEXT.length-Store.all().done.length;
+  const line=left? 'Кусочек готов. Осталось '+left+'.' : 'Всё. Текст целиком у тебя в голове.';
+  setTimeout(()=>catSay(line),400);
+  scene.innerHTML=`
+    <h1>${TEXT[block].t} — готово</h1>
+    ${cat(left?'cheer':'cheer',line)}
+    <button class="next" id="back">К списку</button>
+    ${block+1<TEXT.length?`<button class="ghostbtn" id="nx">Следующий кусочек</button>`:''}`;
+  document.getElementById('back').onclick=menu;
+  const nx=document.getElementById('nx');
+  if(nx) nx.onclick=()=>{block++; st=0; si=0; render();};
+}
+
+/* ═══ ВЕСЬ ТЕКСТ ПО ПЕРВЫМ БУКВАМ ═══ */
+function whole(){
+  rail.innerHTML=''; stageName.textContent='';
+  const all=TEXT.flatMap(b=>b.s);
+  scene.innerHTML=`
+    <p class="eyebrow">Весь текст</p><h1>По первым буквам</h1>
+    <p class="sub">Расскажи вслух целиком. Если застряла — нажми строчку, она откроется.</p>
+    ${all.map((S,i)=>`<p class="en recall-line" data-i="${i}"
+      style="font-size:19px;margin:0 0 12px;cursor:pointer">${firstLetters(S.en)}</p>`).join('')}
+    <button class="next" id="back2">К списку</button>`;
+  scene.querySelectorAll('.recall-line').forEach(p=>p.onclick=()=>{
+    const S=all[+p.dataset.i]; p.textContent=S.en; say(S.en);});
+  document.getElementById('back2').onclick=menu;
+}
+
+document.getElementById('catBtn').onclick=()=>{Store.toggleCat(); render();};
+menu();
+</script>
+</body>
+</html>
