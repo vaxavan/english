@@ -193,6 +193,8 @@ body.purring main,body.purring .cat{animation:purr-shake .09s linear 16}
 .modal .bar i{display:block;height:100%;background:var(--moss)}
 .paw{position:fixed;top:-30px;z-index:65;pointer-events:none;animation:paw-fall 1.8s ease-in forwards}
 @keyframes paw-fall{0%{transform:translate(0,0) rotate(0);opacity:0}10%{opacity:1}100%{transform:translate(var(--dx),75vh) rotate(40deg);opacity:0}}
+.won{font:15px/1.45 system-ui,sans-serif;background:#e8f2ea;border-radius:12px;padding:10px 13px;margin:14px 0 0}
+.won b{font-weight:600}
 .ask{background:#fff;border:1px solid var(--line);border-top:4px solid var(--clay);border-radius:14px;padding:14px;margin:18px 0 0}
 .ask-q{font:16px/1.4 system-ui,sans-serif;margin:0 0 10px}
 .ask-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
@@ -350,7 +352,7 @@ const Store={
                  step,due:now+LADDER[step]*DAY,lastOk:now});
     return {first,confirming};
   },
-  fail(en){ const w=this.w(en); this.set(en,{err:w.err+1,step:0,due:Date.now()+LADDER[0]*DAY}); },
+  fail(en){ const w=this.w(en); this.set(en,{err:w.err+1,step:0,due:Date.now()+LADDER[0]*DAY,failAt:Date.now()}); },
   due(en){ const w=this.w(en); return !!w.learned && Date.now()>=w.due; }
 };
 
@@ -969,7 +971,8 @@ function buildPack(){
     pack.forEach((w,i)=>{const d=Math.abs(hardness(w)-hardness(artFresh)); if(i>0&&d<best){best=d;j=i;}});
     if(best<=3) pack[j]=artFresh;
   }
-  stageIx=0; mistakes=[]; stuck={}; retriesTotal=0; queue=[...pack];
+  stageIx=0; mistakes=[]; stuck={}; retriesTotal=0; queue=[...pack]; wrongs={}; recalled={};
+  const t0=new Date(); t0.setHours(0,0,0,0); oldFails=Object.fromEntries(pack.map(w=>[w.en,(Store.w(w.en).failAt||0)<t0.getTime()&&(Store.w(w.en).err||0)>0]));
 }
 
 /* ═══ ЭКРАН ПОДГОТОВКИ ═══ */
@@ -1081,7 +1084,7 @@ function intro(){
    За подход — не больше одной фразы про слово. Без обещаний результата
    («ты добьёшься цели») — хвалим то, что она уже сделала.
    Подсказка висит, пока не коснёшься экрана; касание её только закрывает. */
-let streak=0, lastCheer=0, streakCheered=false, packCheers=0;
+let streak=0, lastCheer=0, streakCheered=false, packCheers=0, wrongs={}, recalled={}, oldFails={};
 const HOUR=36e5;
 function touchActive(){ Store.setMeta({lastActive:Date.now()}); try{localStorage.setItem('eng-last',Date.now())}catch(e){} }
 function cheer(ev,arg){
@@ -1097,10 +1100,14 @@ function cheer(ev,arg){
     if(text){ if(party) setTimeout(paws,250); return showCheer(text,true); }
     return;
   }
-  if(packCheers>=1||!arg) return;          // золотая середина: не больше одной похвалы за подход
+  const cap=(m.packsDone||0)<3?2:1;          // золотая середина: в начале до двух похвал за подход, потом одна
+  if(packCheers>=cap||!arg) return;
   const who=nextSpeaker(), set=who==='niko'?NIKO:who==='iki'?IKI:CAT;
-  if(ev==='persist') text=pickC(set.persist)+` («${arg.en}»)`;
-  else if(ev==='comeback') text=pickC([`«${arg.en}» сначала не давалось, а ты вернулась к нему — и получилось!`,`С «${arg.en}» была ошибка, а теперь — верно. Так слова и запоминаются.`]);
+  const n=(wrongs[arg.en]||0)+1, nth=n>=2?` с ${n}-й попытки`:'';
+  if(ev==='persist') text=pickC(set.persist)+` («${arg.en}»${nth})`;
+  else if(ev==='recall') text=pickC([`Раньше «${arg.en}» не давалось, а сегодня — с первого раза! Повторение работает.`,
+                                     `«${arg.en}» в прошлый раз было трудным, а сейчас — сразу верно. Это твоя работа окупилась.`]);
+  else if(ev==='comeback') text=pickC([`«${arg.en}» получилось${nth}. Ты не бросила — вот так слова и запоминаются.`,`«${arg.en}» сначала не давалось, а ты вернулась к нему — и получилось!`,`С «${arg.en}» была ошибка, а теперь — верно. Так слова и запоминаются.`]);
   if(!text||!catOn()) return;
   lastCheer=now; packCheers++; showCheer(text,false,who);
 }
@@ -1148,7 +1155,7 @@ function distractors(w,f){
   const src=WORDS.filter(x=>x.en!==w.en).sort(()=>Math.random()-.5).slice(0,3);
   return [...src.map(x=>x[f]),w[f]].sort(()=>Math.random()-.5);
 }
-function note(w){ Store.fail(w.en); if(!mistakes.find(m=>m.en===w.en)) mistakes.push(w); }
+function note(w){ wrongs[w.en]=(wrongs[w.en]||0)+1; Store.fail(w.en); if(!mistakes.find(m=>m.en===w.en)) mistakes.push(w); }
 
 function render(){
   drawRail();
@@ -1199,7 +1206,7 @@ function render(){
       b.onclick=()=>{
         if(opts.dataset.lock)return; opts.dataset.lock='1';
         if(t===answer){ b.classList.add('right'); say(w.en); streak++;
-          cheer(!Store.meta().everRight?'firstRight':(mistakes.find(m=>m.en===w.en)?'comeback':'streak'),w); setTimeout(solved,650); }
+          cheer(mistakes.find(m=>m.en===w.en)?'comeback':(oldFails[w.en]&&!recalled[w.en]?'recall':'streak'),w); recalled[w.en]=1; setTimeout(solved,650); }
         else{ b.classList.add('wrong');
           [...opts.children].forEach(c=>{if(c.textContent===answer)c.classList.add('right')});
           note(w); streak=0; say(w.en); setTimeout(retry,1600); }
@@ -1234,7 +1241,7 @@ function render(){
   function tap(ch,k){
     if(ch===L[typed]){ typed++; k.remove(); paint(); if(typed===L.length) done(); }
     else{ k.classList.add('shake'); setTimeout(()=>k.classList.remove('shake'),300);
-      errNow=true; if(!stuck[w.en])note(w); stuck[w.en]=(stuck[w.en]||0)+1; }
+      errNow=true; if(!stuck[w.en])note(w); else wrongs[w.en]=(wrongs[w.en]||0)+1; stuck[w.en]=(stuck[w.en]||0)+1; }
   }
   if(!copyMode) tip.onclick=()=>{
     if(typed>=L.length)return;
@@ -1314,6 +1321,7 @@ function finish(){
     ${prizes.map(([id,b])=>`<div class="prize">${badgeArt(id)}
       <div><b>${b.t}</b><span>${b.d}</span></div></div>`).join('')}
     ${errs?`<ul class="missed">${mistakes.map(m=>`<li><span>${m.en}</span><span>${m.ru}</span></li>`).join('')}</ul>`:''}
+    ${(()=>{const hard=pack.filter(w=>(wrongs[w.en]||0)>=2).map(w=>`<b>${w.en}</b>`); return hard.length?`<p class="won">Трудные слова, которые ты всё-таки взяла: ${hard.join(', ')}. Это и есть работа 💪</p>`:'';})()}
     ${askBlock(lessonDone, hardWord&&(stuck[hardWord]||0)>=2?hardWord:null)}
     <button class="next" id="again">Дальше</button>
     <button class="ghostbtn" id="share">Отправить маме</button>

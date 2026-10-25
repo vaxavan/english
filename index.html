@@ -260,7 +260,7 @@ function render(){
     const unit=l.type==='text'?'кусочков':'слов';
     return `<button class="lesson ${l.type}" data-file="${l.file}" data-title="${l.title}">
       <span class="tag">${l.tag}</span>
-      <span><span class="l-title">${l.title}${l.isNew?'<span class="new">новое</span>':''}</span>
+      <span><span class="l-title">${l.title}${l.isNew&&!n?'<span class="new">новое</span>':''}</span>
         <span class="l-sub">${l.sub}${n?` · ${l.type==='text'?'пройдено':'выучено'} ${n} из ${l.total}`:''}</span>
         ${n?`<span class="bar"><i style="width:${pct}%"></i></span>`:''}</span>
       <span class="l-go" aria-hidden="true">›</span></button>`;
