@@ -71,7 +71,49 @@ h2{font:600 12px/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;c
 .mk-tail{transform-box:fill-box;transform-origin:0% 50%;animation:mk-tail 3.4s ease-in-out infinite}
 @keyframes mk-tail{0%,100%{transform:rotate(0)}50%{transform:rotate(-7deg)}}
 .mk-ear-r{transform-box:fill-box;transform-origin:30% 100%;animation:mk-ear 8s infinite}
-@keyframes mk-ear{0%,90%,100%{transform:rotate(0)}9
+@keyframes mk-ear{0%,90%,100%{transform:rotate(0)}93%{transform:rotate(-9deg)}96%{transform:rotate(3deg)}}
+.pg-nose{transform-box:fill-box;transform-origin:50% 50%;animation:pg-nose 1.6s ease-in-out infinite}
+@keyframes pg-nose{0%,100%{transform:translateY(0)}50%{transform:translateY(-1.2px) scale(1.08)}}
+.pg-lid{transform-box:fill-box;transform-origin:50% 0;transform:scaleY(0);animation:pg-blink 4.8s infinite}
+@keyframes pg-blink{0%,92%,100%{transform:scaleY(0)}95%{transform:scaleY(1)}}
+.paw{position:fixed;top:-30px;z-index:65;pointer-events:none;animation:paw-fall 1.8s ease-in forwards}
+@keyframes paw-fall{0%{transform:translate(0,0) rotate(0);opacity:0}10%{opacity:1}100%{transform:translate(var(--dx),75vh) rotate(40deg);opacity:0}}
+.ask{background:#fff;border:1px solid var(--line);border-top:4px solid var(--clay);border-radius:14px;padding:14px;margin:18px 0 0}
+.ask-q{font:16px/1.4 system-ui,sans-serif;margin:0 0 10px}
+.ask-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
+.ask-chip{border:1px solid var(--line);border-radius:999px;padding:8px 12px;background:var(--paper);font:14px/1 system-ui,sans-serif;color:var(--ink)}
+.ask-chip.on{background:var(--moss);border-color:var(--moss);color:#fff}
+.ask textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;font:15px/1.4 system-ui,sans-serif;background:var(--paper);color:var(--ink)}
+.wheel-spin{transform-box:view-box;transform-origin:60px 60px;animation:wheel 1.1s linear infinite}
+@keyframes wheel{to{transform:rotate(-360deg)}}
+.iki-run{animation:iki-run .28s ease-in-out infinite alternate}
+@keyframes iki-run{from{transform:translateY(0)}to{transform:translateY(-3px)}}
+.mk-paw{transform-box:fill-box;transform-origin:50% 100%;animation:lick .7s ease-in-out infinite alternate}
+@keyframes lick{from{transform:translateY(0) rotate(-4deg)}to{transform:translateY(-3px) rotate(4deg)}}
+.mk-tongue{transform-box:fill-box;transform-origin:50% 0;animation:tongue .7s ease-in-out infinite alternate}
+@keyframes tongue{from{transform:scaleY(.6)}to{transform:scaleY(1.1)}}
+.wheel-spin{transform-box:view-box;transform-origin:60px 60px;animation:wheel 1.1s linear infinite}
+@keyframes wheel{to{transform:rotate(-360deg)}}
+.iki-run{animation:iki-run .28s ease-in-out infinite alternate}
+@keyframes iki-run{from{transform:translateY(0)}to{transform:translateY(-3px)}}
+.mk-paw{transform-box:fill-box;transform-origin:50% 100%;animation:lick .7s ease-in-out infinite alternate}
+@keyframes lick{from{transform:translateY(0) rotate(-4deg)}to{transform:translateY(-3px) rotate(4deg)}}
+.mk-tongue{transform-box:fill-box;transform-origin:50% 0;animation:tongue .7s ease-in-out infinite alternate}
+@keyframes tongue{from{transform:scaleY(.6)}to{transform:scaleY(1.1)}}
+
+.pets{display:flex;gap:10px;align-items:flex-end;margin-top:8px}
+.pet{border:0;background:transparent;padding:0;cursor:pointer}
+.pet svg{display:block;width:100%;height:auto}
+.pet.niko{width:70px}.pet.iki{width:44px}.pet.mashka{width:76px}
+.hero-cat.small{width:84px}
+.welcome-bg{position:fixed;inset:0;z-index:40;background:rgba(18,36,28,.35);display:flex;align-items:center;justify-content:center;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.welcome{background:var(--card);border-radius:20px;padding:20px 18px 16px;width:min(380px,100%);text-align:center;box-shadow:0 14px 40px rgba(0,0,0,.25);border-top:5px solid var(--ginger)}
+.welcome .w-pic{width:150px;margin:0 auto 6px}.welcome .w-pic svg{width:100%;height:auto;display:block}
+.welcome .w-pic.iki{width:96px}
+.welcome b{display:block;font:600 12px/1 var(--f-body);color:var(--dim);letter-spacing:.06em;margin-bottom:6px}
+.welcome p{font:400 21px/1.3 var(--f-display);margin:0 0 14px;text-wrap:balance}
+.welcome button{width:100%;padding:15px;border:0;border-radius:12px;background:var(--ink);color:var(--paper);font:16px/1 var(--f-body);cursor:pointer}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 </style>
 
@@ -83,7 +125,8 @@ h2{font:600 12px/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;c
       <p>Spotlight 6 · слова и тексты к урокам</p>
     </div>
   </header>
-  <div class="bubble"><b>Машка</b><span id="say">Выбирай урок — я посторожу остальные.</span></div>
+  <div class="bubble"><b id="who">Машка</b><span id="say">Выбирай урок — я посторожу остальные.</span></div>
+  <div class="pets" id="pets" aria-label="Погладь зверей"></div>
 
   <h2>Слова</h2>
   <div class="list" id="words"></div>
@@ -228,20 +271,244 @@ function render(){
 }
 const player=document.getElementById('player'), frame=document.getElementById('frame');
 function openLesson(file,title){
+  try{ localStorage.setItem('eng-last',Date.now()); }catch(e){}
   frame.src=file; document.getElementById('ptitle').textContent=title; player.hidden=false;
 }
 document.getElementById('back').onclick=()=>{
   try{ frame.contentWindow.speechSynthesis&&frame.contentWindow.speechSynthesis.cancel(); }catch(e){}
   player.hidden=true; frame.src='about:blank'; render();
 };
-const PHRASES=['Выбирай урок — я посторожу остальные.','Мур. Одно задание — и можно гладить кошку.','Начни с того, что задали на завтра.',
-  'Не торопись. Я вот никогда не тороплюсь.','Слова сами себя не выучат. А я посплю рядом.','Ты справишься. Я в тебя верю. Мур.'];
-const cat=document.getElementById('cat'), say=document.getElementById('say');
-cat.innerHTML=mashkaSVG('loaf','calm');
-const pet=()=>{ purr(); const mood=Math.random()<.5?'happy':'calm';
-  cat.innerHTML=mashkaSVG(Math.random()<.2?'bag':'loaf',mood);
-  say.textContent=PHRASES[Math.floor(Math.random()*PHRASES.length)]; };
-cat.onclick=pet; cat.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); pet(); } };
+let pgN=0;
+function pigSVG(mood){
+  const id=++pgN, K='#221c18', O='#e0853f';
+  const BODY='M18 74 C16 52 30 34 52 30 C60 22 76 20 90 24 C130 24 166 40 168 74 C170 98 150 110 104 110 C60 111 20 102 18 74 Z';
+  const eye = mood==='happy'
+    ? '<path d="M41 54 q5.5 -5.5 11 0" stroke="#e0853f" stroke-width="2.2" fill="none" stroke-linecap="round"/>'
+    : '<circle cx="46" cy="53" r="5.2" fill="#0b0908" stroke="#6b5040" stroke-width="1.2"/><circle cx="47.8" cy="51.2" r="1.6" fill="#c9cf8c"/><rect class="pg-lid" x="40" y="47" width="12" height="12" fill="#221c18"/>';
+  /* полосы от мордочки к попке: чёрная мордочка, рыжая, чёрная, рыжая, чёрная, рыжая, чёрная попка */
+  /* фон тела чёрный, поверх три рыжие волнистые полоски — без щелей */
+  const wave=(x,dir)=>dir>0?`M${x} 0 C${x+6} 30 ${x-6} 60 ${x+4} 90 S${x-3} 120 ${x} 130`:`L${x} 130 C${x-3} 120 ${x+4} 100 ${x-2} 80 S${x+6} 30 ${x} 0 Z`;
+  const strip=`<rect x="0" y="0" width="200" height="130" fill="${K}"/>`+
+    [[64,84],[100,120],[134,150]].map(([a,b])=>`<path d="${wave(a,1)} ${wave(b,-1)}" fill="${O}"/>`).join('');
+  const fur=[[70,40],[92,34],[112,38],[132,44],[150,56],[96,60],[126,64],[78,70],[140,80]]
+    .map(([x,y])=>`<path d="M${x} ${y} q3 4 0 8 M${x+5} ${y+1} q3 4 0 8" />`).join('');
+  return `<svg class="piggy" viewBox="0 0 180 122" aria-hidden="true">
+    <clipPath id="pgB${id}"><path d="${BODY}"/></clipPath>
+    <ellipse cx="58" cy="110" rx="9" ry="5" fill="#e8a7a0"/><ellipse cx="132" cy="110" rx="10" ry="5" fill="#e8a7a0"/>
+    <g clip-path="url(#pgB${id})">${strip}
+      </g>
+    <path d="${BODY}" fill="none" stroke="#8a5a3a" stroke-width="1.2"/>
+    <path class="pg-ear" d="M60 34 c-2 -12 13 -16 18 -5 c-6 1 -12 3 -18 5 Z" fill="#E0853F" stroke="#8a5a3a" stroke-width="1"/>
+    ${eye}
+    <ellipse class="pg-nose" cx="22" cy="74" rx="4.5" ry="3.6" fill="#c98a82"/>
+    <path d="M24 81 q4 4 8 1" stroke="#c98a82" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <g stroke="#8c7a6c" stroke-width=".9" stroke-linecap="round"><path d="M28 74 L4 66 M28 77 L3 78 M28 80 L6 88"/></g>
+    ${mood==='happy'?'<text x="2" y="26" font-size="14" font-family="system-ui,sans-serif" font-weight="600" fill="#c96f32" class="pg-wheek">уи-уи!</text>':''}
+  </svg>`;
+}
+/* «уи-уи»: два-три коротких писка вверх, как у настоящей свинки */
+function wheek(){
+  const ac=Sound.ensure(); if(!ac) return;
+  const t0=ac.currentTime+0.02;
+  [0,0.22,0.44].forEach(st=>{
+    const o=ac.createOscillator(), g=ac.createGain(), s=t0+st;
+    o.type='triangle'; o.frequency.setValueAtTime(1100,s); o.frequency.exponentialRampToValueAtTime(2300,s+0.15);
+    g.gain.setValueAtTime(0.0001,s); g.gain.exponentialRampToValueAtTime(0.25,s+0.02); g.gain.exponentialRampToValueAtTime(0.0001,s+0.17);
+    o.connect(g); g.connect(Sound.out); o.start(s); o.stop(s+0.2);
+  });
+}
+
+/* ═══ ИКИ ═══ джунгарский хомячок: почти белый, серая клякса на спинке, белый животик. Совсем маленький. */
+let ikN=0;
+function ikiSVG(mood){
+  const id=++ikN, W='#f7f4ef', G='#9b9aa0', GD='#7d7c83';
+  const eye = mood==='happy'
+    ? '<path d="M33 40 q4 -4 8 0" stroke="#2a2420" stroke-width="2" fill="none" stroke-linecap="round"/>'
+    : '<circle cx="37" cy="40" r="3.6" fill="#1a1512"/><circle cx="38.3" cy="38.7" r="1.2" fill="#fff"/><rect class="pg-lid" x="32.5" y="36" width="9" height="9" fill="#f7f4ef"/>';
+  return `<svg class="iki" viewBox="0 0 110 86" aria-hidden="true">
+    <clipPath id="ikB${id}"><ellipse cx="58" cy="50" rx="40" ry="30"/></clipPath>
+    <ellipse cx="40" cy="78" rx="6" ry="3.5" fill="#efb8b0"/><ellipse cx="70" cy="79" rx="6" ry="3.5" fill="#efb8b0"/>
+    <ellipse cx="58" cy="50" rx="40" ry="30" fill="${W}"/>
+    <g clip-path="url(#ikB${id})">
+      <path d="M44 22 C58 12 84 14 96 30 C102 42 94 50 84 48 C74 46 70 40 60 40 C50 40 42 34 44 22 Z" fill="${G}"/>
+      <path d="M58 20 C72 22 86 30 94 42" stroke="${GD}" stroke-width="3" fill="none" stroke-linecap="round"/>
+    </g>
+    <ellipse cx="58" cy="50" rx="40" ry="30" fill="none" stroke="#c9c3ba" stroke-width="1"/>
+    <path d="M30 30 c-3 -9 6 -14 11 -6 Z" fill="#e7c9c4" stroke="#c9c3ba" stroke-width="1"/>
+    <path d="M44 25 c0 -9 9 -11 12 -3 Z" fill="#e7c9c4" stroke="#c9c3ba" stroke-width="1"/>
+    ${eye}
+    <ellipse class="pg-nose" cx="20" cy="50" rx="3" ry="2.4" fill="#e79c97"/>
+    <path d="M22 55 q3 3 6 0" stroke="#c98a82" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+    <g stroke="#b3aca3" stroke-width=".8" stroke-linecap="round"><path d="M25 50 L6 45 M25 52 L5 54 M25 54 L8 61"/></g>
+    <ellipse cx="34" cy="64" rx="5" ry="3.4" fill="#f2c9c2"/>
+    ${mood==='happy'?'<text x="66" y="12" font-size="10" font-family="system-ui,sans-serif" font-weight="600" fill="#7d7c83">пи-пи!</text>':''}
+  </svg>`;
+}
+/* тоненький «пи-пи» */
+function squeak(){
+  const ac=Sound.ensure(); if(!ac) return;
+  const t0=ac.currentTime+0.02;
+  [0,0.13].forEach(st=>{
+    const o=ac.createOscillator(), g=ac.createGain(), s=t0+st;
+    o.type='sine'; o.frequency.setValueAtTime(3200,s); o.frequency.exponentialRampToValueAtTime(3900,s+0.07);
+    g.gain.setValueAtTime(0.0001,s); g.gain.exponentialRampToValueAtTime(0.12,s+0.01); g.gain.exponentialRampToValueAtTime(0.0001,s+0.09);
+    o.connect(g); g.connect(Sound.out); o.start(s); o.stop(s+0.1);
+  });
+}
+
+
+/* ═══ СМЕШНЫЕ ПОЗЫ ═══ */
+/* Машка вылизывает лапу: буханочка, одна лапа поднята ко рту, розовый язычок */
+function mashkaWashSVG(){
+  const svg=mashkaSVG('loaf','happy');
+  return svg.replace('</svg>',`
+    <g class="mk-wash">
+      <ellipse class="mk-tongue" cx="64" cy="72.5" rx="3" ry="3.4" fill="#EBA0A4"/>
+      <ellipse class="mk-paw" cx="64" cy="83" rx="8" ry="9.5" fill="#FBF7F1" stroke="#E2D9CC" stroke-width="1"/>
+      <path d="M59 77 q5 -2.5 10 0" stroke="#E2D9CC" stroke-width="1" fill="none"/>
+    </g></svg>`);
+}
+/* Ики бегает в колесе */
+function ikiWheelSVG(){
+  const spokes=[0,30,60,90,120,150].map(a=>`<line x1="60" y1="60" x2="${60+52*Math.cos(a*Math.PI/180)}" y2="${60+52*Math.sin(a*Math.PI/180)}"/><line x1="60" y1="60" x2="${60-52*Math.cos(a*Math.PI/180)}" y2="${60-52*Math.sin(a*Math.PI/180)}"/>`).join('');
+  const iki=ikiSVG('calm').replace('<svg class="iki" viewBox="0 0 110 86"','<svg x="26" y="54" width="68" height="54" viewBox="0 0 110 86"');
+  return `<svg class="iki-wheel" viewBox="0 0 120 132" aria-hidden="true">
+    <path d="M60 60 L34 126 M60 60 L86 126 M26 126 H94" stroke="#b9a58a" stroke-width="4" stroke-linecap="round" fill="none"/>
+    <g class="wheel-spin" stroke="#c9bfa8" stroke-width="1.6"><circle cx="60" cy="60" r="54" fill="none" stroke="#b9a58a" stroke-width="5"/>${spokes}</g>
+    <g class="iki-run">${iki}</g>
+  </svg>`;
+}
+/* «через слово по-английски»: фразы с уже выученными словами урока */
+const MIX={
+  mashka:{
+    "zebra crossing":"Я вчера по zebra crossing шла. Медленно. Красиво. Все ждали.",
+    "on foot":"До миски — только on foot. Машину мне не дали.",
+    "seat belt":"В переноске нет seat belt. Я жаловалась. Мур.",
+    "traffic lights":"Traffic lights у меня одни: пустая миска — красный.",
+    "pavement":"Лежу на pavement. Тёплый. Не мешайте.",
+    "back seat":"Back seat — моё место. Всегда было моим.",
+    "bike lane":"Bike lane? Я по нему сплю.",
+    "parking zone":"Мой parking zone — твоя подушка.",
+    "look both ways":"Look both ways — и прыгаю на стол.",
+    "traffic warden":"Я тут traffic warden. Кто к миске — стоп.",
+    "pedestrian":"Я pedestrian. Причём очень важный pedestrian.",
+    "traffic sign":"Traffic sign «Не будить кошку» — где он? Надо повесить.",
+    "bicycle helmet":"Bicycle helmet я бы надела. Как миску. Мур.",
+    "lean out of the window":"Lean out of the window — это моё хобби. Не повторяй."
+  },
+  niko:{
+    "zebra crossing":"Уи! Zebra crossing — полосатый, как я! Мы родственники?!",
+    "on foot":"Я везде on foot! У меня четыре foot! Уи-уи!",
+    "traffic lights":"Traffic lights! Зелёный — значит огурец! Уи!",
+    "pedestrian":"Я самый быстрый pedestrian в клетке! Уи-уи-уи!",
+    "bike lane":"Хочу bike lane до холодильника! Уи!",
+    "seat belt":"Seat belt — пристегнись, я сейчас как побегу! Уи!",
+    "pavement":"Pavement из сена — лучший pavement! Хрум!",
+    "back seat":"Можно я на back seat? Я тихо! (нет)",
+    "parking zone":"Моя parking zone — миска. Паркуюсь! Уи!"
+  },
+  iki:{
+    "zebra crossing":"Zebra crossing перебегаю за секунду. Кусь водителю.",
+    "on foot":"Я on foot бегаю в колесе. Километры. Кусь.",
+    "traffic warden":"Я traffic warden клетки. Кто сунул палец — кусь.",
+    "look both ways":"Look both ways. Вдруг Машка. Тогда кусь.",
+    "bicycle helmet":"Bicycle helmet? Мне не надо. У меня зубы.",
+    "pedestrian":"Pedestrian маленький, но кусачий. Это я.",
+    "traffic sign":"Traffic sign: «Осторожно, кусь». Повесьте на клетку."
+  }
+};
+function mixPhrase(who,learnedEn){
+  const pool=Object.entries(MIX[who]||{}).filter(([en])=>learnedEn.includes(en));
+  return pool.length?pool[Math.floor(Math.random()*pool.length)][1]:null;
+}
+
+/* маленький салют из лапок */
+function paws(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  for(let i=0;i<18;i++){
+    const p=document.createElement('span'); p.className='paw'; p.textContent=['🐾','🐾','✨','🧡'][Math.floor(Math.random()*4)];
+    p.style.left=(10+Math.random()*80)+'vw'; p.style.animationDelay=(Math.random()*.4)+'s';
+    p.style.setProperty('--dx',(Math.random()*60-30)+'px'); p.style.fontSize=(16+Math.random()*14)+'px';
+    document.body.appendChild(p); setTimeout(()=>p.remove(),2200);
+  }
+}
+
+/* ═══ ЗВЕРИ НА ГЛАВНОЙ ═══ каждый раз сюрприз: случайный зверь, его характер, время суток,
+   иногда — фраза с уже выученными английскими словами (через слово по-английски). */
+const NAMES={mashka:'Машка',niko:'Нико',iki:'Ики'};
+const HELLO={
+  mashka:{morning:['Доброе утро. Я ещё сплю, но тебе рада. Мур.','Утро. Я умылась. Твоя очередь — слова.'],
+          day:['О, пришла. Рада тебя видеть. Мур.','Привет. Я грела твой список уроков.'],
+          evening:['Добрый вечер. Самое время для пары слов. А потом гладить кошку.','Вечер. Я уже умылась. Твоя очередь — слова.'],
+          night:['Ты чего не спишь? Я вот сплю. Ну ладно, одно слово — и спать.']},
+  niko:{morning:['Уи-уи! Утро! Ты пришла! Я так рад, что подпрыгнул!','Доброе утро! Огурец уже был? У меня — да! Уи!'],
+        day:['Уи-уи-уи! Ты здесь! Это лучший день!','Привет-привет! Давай учить! Я буду громко болеть за тебя! Уи!'],
+        evening:['Уи! Вечер! Самое уютное время для слов! Хрум!','Ты пришла! А я шуршал сеном и ждал! Уи-уи!'],
+        night:['Уи… тихо-тихо… Ночь. Одно словечко — и спать. Уи.']},
+  iki:{morning:['Утро. Я не выспался. Кусь.','Пришла? Ладно. Не кусаю. Пока.'],
+       day:['Кусь! Это «привет» по-хомячьи.','Явилась. Хорошо. Учи, а я побегаю.'],
+       evening:['Вечер — моё время. Бегаю в колесе. Ты — в словах. Кусь.','Привет. Кусь. Это от радости, честно.'],
+       night:['Ночь — моё время. А тебе — спать. Кусь на ночь.']}
+};
+const TAPS={
+  mashka:['Мур. Одно задание — и можно гладить кошку.','Не торопись. Я вот никогда не тороплюсь.','Я в пакете. Меня тут нет. Учи.','Ты справишься. Я в тебя верю. Мур.'],
+  niko:['Уи-уи-уи!','Сколько я съел огурцов? Six seven! 🤷 Уи!','Six… seven… Уи! Не знаю, что это, но все так говорят!','Хрум-хрум! Я за тебя болею!'],
+  iki:['Кусь!','Кусь-кусь. Не трогай, я злой.','Сколько слов осталось? 6-7. Шучу. Кусь.','Я маленький, но кусаюсь.']
+};
+const tod=()=>{const h=new Date().getHours(); return h<5?'night':h<12?'morning':h<18?'day':h<23?'evening':'night';};
+const pickC=a=>a[Math.floor(Math.random()*a.length)];
+function learnedEns(){ try{ const d=JSON.parse(localStorage.getItem('sp6-3a')||'{}'); return Object.keys(d).filter(k=>d[k]&&d[k].learned);}catch(e){return [];} }
+function petSVG(who,mood){
+  if(who==='niko') return pigSVG(mood==='happy'?'happy':'calm');
+  if(who==='iki') return mood==='run'?ikiWheelSVG():ikiSVG(mood==='happy'?'happy':'calm');
+  if(mood==='wash') return mashkaWashSVG();
+  return mashkaSVG(mood==='bag'?'bag':'loaf', mood==='happy'?'happy':'calm');
+}
+function sound(who){ if(who==='niko') wheek(); else if(who==='iki') squeak(); else purr(); }
+let HERO=pickC(['mashka','mashka','niko','iki']);
+const cat=document.getElementById('cat'), say=document.getElementById('say'), whoEl=document.getElementById('who'), pets=document.getElementById('pets');
+function showHero(text,mood){
+  cat.innerHTML=petSVG(HERO,mood); cat.className='hero-cat'+(HERO==='iki'&&mood!=='run'?' small':'');
+  whoEl.textContent=NAMES[HERO]; say.textContent=text;
+  pets.innerHTML=['mashka','niko','iki'].filter(w=>w!==HERO).map(w=>`<button class="pet ${w}" data-w="${w}" aria-label="Погладить: ${NAMES[w]}">${petSVG(w,'calm')}</button>`).join('');
+  pets.querySelectorAll('.pet').forEach(b=>b.onclick=()=>{ HERO=b.dataset.w; tapHero(); });
+}
+function tapHero(){
+  sound(HERO);
+  const mix=Math.random()<.4&&mixPhrase(HERO,learnedEns());
+  const r=Math.random();
+  const mood= HERO==='mashka'?(r<.25?'wash':r<.4?'bag':r<.7?'happy':'calm') : HERO==='iki'?(r<.4?'run':r<.7?'happy':'calm') : (r<.6?'happy':'calm');
+  showHero(mix||pickC(TAPS[HERO]), mood);
+}
+cat.onclick=tapHero; cat.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); tapHero(); } };
+showHero((Math.random()<.3&&mixPhrase(HERO,learnedEns()))||pickC(HELLO[HERO][tod()]), 'calm');
+
+/* ═══ «МОЛОДЕЦ, ЧТО ПРИШЛА» ═══ первый раз и после перерыва больше часа — крупно, с салютом.
+   Карточка закрывается только кнопкой, чтобы не пропустить. */
+(function welcome(){
+  let last=0; try{ last=+localStorage.getItem('eng-last')||0; }catch(e){}
+  const gap=last?Date.now()-last:Infinity, H=36e5;
+  try{ localStorage.setItem('eng-last',Date.now()); }catch(e){}
+  let text=null;
+  const who=pickC(['mashka','niko','iki']);
+  if(gap===Infinity) text={mashka:'Молодец, что пришла учить! Начать — самое трудное, и ты это уже сделала.',
+                           niko:'Уи-уи-уи! Ты пришла учить! Начать — самое трудное, а ты уже начала!',
+                           iki:'Пришла учить. Это самое трудное. Уважаю. Кусь — от уважения.'}[who];
+  else if(gap>=48*H) text={mashka:'Ты вернулась! После перерыва снова сесть — это сила. Слова тебя ждали.',
+                           niko:'Уи! Ты вернулась! Я так скучал, что сгрыз всё сено! Слова тоже ждали!',
+                           iki:'Вернулась. Я не скучал. (скучал) Кусь. Давай учить.'}[who];
+  else if(gap>=H) text={mashka:'Снова за слова — молодец, что заставила себя сесть ещё раз.',
+                        niko:'Уи! Второй заход! Вот это упорство! Я в восторге!',
+                        iki:'Опять пришла учить. Ладно, уважаю. Кусь.'}[who];
+  if(!text) return;
+  const bg=document.createElement('div'); bg.className='welcome-bg';
+  bg.innerHTML=`<div class="welcome" role="dialog" aria-label="${NAMES[who]}">
+    <div class="w-pic ${who}">${petSVG(who,'happy')}</div><b>${NAMES[who]}</b><p>${text}</p>
+    <button id="wgo">Поехали!</button></div>`;
+  document.body.appendChild(bg);
+  setTimeout(paws,300);
+  document.getElementById('wgo').onclick=()=>{ sound(who); bg.remove(); };
+})();
 render();
 </script>
 

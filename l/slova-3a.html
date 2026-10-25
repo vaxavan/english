@@ -178,6 +178,8 @@ h1{font-size:clamp(30px,8vw,42px);font-weight:400;margin:0 0 8px;line-height:1.1
 @keyframes ch-in{from{opacity:0;transform:translateX(-50%) translateY(-10px) scale(.96)}}
 .cheer-pic{width:52px;flex:none}.cheer-pic svg{width:100%;height:auto;display:block}
 .cheer.iki .cheer-pic{width:40px}
+.cheer.big{top:30%;flex-direction:column;text-align:center;padding:18px 18px 16px;font-size:17px;border-left:1px solid var(--line);border-top:4px solid var(--moss)}
+.cheer.big .cheer-pic{width:110px}
 body.purring main,body.purring .cat{animation:purr-shake .09s linear 16}
 @keyframes purr-shake{0%{transform:translate(0,0)}25%{transform:translate(.7px,-.4px)}50%{transform:translate(-.6px,.5px)}75%{transform:translate(.5px,.6px)}100%{transform:translate(0,0)}}
 .keyrow{display:flex;justify-content:center;gap:6px;align-items:center;font:14px/1.4 system-ui,sans-serif;color:var(--dim);margin:-2px 0 6px}
@@ -191,6 +193,20 @@ body.purring main,body.purring .cat{animation:purr-shake .09s linear 16}
 .modal .bar i{display:block;height:100%;background:var(--moss)}
 .paw{position:fixed;top:-30px;z-index:65;pointer-events:none;animation:paw-fall 1.8s ease-in forwards}
 @keyframes paw-fall{0%{transform:translate(0,0) rotate(0);opacity:0}10%{opacity:1}100%{transform:translate(var(--dx),75vh) rotate(40deg);opacity:0}}
+.ask{background:#fff;border:1px solid var(--line);border-top:4px solid var(--clay);border-radius:14px;padding:14px;margin:18px 0 0}
+.ask-q{font:16px/1.4 system-ui,sans-serif;margin:0 0 10px}
+.ask-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
+.ask-chip{border:1px solid var(--line);border-radius:999px;padding:8px 12px;background:var(--paper);font:14px/1 system-ui,sans-serif;color:var(--ink)}
+.ask-chip.on{background:var(--moss);border-color:var(--moss);color:#fff}
+.ask textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px;font:15px/1.4 system-ui,sans-serif;background:var(--paper);color:var(--ink)}
+.wheel-spin{transform-box:view-box;transform-origin:60px 60px;animation:wheel 1.1s linear infinite}
+@keyframes wheel{to{transform:rotate(-360deg)}}
+.iki-run{animation:iki-run .28s ease-in-out infinite alternate}
+@keyframes iki-run{from{transform:translateY(0)}to{transform:translateY(-3px)}}
+.mk-paw{transform-box:fill-box;transform-origin:50% 100%;animation:lick .7s ease-in-out infinite alternate}
+@keyframes lick{from{transform:translateY(0) rotate(-4deg)}to{transform:translateY(-3px) rotate(4deg)}}
+.mk-tongue{transform-box:fill-box;transform-origin:50% 0;animation:tongue .7s ease-in-out infinite alternate}
+@keyframes tongue{from{transform:scaleY(.6)}to{transform:scaleY(1.1)}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -452,9 +468,10 @@ const MK_TAP=["Мур. Ещё разок — и запомнишь.","Мяу. Э
   "Не торопись. Я вот никогда не тороплюсь.","Ты справишься. Я в тебя верю. Мур.","Фрр. Хватит гладить, повторяй."];
 function mkTap(box){
   purrFx();
-  const t=MK_TAP[Math.floor(Math.random()*MK_TAP.length)];
+  let t=(Math.random()<.45&&mixPhrase('mashka',learnedEns()))||MK_TAP[Math.floor(Math.random()*MK_TAP.length)];
+  const wash=Math.random()<.25; if(wash) t=pickC(['Не отвлекай. Я умываюсь. А ты учи.','Лапа чистая — слова выучены. У меня так.','Мур. Это у меня такой spa. Продолжай.']);
   const pose=t.includes('пакете')?'bag':'loaf', mood=t.includes('закатывает')?'roll':t.startsWith('Фрр')?'grumpy':'calm';
-  box.querySelector('.mk-pic').innerHTML=mashkaSVG(pose,mood);
+  box.querySelector('.mk-pic').innerHTML=wash?mashkaWashSVG():mashkaSVG(pose,mood);
   box.querySelector('.mk-say').textContent=t;
 }
 /* ═══ НИКО ═══ морская свинка, мальчик. В стиле Машки: мягкий контур, без белого. чёрная мордочка, три рыжие полоски, чёрная попка */
@@ -536,37 +553,110 @@ function squeak(){
   });
 }
 
-const IKI={
-  clean:['Пи! Ни одной ошибки! Я маленький, но заметил.','Пи-пи! Чисто-чисто.'],
-  comeback:['Пи! Трудное слово — твоё! Я спрятал за щёку на память.'],
-  hard:['Пи. Было трудно. Но ты дошла. Я бы уже спал в опилках.'],
-  ok:['Пи! Ещё чуть-чуть слов в норку.','Пи-пи. Хорошо идём.'],
-  done:['Пи-пи-пи! Весь урок! Я сейчас лопну от гордости.'],
-  puzzle:['Пи! Угадала! А я думал, это семечка.'],
-  miss:['Пи. Не то. Я тоже путаю, где у меня колесо.']
+/* ═══ СМЕШНЫЕ ПОЗЫ ═══ */
+/* Машка вылизывает лапу: буханочка, одна лапа поднята ко рту, розовый язычок */
+function mashkaWashSVG(){
+  const svg=mashkaSVG('loaf','happy');
+  return svg.replace('</svg>',`
+    <g class="mk-wash">
+      <ellipse class="mk-tongue" cx="64" cy="72.5" rx="3" ry="3.4" fill="#EBA0A4"/>
+      <ellipse class="mk-paw" cx="64" cy="83" rx="8" ry="9.5" fill="#FBF7F1" stroke="#E2D9CC" stroke-width="1"/>
+      <path d="M59 77 q5 -2.5 10 0" stroke="#E2D9CC" stroke-width="1" fill="none"/>
+    </g></svg>`);
+}
+/* Ики бегает в колесе */
+function ikiWheelSVG(){
+  const spokes=[0,30,60,90,120,150].map(a=>`<line x1="60" y1="60" x2="${60+52*Math.cos(a*Math.PI/180)}" y2="${60+52*Math.sin(a*Math.PI/180)}"/><line x1="60" y1="60" x2="${60-52*Math.cos(a*Math.PI/180)}" y2="${60-52*Math.sin(a*Math.PI/180)}"/>`).join('');
+  const iki=ikiSVG('calm').replace('<svg class="iki" viewBox="0 0 110 86"','<svg x="26" y="54" width="68" height="54" viewBox="0 0 110 86"');
+  return `<svg class="iki-wheel" viewBox="0 0 120 132" aria-hidden="true">
+    <path d="M60 60 L34 126 M60 60 L86 126 M26 126 H94" stroke="#b9a58a" stroke-width="4" stroke-linecap="round" fill="none"/>
+    <g class="wheel-spin" stroke="#c9bfa8" stroke-width="1.6"><circle cx="60" cy="60" r="54" fill="none" stroke="#b9a58a" stroke-width="5"/>${spokes}</g>
+    <g class="iki-run">${iki}</g>
+  </svg>`;
+}
+/* «через слово по-английски»: фразы с уже выученными словами урока */
+const MIX={
+  mashka:{
+    "zebra crossing":"Я вчера по zebra crossing шла. Медленно. Красиво. Все ждали.",
+    "on foot":"До миски — только on foot. Машину мне не дали.",
+    "seat belt":"В переноске нет seat belt. Я жаловалась. Мур.",
+    "traffic lights":"Traffic lights у меня одни: пустая миска — красный.",
+    "pavement":"Лежу на pavement. Тёплый. Не мешайте.",
+    "back seat":"Back seat — моё место. Всегда было моим.",
+    "bike lane":"Bike lane? Я по нему сплю.",
+    "parking zone":"Мой parking zone — твоя подушка.",
+    "look both ways":"Look both ways — и прыгаю на стол.",
+    "traffic warden":"Я тут traffic warden. Кто к миске — стоп.",
+    "pedestrian":"Я pedestrian. Причём очень важный pedestrian.",
+    "traffic sign":"Traffic sign «Не будить кошку» — где он? Надо повесить.",
+    "bicycle helmet":"Bicycle helmet я бы надела. Как миску. Мур.",
+    "lean out of the window":"Lean out of the window — это моё хобби. Не повторяй."
+  },
+  niko:{
+    "zebra crossing":"Уи! Zebra crossing — полосатый, как я! Мы родственники?!",
+    "on foot":"Я везде on foot! У меня четыре foot! Уи-уи!",
+    "traffic lights":"Traffic lights! Зелёный — значит огурец! Уи!",
+    "pedestrian":"Я самый быстрый pedestrian в клетке! Уи-уи-уи!",
+    "bike lane":"Хочу bike lane до холодильника! Уи!",
+    "seat belt":"Seat belt — пристегнись, я сейчас как побегу! Уи!",
+    "pavement":"Pavement из сена — лучший pavement! Хрум!",
+    "back seat":"Можно я на back seat? Я тихо! (нет)",
+    "parking zone":"Моя parking zone — миска. Паркуюсь! Уи!"
+  },
+  iki:{
+    "zebra crossing":"Zebra crossing перебегаю за секунду. Кусь водителю.",
+    "on foot":"Я on foot бегаю в колесе. Километры. Кусь.",
+    "traffic warden":"Я traffic warden клетки. Кто сунул палец — кусь.",
+    "look both ways":"Look both ways. Вдруг Машка. Тогда кусь.",
+    "bicycle helmet":"Bicycle helmet? Мне не надо. У меня зубы.",
+    "pedestrian":"Pedestrian маленький, но кусачий. Это я.",
+    "traffic sign":"Traffic sign: «Осторожно, кусь». Повесьте на клетку."
+  }
 };
-const IKI_TAP=["Пи! Я Ики. Я маленький, но всё слышу.","Пи-пи. Спрятал слово за щёку — потом достану.",
-  "Zebra crossing — полосатый, как Нико. Пи!","Look both ways! Я всегда смотрю. Вдруг Машка.","Пи. Кручу колесо, а ты — слова."];
+function mixPhrase(who,learnedEn){
+  const pool=Object.entries(MIX[who]||{}).filter(([en])=>learnedEn.includes(en));
+  return pool.length?pool[Math.floor(Math.random()*pool.length)][1]:null;
+}
+
+const learnedEns=()=>WORDS.filter(w=>Store.w(w.en).learned).map(w=>w.en);
+const IKI={
+  clean:['Кусь! Ни одной ошибки. Даже укусить не за что.','Чисто. Ладно, сегодня не кусаю.'],
+  comeback:['Кусь-кусь! Это слово ты загрызла. Уважаю.','Трудное слово — твоё. Я бы его тоже покусал.'],
+  persist:['Ошибалась, а не бросила. Кусь — это от уважения.','Не сдалась! Я бы уже кусался от злости, а ты дособирала.'],
+  hard:['Тяжело шло. Но ты не сбежала. Кусь за упорство.'],
+  ok:['Пи. Дальше. И не трогай меня.','Кусь-кусь. Иду в опилки, а ты — за слова.'],
+  done:['Весь урок?! Кусь-кусь-кусь! Это я так радуюсь.'],
+  puzzle:['Угадала. А я думал, это семечка. Кусь.'],
+  miss:['Мимо. Не кусаю — сегодня добрый. Попробуй ещё.']
+};
+const IKI_TAP=["Кусь!","Сколько слов осталось? 6-7. Шучу. Кусь.","Кусь-кусь. Не трогай, я злой.","Я Ики. Маленький, но кусаюсь.",
+  "Zebra crossing — полосатый, как Нико. Кусь его!","Look both ways. Вдруг Машка. Кусь её.","Пи. Кручу колесо, а ты — слова. Кусь для бодрости."];
 function ikiTap(box){
   squeak();
-  box.querySelector('.mk-pic').innerHTML=ikiSVG(Math.random()<.5?'happy':'calm');
-  box.querySelector('.mk-say').textContent=IKI_TAP[Math.floor(Math.random()*IKI_TAP.length)];
+  const r=Math.random();
+  box.querySelector('.mk-pic').innerHTML= r<.35?ikiWheelSVG() : ikiSVG(r<.65?'happy':'calm');
+  box.querySelector('.mk-say').textContent=(Math.random()<.45&&mixPhrase('iki',learnedEns()))||IKI_TAP[Math.floor(Math.random()*IKI_TAP.length)];
 }
 const NIKO={
   clean:['Уи-уи! Ни одной ошибки. Я даже морковку не успел догрызть.','Чисто! Нико доволен. Уи!'],
   comeback:['Уи-уи-уи! Ты его победила! Я подпрыгнул, честно.','Это слово было трудное. А теперь — твоё. Уи!'],
+  persist:['Уи-уи! Ошибалась — и не бросила! Вот это да!','Ты не сдалась! Я так рад, что прыгаю. Уи-уи-уи!'],
   hard:['Было трудно, но ты не сдалась. Хрум. Это главное.','Много ошибок? Зато все слова пройдены. Я горжусь. Уи.'],
   ok:['Уи! Идём дальше.','Хрум-хрум. Ещё немного слов в копилку.'],
   done:['Урок выучен! Уи-уи-уи! Это надо отметить морковкой.'],
   puzzle:['Уи-уи! Угадала! Я бы ни за что.','Глазастая! Как я, когда шуршит пакет с сеном.'],
   miss:['Не то. Но я тоже иногда путаю огурец с кабачком. Уи.','Мимо. Выучи ещё слово — откроется кусочек.']
 };
-const NIKO_TAP=["Уи-уи! Я Нико.","Хрум. Это я морковку. Учи дальше.","Pedestrian — это ты. А я — pet. Уи!",
+const NIKO_TAP=["Уи-уи! Я Нико.","Сколько я съел огурцов? Six seven! 🤷 Уи-уи!","Six… seven… Уи! Не знаю, что это значит, но все так говорят!","Хрум. Это я морковку. Учи дальше.","Pedestrian — это ты. А я — pet. Уи!",
   "Traffic lights! Красный — стой. Как я перед огурцом.","Не трогай мои полоски. Трогай слова. Уи.","Уи-уи-уи! Это значит «молодец»."];
 let SPK='mashka';
+/* звери приходят по очереди, а не случайно — чтобы Нико и Ики точно появлялись:
+   Машка, Нико, Машка, Ики, … Номер в очереди помнится между занятиями. */
+const SPK_ORDER=['mashka','niko','mashka','iki'];
+function nextSpeaker(){ const m=Store.meta(), i=(m.spkI||0)%SPK_ORDER.length; Store.setMeta({spkI:i+1}); return SPK_ORDER[i]; }
 function nikoTap(box){
   wheek();
-  const t=NIKO_TAP[Math.floor(Math.random()*NIKO_TAP.length)];
+  const t=(Math.random()<.45&&mixPhrase('niko',learnedEns()))||NIKO_TAP[Math.floor(Math.random()*NIKO_TAP.length)];
   box.querySelector('.mk-pic').innerHTML=pigSVG(Math.random()<.5?'happy':'calm');
   box.querySelector('.mk-say').textContent=t;
 }
@@ -588,6 +678,7 @@ function catBlock(mood,phrase){
     <div class="bubble"><b class="mk-name">Машка</b><span class="mk-say">${phrase}</span></div></div>`;
 }
 const CAT={
+  persist:['Ошибалась, а всё равно дособирала. Молодец, что не сдалась. Мур.','Не сдалась — уважаю. Я бы уже ушла спать.'],
   clean:['Ни одной ошибки. Я даже мяукнуть не успела.','Чисто. Вообще не за что зацепиться.'],
   comeback:['Ты его дожала. Я, честно, сомневалась.','Вот это слово тебя мучило. И всё, больше не мучает.'],
   hard:['Тяжело шло. Но ты досидела до конца — это и считается.','Много ошибок, ну и что. Главное, не закрыла и не ушла.'],
@@ -596,8 +687,8 @@ const CAT={
   puzzle:['Угадала! Глаз-алмаз.','Вот это ты быстро разглядела.'],
   miss:['Не оно. Но идея была хорошая.','Мимо. Открой ещё кусочек, и попробуем снова.']
 };
-/* иногда вместо Машки приходит Нико (свинка) или Ики (хомячок) */
-const catPick=k=>{const r=Math.random(); SPK=r<.25&&NIKO[k]?'niko':r<.42&&IKI[k]?'iki':'mashka'; const a=SPK==='niko'?NIKO[k]:SPK==='iki'?IKI[k]:CAT[k]; return a[Math.floor(Math.random()*a.length)];};
+/* вместо Машки по очереди приходят Нико (свинка) и Ики (хомячок) */
+const catPick=k=>{SPK=nextSpeaker(); if(SPK==='niko'&&!NIKO[k]) SPK='mashka'; if(SPK==='iki'&&!IKI[k]) SPK='mashka'; const a=SPK==='niko'?NIKO[k]:SPK==='iki'?IKI[k]:CAT[k]; return a[Math.floor(Math.random()*a.length)];};
 
 
 /* ═══ ОЗВУЧКА ═══ */
@@ -992,45 +1083,44 @@ function intro(){
    Подсказка висит, пока не коснёшься экрана; касание её только закрывает. */
 let streak=0, lastCheer=0, streakCheered=false, packCheers=0;
 const HOUR=36e5;
-function touchActive(){ Store.setMeta({lastActive:Date.now()}); }
+function touchActive(){ Store.setMeta({lastActive:Date.now()}); try{localStorage.setItem('eng-last',Date.now())}catch(e){} }
 function cheer(ev,arg){
   const m=Store.meta(), now=Date.now();
   let text=null, party=false;
   if(ev==='start'){
     const gap=m.lastActive?now-m.lastActive:Infinity;
     touchActive();
-    if(gap===Infinity) text=pickC(['Молодец, что села учить! Начать — самое трудное, и это уже позади.',
-                                    'Ты взялась за слова — это самое сложное. Поехали!']);
-    else if(gap>=2*DAY){ party=true; text=pickC(['Ты вернулась! После перерыва сесть снова — это сила. Слова тебя ждали.',
-                                    'Перерыв был, а ты всё равно пришла. Это и есть настоящее усилие.']); }
-    else if(gap>=HOUR) text=pickC(['Снова за слова — молодец, что заставила себя сесть ещё раз.',
-                                    'Второй заход — это то, что отличает тех, кто выучит. Ты это сделала.',
-                                    'Вернулась к словам — хорошо. Повторение через время держит слова крепче.']);
-    if(gap===Infinity) party=true;
+    if(window.top!==window) return;       // на сайте «молодец, что начала» показывает главная страница
+    if(gap===Infinity){ party=true; text=pickC(['Молодец, что села учить! Начать — самое трудное, и это уже позади.']); }
+    else if(gap>=2*DAY){ party=true; text='Ты вернулась! После перерыва сесть снова — это сила.'; }
+    else if(gap>=HOUR) text='Снова за слова — молодец, что заставила себя сесть ещё раз.';
+    if(text){ if(party) setTimeout(paws,250); return showCheer(text,true); }
+    return;
   }
-  else if(ev==='comeback'&&arg&&packCheers<1&&now-lastCheer>15000)
-    text=pickC([`«${arg.en}» сначала не давалось, а ты вернулась к нему — и получилось!`,
-                `С «${arg.en}» была ошибка, а теперь — верно. Вот так слова и запоминаются.`]);
-  if(text&&party) setTimeout(paws,250);
+  if(packCheers>=2||now-lastCheer<8000||!arg) return;
+  const who=nextSpeaker(), set=who==='niko'?NIKO:who==='iki'?IKI:CAT;
+  if(ev==='persist') text=pickC(set.persist)+` («${arg.en}»)`;
+  else if(ev==='comeback') text=pickC([`«${arg.en}» сначала не давалось, а ты вернулась к нему — и получилось!`,`С «${arg.en}» была ошибка, а теперь — верно. Так слова и запоминаются.`]);
   if(!text||!catOn()) return;
-  lastCheer=now; packCheers++; showCheer(text);
+  lastCheer=now; packCheers++; showCheer(text,false,who);
 }
 const pickC=a=>a[Math.floor(Math.random()*a.length)];
 /* маленький салют из лапок */
 function paws(){
   if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
   for(let i=0;i<18;i++){
-    const p=document.createElement('span'); p.className='paw'; p.textContent=pickC(['🐾','🐾','✨','🧡']);
+    const p=document.createElement('span'); p.className='paw'; p.textContent=['🐾','🐾','✨','🧡'][Math.floor(Math.random()*4)];
     p.style.left=(10+Math.random()*80)+'vw'; p.style.animationDelay=(Math.random()*.4)+'s';
     p.style.setProperty('--dx',(Math.random()*60-30)+'px'); p.style.fontSize=(16+Math.random()*14)+'px';
     document.body.appendChild(p); setTimeout(()=>p.remove(),2200);
   }
 }
-function showCheer(text){
-  const r=Math.random(), who=r<.6?'mashka':r<.82?'niko':'iki';
+
+function showCheer(text,big,whoIn){
+  const who=whoIn||nextSpeaker();
   const pic= who==='mashka'?mashkaSVG('head','happy'): who==='niko'?pigSVG('happy'):ikiSVG('happy');
   document.querySelectorAll('.cheer').forEach(x=>x.remove());
-  const d=document.createElement('div'); d.className='cheer '+who;
+  const d=document.createElement('div'); d.className='cheer '+who+(big?' big':'');
   d.innerHTML=`<span class="cheer-pic">${pic}</span><span>${text}</span>`;
   document.body.appendChild(d);
   if(who==='mashka') purrFx(); else if(who==='niko') wheek(); else squeak();
@@ -1138,7 +1228,8 @@ function render(){
       k.textContent=ch===' '?'пробел':ch; if(ch===' ')k.style.minWidth='90px'; k.onclick=()=>tap(ch,k); keys.appendChild(k); }); };
   const dropKey=ch=>{ const k=[...keys.children].find(x=>x.dataset.ch===ch); if(k) k.remove(); };
   const done=()=>{ say(target);
-    if(!errNow&&!copyMode){ streak++; cheer(Store.meta().everBuilt?'streak':'firstBuilt'); } else streak=0;
+    if(!errNow&&!copyMode){ streak++; if(mistakes.find(m=>m.en===w.en)) cheer('comeback',w); }
+    else{ streak=0; if((stuck[w.en]||0)>=2) cheer('persist',w); }
     setTimeout((copyMode||!errNow)?solved:retry,700); };
   function tap(ch,k){
     if(ch===L[typed]){ typed++; k.remove(); paint(); if(typed===L.length) done(); }
@@ -1151,6 +1242,41 @@ function render(){
     paint(); if(typed===L.length) done();
   };
   paint(); refresh();
+}
+
+/* ═══ ВОПРОСЫ ДОЧКЕ ═══ ответ уходит маме кнопкой «Отправить маме» (через мессенджер телефона).
+   1) Урок выучен — «Что ты хочешь за выученный урок?»
+   2) Был трудный подход и она не бросила — «Что помогло не бросить?» (не чаще раза в урок) */
+let ASK=null;
+function askBlock(lessonDone,hard){
+  const m=Store.meta();
+  if(lessonDone&&!m.askedReward) ASK={k:'askedReward',q:'Урок выучен! Что ты хочешь за это? Напиши — я передам маме 🐾',
+    chips:['Сходить куда-нибудь вместе','Вкусняшку','Время в игре','Сюрприз от мамы']};
+  else if(hard&&!m.askedPersist) ASK={k:'askedPersist',q:`С «${hard}» было трудно, а ты не бросила. Что помогло продолжить?`,
+    chips:['Хотелось открыть пазл','Звери смешные','Хотелось выучить к уроку','Просто упрямство 😤']};
+  else { ASK=null; return ''; }
+  return `<div class="ask"><p class="ask-q">${ASK.q}</p>
+    <div class="ask-chips">${ASK.chips.map(c=>`<button class="ask-chip" type="button">${c}</button>`).join('')}</div>
+    <textarea id="askText" rows="2" placeholder="Или напиши своими словами"></textarea>
+    <button class="next" id="askSend" style="margin-top:10px">Отправить маме</button>
+    <button class="ghostbtn" id="askSkip">Не сейчас</button></div>`;
+}
+function bindAsk(){
+  if(!ASK) return;
+  const box=scene.querySelector('.ask'), ta=document.getElementById('askText');
+  box.querySelectorAll('.ask-chip').forEach(c=>c.onclick=()=>{ c.classList.toggle('on'); });
+  document.getElementById('askSkip').onclick=()=>{ Store.setMeta({[ASK.k]:1}); box.remove(); };
+  document.getElementById('askSend').onclick=async()=>{
+    const picked=[...box.querySelectorAll('.ask-chip.on')].map(c=>c.textContent);
+    const ans=[...picked, ta.value.trim()].filter(Boolean).join('; ');
+    if(!ans){ ta.focus(); return; }
+    const answers=Store.meta().answers||[];
+    Store.setMeta({[ASK.k]:1, answers:[...answers,{q:ASK.q,a:ans,at:Date.now()}]});
+    const t=`🐾 ${LESSON.book}, ${LESSON.unit}\n${ASK.q}\nОтвет: ${ans}`;
+    try{ if(navigator.share){ await navigator.share({text:t}); } else throw 0; box.innerHTML='<p class="ask-q">Отправлено маме. Спасибо! 🐾</p>'; }
+    catch(e){ try{ await navigator.clipboard.writeText(t); box.innerHTML='<p class="ask-q">Скопировала. Вставь маме в мессенджер 🐾</p>'; }
+      catch(e2){ box.innerHTML='<p class="ask-q">Перешли маме этот текст:</p><textarea rows="4" readonly style="width:100%">'+t+'</textarea>'; } }
+  };
 }
 
 /* ═══ ИТОГИ ═══ */
@@ -1167,7 +1293,7 @@ function finish(){
   });
 
   const errs=mistakes.length;
-  const learned=learnedCount(), left=WORDS.length-learned, lessonDone=left===0;
+  const learned=learnedCount(), left=pool().filter(w=>!Store.w(w.en).learned).length, lessonDone=left===0;
   const hardWord=Object.entries(stuck).sort((a,b)=>b[1]-a[1])[0]?.[0]||null;
 
   const add=id=>{const b=award(id); if(b)prizes.push([id,b]);};
@@ -1188,10 +1314,12 @@ function finish(){
     ${prizes.map(([id,b])=>`<div class="prize">${badgeArt(id)}
       <div><b>${b.t}</b><span>${b.d}</span></div></div>`).join('')}
     ${errs?`<ul class="missed">${mistakes.map(m=>`<li><span>${m.en}</span><span>${m.ru}</span></li>`).join('')}</ul>`:''}
+    ${askBlock(lessonDone, hardWord&&(stuck[hardWord]||0)>=2?hardWord:null)}
     <button class="next" id="again">Дальше</button>
     <button class="ghostbtn" id="share">Отправить маме</button>
     <p class="hint">Выучено ${pool().filter(w=>Store.w(w.en).learned).length} из ${pool().length}.${
       left?' Вернуться к этим словам через час или завтра — и они закрепятся надолго.':''}</p>`;
+  bindAsk();
   again.onclick=()=>{buildPack();intro();};
   share.onclick=()=>{
     const t=`${LESSON.book}, ${LESSON.unit} — ${new Date().toLocaleDateString('ru-RU')}\n`
