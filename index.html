@@ -1,18 +1,4 @@
-<!doctype html>
-<html lang="ru">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#12241c">
-<meta name="robots" content="noindex">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
-<link rel="apple-touch-icon" href="icon.svg">
-<title>Английский с Машкой</title>
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style>
-</head>
-<body>
-
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#12241c"><meta name="robots" content="noindex"><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="icon.svg"><title>Английский с Машкой</title><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}</style></head><body>
 <meta name="claude:viewport-fit-sides" content="cover">
 <style>
 /* Layout: одна колонка как тетрадь — шапка с Машкой, два раздела карточек уроков, урок открывается поверх на весь экран.
@@ -44,6 +30,7 @@ h2{font:600 12px/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;c
 .tag{font:600 13px/1 var(--f-body);color:var(--moss);background:#e5efe7;border-radius:10px;height:44px;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
 .lesson.text.own .tag{color:var(--moss);background:#e5efe7;font-size:22px}
 .lesson.text .tag{color:#9a5a24;background:#f8e7d6}
+.lesson.rule .tag{color:#2c4f86;background:#e5ecf7;font-family:Georgia,serif}
 .l-title{font:400 19px/1.25 var(--f-display);display:block}
 .l-sub{font-size:13px;color:var(--dim);display:block;margin-top:2px}
 .bar{height:5px;border-radius:9px;background:var(--chalk);overflow:hidden;margin-top:8px}
@@ -158,6 +145,8 @@ button:active,.lesson:active{transform:scale(.98)}
   <div class="list" id="words"></div>
   <h2>Тексты</h2>
   <div class="list" id="texts"></div>
+  <h2>Правила</h2>
+  <div class="list" id="rules"></div>
 
   <p class="note">Прогресс хранится в этом телефоне или компьютере, в браузере. Если открыть ссылку на другом устройстве, там всё начнётся сначала.
   Новые уроки появляются здесь же — ссылка не меняется.</p>
@@ -276,6 +265,8 @@ const LESSONS=[
  {type:'text',file:'l/tekst-oxford.html',tag:'Text',title:'Oxford Street',sub:'Famous Streets · 2 кусочка',key:'oxford-text',total:2},
  {type:'text',file:'l/tekst-uk-1d.html',tag:'1d',title:'The United Kingdom',sub:'Culture Corner · 4 кусочка',key:'uk-1d',total:4},
  {type:'text',file:'l/tekst-london.html',tag:'Text',title:'London',sub:'Текст про Лондон · 6 кусочков',key:'london-text',total:6},
+ {type:'rule',file:'l/pravila.html#relative',id:'relative',tag:'who',title:'Who, which, that',sub:'«который»: загадки, определения, склейка',isNew:true},
+ {type:'rule',file:'l/pravila.html#time',id:'time',tag:'time',title:'What time is it?',sub:'Время по часам: past и to',isNew:true},
  {type:'own',file:'l/svoy-tekst.html',tag:'＋',title:'Свой текст',sub:'Вставь любой текст или песню — тренажёр соберётся сам',key:'own-texts',total:0},
 ];
 function progress(l){
@@ -288,6 +279,8 @@ function progress(l){
 }
 function render(){
   const make=l=>{
+    if(l.type==='rule'){ let r=null; try{ r=(JSON.parse(localStorage.getItem('rules')||'{}'))[l.id]; }catch(e){}
+      return `<button class="lesson rule" data-file="${l.file}" data-title="${l.title}"><span class="tag">${l.tag}</span><span><span class="l-title">${l.title}${l.isNew&&!r?'<span class="new">новое</span>':''}</span><span class="l-sub">${l.sub}${r?` · лучший результат ${r.best} из ${r.of}`:''}</span>${r?`<span class="bar"><i style="width:${Math.round(r.best/r.of*100)}%"></i></span>`:''}</span><span class="l-go" aria-hidden="true">›</span></button>`; }
     if(l.type==='own'){ const k=progress(l); return `<button class="lesson text own" data-file="${l.file}" data-title="${l.title}"><span class="tag">${l.tag}</span><span><span class="l-title">${l.title}</span><span class="l-sub">${k?`Мои тексты: ${k}`:l.sub}</span></span><span class="l-go" aria-hidden="true">›</span></button>`; }
     const n=Math.min(progress(l),l.total), pct=Math.round(n/l.total*100);
     const unit=l.type==='text'?'кусочков':'слов';
@@ -300,6 +293,7 @@ function render(){
   };
   document.getElementById('words').innerHTML=LESSONS.filter(l=>l.type==='words').map(make).join('');
   document.getElementById('texts').innerHTML=LESSONS.filter(l=>l.type==='text'||l.type==='own').map(make).join('');
+  document.getElementById('rules').innerHTML=LESSONS.filter(l=>l.type==='rule').map(make).join('');
   document.querySelectorAll('.lesson').forEach(b=>b.onclick=()=>openLesson(b.dataset.file,b.dataset.title));
 }
 const player=document.getElementById('player'), frame=document.getElementById('frame');
@@ -630,6 +624,4 @@ document.getElementById('bkFile').onchange=e=>{
   r.readAsText(f);
 };
 </script>
-
-</body>
-</html>
+</body></html>

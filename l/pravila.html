@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Правила с Машкой</title>
+<style>
+/* Мини-уроки грамматики: правило одной картинкой → примеры со звуком → задания от лёгких к трудным,
+   при ошибке — короткое объяснение «почему». Значок 💡 открывает правило в любой момент.
+   Та же бумага и чернила, что в тренажёрах. Одна светлая тема, как у всех уроков. */
+:root{
+  --ink:#12241c; --paper:#f2efe6; --chalk:#e8e3d5; --card:#fffdf8;
+  --moss:#2f6b46; --leaf:#7fae8c; --clay:#b4573a; --ginger:#e0853f;
+  --dim:#6f7d73; --line:rgba(18,36,28,.14);
+  --past:#2f6b46; --past-bg:#e3efe6; --to:#b4573a; --to-bg:#f7e4dc;
+  --f-display:Georgia,"Iowan Old Style","Times New Roman",serif;
+  --f-body:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{background:var(--paper);color:var(--ink);margin:0}
+body{font:16px/1.5 var(--f-body);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}
+header{display:flex;align-items:center;gap:8px;padding-block:12px;border-bottom:1px solid var(--line);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header .spacer{flex:1}
+.chip{font:13px/1 var(--f-body);border:1px solid var(--line);border-radius:999px;padding:7px 12px;background:#fff;color:var(--dim);cursor:pointer;white-space:nowrap}
+.chip.snd{font-size:15px;padding:5px 9px}
+.rail{display:flex;gap:4px;padding:10px 0 0}
+.rail i{flex:1;height:3px;background:var(--chalk);border-radius:2px;transition:background .3s}
+.rail i.done{background:var(--moss)} .rail i.now{background:var(--ink)}
+main{max-width:600px;margin:0 auto;padding-block:18px 48px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{font:600 12px/1 var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:0 0 8px}
+h1{font:400 clamp(28px,7vw,36px)/1.15 var(--f-display);margin:0 0 6px;text-wrap:balance}
+h2{font:400 22px/1.25 var(--f-display);margin:0 0 8px}
+.sub{color:var(--dim);margin:0 0 14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin:0 0 14px}
+.rule-row{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.rule-row:first-child{border-top:0}
+.pron{font:600 22px/1 var(--f-display);padding:8px 12px;border-radius:10px;min-width:74px;text-align:center}
+.p-who{background:#e5ecf7;color:#2c4f86}.p-which{background:#f7ead8;color:#94561e}.p-that{background:#ece6f4;color:#5b3f86}
+.rule-row small{display:block;color:var(--dim);font-size:13px}
+.ex{display:flex;gap:10px;align-items:flex-start;width:100%;text-align:left;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;margin:0 0 8px;font:inherit;color:var(--ink);cursor:pointer}
+.ex .en{font:18px/1.35 var(--f-display)}
+.ex .ru{display:block;color:var(--dim);font-size:14px}
+.ex .spk{flex:none;font-size:18px;line-height:1.3}
+mark{padding:0 3px;border-radius:5px;font-weight:600}
+mark.who{background:#e5ecf7;color:#2c4f86} mark.which{background:#f7ead8;color:#94561e} mark.that{background:#ece6f4;color:#5b3f86}
+mark.past{background:var(--past-bg);color:var(--past)} mark.to{background:var(--to-bg);color:var(--to)}
+.q{font:22px/1.35 var(--f-display);margin:6px 0 16px;text-wrap:balance}
+.q .gap{display:inline-block;min-width:70px;border-bottom:2px solid var(--ink);text-align:center}
+.opts{display:grid;gap:10px}
+.opts.row{grid-template-columns:repeat(3,minmax(0,1fr))}
+.opt{padding:15px 12px;border:1px solid var(--line);border-radius:12px;background:#fff;font:18px/1.2 var(--f-body);color:var(--ink);cursor:pointer;text-align:center}
+.opt.right{background:#e8f2ea;border-color:var(--moss);color:var(--moss);animation:pop .35s cubic-bezier(.3,1.6,.5,1)}
+.opt.wrong{background:#f8e8e2;border-color:var(--clay);color:var(--clay);animation:nudge .3s}
+.opt[disabled]{cursor:default}
+.clockopt{padding:8px;display:flex;justify-content:center}
+.clockopt svg{width:100%;max-width:120px;height:auto}
+.tip{background:#fff7e8;border:1px solid #edd9b0;border-radius:12px;padding:12px 14px;margin:14px 0 0;font-size:15px}
+.tip b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#94561e;margin-bottom:4px}
+.next{margin-top:18px;width:100%;padding:16px;border:0;border-radius:12px;background:var(--ink);color:var(--paper);font:16px/1 var(--f-body);cursor:pointer}
+.next[disabled]{opacity:.35;cursor:default}
+.ghost{margin-top:10px;width:100%;padding:12px;border:0;background:none;color:var(--dim);font:15px/1.3 var(--f-body);cursor:pointer}
+.bigclock{display:block;width:min(300px,82vw);height:auto;margin:6px auto 10px}
+.setter{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:6px 0 4px}
+.setter button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:10px 14px;font:15px var(--f-body);cursor:pointer;color:var(--ink)}
+.digital{font:600 28px/1 ui-monospace,Menlo,monospace;text-align:center;letter-spacing:.04em;margin:4px 0 10px;font-variant-numeric:tabular-nums}
+.lessons{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.lessons button{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:12px;align-items:center;width:100%;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font:inherit;color:var(--ink);cursor:pointer}
+.lessons .ic{font-size:26px;text-align:center}
+.lessons b{font:400 19px/1.25 var(--f-display);display:block}
+.lessons small{color:var(--dim)}
+.score{font:600 13px var(--f-body);color:var(--moss)}
+.soon{opacity:.55}
+.ic2{font-size:24px;width:40px;text-align:center}
+.where .rule-row{align-items:start}
+.cat{display:flex;gap:10px;align-items:center;margin:14px 0}
+.cat .mk-pic{width:96px;flex:none}.cat .mk-pic svg{width:100%;height:auto;display:block}
+.bubble{background:var(--card);border:1px solid var(--line);border-radius:14px 14px 14px 4px;padding:10px 12px;font-size:15px}
+.bubble b{display:block;font-size:12px;color:var(--dim)}
+.tally{font:400 30px/1.2 var(--f-display);margin:10px 0 4px}
+button{transition:transform .12s ease,background-color .2s,border-color .2s}
+button:active:not([disabled]){transform:scale(.97)}
+button:focus-visible{outline:2px solid var(--moss);outline-offset:2px}
+@keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.05)}100%{transform:scale(1)}}
+@keyframes nudge{0%,100%{transform:none}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+main.enter{animation:enter .28s ease-out}
+@keyframes enter{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.paw{position:fixed;top:-30px;z-index:65;pointer-events:none;animation:paw-fall 1.8s ease-in forwards}
+@keyframes paw-fall{0%{transform:translate(0,0) rotate(0);opacity:0}10%{opacity:1}100%{transform:translate(var(--dx),75vh) rotate(40deg);opacity:0}}
+.mk-lid{transform-box:fill-box;transform-origin:50% 0;transform:scaleY(.42);animation:mk-blink 5.5s infinite}
+@keyframes mk-blink{0%,93%,100%{transform:scaleY(.42)}96%{transform:scaleY(1.05)}}
+.mk-lid-up{transform:scaleY(.22);animation:mk-blink-up 6s infinite}
+@keyframes mk-blink-up{0%,93%,100%{transform:scaleY(.22)}96%{transform:scaleY(1.05)}}
+.mk-roll{animation:mk-roll 2.4s ease-in-out infinite}
+@keyframes mk-roll{0%,100%{transform:translate(-1.6px,.4px)}50%{transform:translate(1.6px,-.6px)}}
+.mk-z{animation:mk-z 2.6s ease-in-out infinite}.mk-z2{animation-delay:.6s}
+@keyframes mk-z{0%,100%{opacity:.2;transform:translateY(2px)}50%{opacity:1;transform:translateY(-2px)}}
+.mk-bag .mk-tail{transform-origin:0% 100%}
+.mk-tail{transform-box:fill-box;transform-origin:0% 50%;animation:mk-tail 3.4s ease-in-out infinite}
+@keyframes mk-tail{0%,100%{transform:rotate(0)}50%{transform:rotate(-7deg)}}
+.mk-ear-r{transform-box:fill-box;transform-origin:30% 100%;animation:mk-ear 8s infinite}
+@keyframes mk-ear{0%,90%,100%{transform:rotate(0)}93%{transform:rotate(-9deg)}96%{transform:rotate(3deg)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <button class="chip" id="home">← Правила</button><span class="spacer"></span>
+  <span id="sndHost"></span>
+  <button class="chip" id="bulb" title="Открыть правило" hidden>💡 Правило</button>
+</header>
+<main id="scene"></main>
+<script>
+const Sound={ac:null,out:null,ensure(){try{if(!this.ac){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;
+  this.ac=new AC();const comp=this.ac.createDynamicsCompressor();comp.threshold.value=-10;comp.ratio.value=6;
+  this.out=this.ac.createGain();this.out.gain.value=1;this.out.connect(comp);comp.connect(this.ac.destination);}
+  if(this.ac.state==="suspended")this.ac.resume();return this.ac;}catch(e){return null;}}};
+let mkN = 0;
+/* moods: calm, grumpy, roll (eye-roll), happy, sleepy */
+function mashkaEyes(id, mood) {
+  const G = "#E0853F";
+  if (mood === "happy") return `<path d="M28.5 54 q6.5 -6.5 13 0 M58.5 54 q6.5 -6.5 13 0" stroke="#5A3A22" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  if (mood === "sleepy") return `<path d="M28.5 52 q6.5 4 13 0 M58.5 52 q6.5 4 13 0" stroke="#5A3A22" stroke-width="2" fill="none" stroke-linecap="round"/><text x="84" y="22" font-size="11" font-family="Comfortaa, sans-serif" fill="#8C9AA8" class="mk-z">z</text><text x="91" y="13" font-size="8" font-family="Comfortaa, sans-serif" fill="#8C9AA8" class="mk-z mk-z2">z</text>`;
+  const roll = mood === "roll", grumpy = mood === "grumpy";
+  const pupY = roll ? 49.2 : 54, pupR = roll ? "mk-roll" : "";
+  const lid = (cx, rot, cls) => `<g transform="rotate(${rot} ${cx} 46)"><rect class="${cls}" x="${cx - 9.5}" y="45.5" width="19" height="14" fill="${G}"/></g>`;
+  const lidCls = roll ? "mk-lid mk-lid-up" : "mk-lid";
+  const rot = grumpy ? 13 : 0;
+  let brows = "";
+  if (grumpy) brows = `<path d="M28.5 46.6 L42.5 50.2 M71.5 46.6 L57.5 50.2" stroke="#8C5A33" stroke-width="1.4" fill="none" stroke-linecap="round"/>`;
+  else if (roll) brows = `<path d="M29 43.5 q6 -3 12 0 M59 43.5 q6 -3 12 0" stroke="#8C5A33" stroke-width="1.3" fill="none" stroke-linecap="round"/>`;
+  return `<clipPath id="mkL${id}"><ellipse cx="35" cy="52" rx="6.6" ry="5.8"/></clipPath><clipPath id="mkR${id}"><ellipse cx="65" cy="52" rx="6.6" ry="5.8"/></clipPath>
+  <ellipse cx="35" cy="52" rx="6.6" ry="5.8" fill="#C9CF8C"/><ellipse cx="65" cy="52" rx="6.6" ry="5.8" fill="#C9CF8C"/>
+  <g class="${pupR}"><ellipse cx="36" cy="${pupY}" rx="2.3" ry="3.4" fill="#2A2A1F"/><ellipse cx="64" cy="${pupY}" rx="2.3" ry="3.4" fill="#2A2A1F"/>
+  <circle cx="37.4" cy="${pupY - 1.4}" r="1" fill="#FFF"/><circle cx="65.4" cy="${pupY - 1.4}" r="1" fill="#FFF"/></g>
+  <g clip-path="url(#mkL${id})">${lid(35, rot, lidCls)}</g><g clip-path="url(#mkR${id})">${lid(65, -rot, lidCls)}</g>${brows}`;
+}
+function mashkaHead(id, line, mood) {
+  mood = mood || "calm";
+  const ol = line ? 'stroke="#B9652B" stroke-width="1.5"' : '';
+  const mouth = mood === "happy" ? `<path d="M50 65.3 q-1 4 -5.5 3.6 M50 65.3 q1 4 5.5 3.6" stroke="#A07468" stroke-width="1.3" fill="none" stroke-linecap="round"/>`
+    : mood === "grumpy" ? `<path d="M46.4 69 q3.6 -2.6 7.2 0" stroke="#A07468" stroke-width="1.2" fill="none" stroke-linecap="round"/>`
+    : `<path d="M50 65.3 q0 3 -3.6 3.3 M50 65.3 q0 3 3.6 3.3" stroke="#A07468" stroke-width="1.1" fill="none" stroke-linecap="round"/>`;
+  return `<g class="mk-ear-l"><path d="M19 47 L9 15 L41 30 Z" fill="#E0853F" ${ol} stroke-linejoin="round"/><path d="M22 41 L15 22 L35 31 Z" fill="#F3C2AA"/><path d="M15 24 l4 3 M17 29 l4 2" stroke="#FBF7F1" stroke-width="1" stroke-linecap="round"/></g>
+  <g class="mk-ear-r"><path d="M81 47 L91 15 L59 30 Z" fill="#E0853F" ${ol} stroke-linejoin="round"/><path d="M78 41 L85 22 L65 31 Z" fill="#F3C2AA"/><path d="M85 24 l-4 3 M83 29 l-4 2" stroke="#FBF7F1" stroke-width="1" stroke-linecap="round"/></g>
+  <ellipse cx="50" cy="57" rx="38" ry="28.5" fill="#FBF7F1"/>
+  <path d="M12.6 62 C11.5 42 26 28.6 46.5 28.4 C46.4 34 46.6 39 47 43 C44 47 42.5 52 41 57 C38 61 31 64 24 66 C18 66.5 14 65 12.6 62 Z" fill="#E0853F"/>
+  <path d="M87.6 60 C88.6 41 74 28.6 53.5 28.4 C53.6 34 53.4 39 53 43 C56 47 57.5 51 59 55.5 C62 58.5 69 60.5 76 61.5 C81.5 62 85.5 61.5 87.6 60 Z" fill="#E0853F"/>
+  ${line ? '<ellipse cx="50" cy="57" rx="38" ry="28.5" fill="none" stroke="#B9652B" stroke-width="1.5"/>' : ""}
+  <path d="M31 35 q4 3 8 1 M61 36 q4 2 8 -1" stroke="#C96F32" stroke-width="2" fill="none" stroke-linecap="round"/>
+  ${mashkaEyes(id, mood)}
+  <path d="M47 62 L53 62 L50 65.3 Z" fill="#EBB0AE" stroke="#CF9290" stroke-width=".8" stroke-linejoin="round"/>
+  ${mouth}
+  <g stroke="#C9BFB0" stroke-width=".9" stroke-linecap="round" opacity=".95"><path d="M40 65 L11 60 M40 67.5 L11 70 M41 69.5 L15 77 M60 65 L89 60 M60 67.5 L89 70 M59 69.5 L85 77"/></g>`;
+}
+function mashkaSVG(kind, mood) {
+  const id = ++mkN;
+  if (kind === "head") return `<svg class="mashka mk-head" viewBox="8 6 86 82" aria-hidden="true">${mashkaHead(id, true, mood)}</svg>`;
+  if (kind === "bag") return `<svg class="mashka mk-bag" viewBox="0 0 170 120" aria-hidden="true">
+    <g class="mk-tail"><path d="M128 102 C150 100 156 84 146 74" fill="none" stroke="#E0853F" stroke-width="10" stroke-linecap="round"/>
+    <path d="M146 74 c-3 -4 -8 -3 -9 1" fill="none" stroke="#F2B57F" stroke-width="7" stroke-linecap="round"/></g>
+    <path d="M30 56 L132 56 L136 118 L26 118 Z" fill="#B98A55"/>
+    <g transform="translate(31 -2) scale(.96)">${mashkaHead(id, false, mood)}</g>
+    <path d="M24 62 L134 62 L138 118 L22 118 Z" fill="#D2A66F"/>
+    <path d="M24 62 L34 70 L44 62 L54 70 L64 62 L74 70 L84 62 L94 70 L104 62 L114 70 L124 62 L134 70 L134 62 Z" fill="#E2BC88"/>
+    <path d="M40 84 H120 M44 98 H116" stroke="#BF925A" stroke-width="2" stroke-linecap="round" opacity=".7"/>
+    <ellipse cx="62" cy="64" rx="9" ry="5.5" fill="#FBF7F1" stroke="#E2D9CC"/><ellipse cx="96" cy="64" rx="9" ry="5.5" fill="#FBF7F1" stroke="#E2D9CC"/>
+    <text x="80" y="104" text-anchor="middle" font-size="10" font-family="Caveat, cursive" fill="#8A6236">шурх-шурх</text>
+  </svg>`;
+  return `<svg class="mashka mk-loaf" viewBox="0 0 170 120" aria-hidden="true">
+    <g class="mk-tail"><path d="M150 96 C170 92 168 112 140 112 C120 112 104 110 96 108" fill="none" stroke="#E0853F" stroke-width="11" stroke-linecap="round"/>
+    <path d="M152 96 c8 -1 12 4 6 9" fill="none" stroke="#F2B57F" stroke-width="7" stroke-linecap="round"/></g>
+    <clipPath id="mkBody${id}"><ellipse cx="102" cy="82" rx="58" ry="30"/></clipPath>
+    <ellipse cx="102" cy="82" rx="58" ry="30" fill="#FBF7F1"/>
+    <path clip-path="url(#mkBody${id})" d="M40 40 H170 V92 C150 80 128 74 104 74 C84 74 66 70 52 62 Z" fill="#E0853F"/>
+    <path d="M78 64 C94 62 112 66 126 74" stroke="#C96F32" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".55"/>
+    <ellipse cx="102" cy="82" rx="58" ry="30" fill="none" stroke="#E6C3A2" stroke-width="1"/>
+    <ellipse cx="64" cy="90" rx="34" ry="22" fill="#FBF7F1"/>
+    <ellipse cx="52" cy="108" rx="12" ry="6.5" fill="#FBF7F1" stroke="#E2D9CC" stroke-width="1"/>
+    <ellipse cx="76" cy="109" rx="12" ry="6.5" fill="#FBF7F1" stroke="#E2D9CC" stroke-width="1"/>
+    <ellipse cx="47" cy="108" rx="5" ry="4" fill="#E0853F"/>
+    <g transform="translate(14 0) scale(1.02)">${mashkaHead(id, false, mood)}</g>
+    <path d="M38 81 Q65 99.5 92 81" fill="none" stroke="#E2D5C4" stroke-width="2" stroke-linecap="round"/>
+  </svg>`;
+}
+
+function purr() {
+  const ac = Sound.ensure(); if (!ac) return;
+  if (!Sound.brown) {
+    const len = Math.floor(ac.sampleRate * 2), buf = ac.createBuffer(1, len, ac.sampleRate), d = buf.getChannelData(0); let last = 0;
+    for (let i = 0; i < len; i++) { last = (last + 0.02 * (Math.random() * 2 - 1)) / 1.02; d[i] = last * 3.5; }
+    Sound.brown = buf;
+  }
+  /* a soft, slow purr: breathy low noise pulsing about 20 times a second, out-breath and in-breath */
+  const t0 = ac.currentTime + 0.03;
+  [[0, 1.35, 1.6, 19], [1.5, 1.0, 0.9, 21.5], [2.65, 1.35, 1.5, 19]].forEach(([st, dur, vol, rate]) => {
+    const s0 = t0 + st, src = ac.createBufferSource(); src.buffer = Sound.brown; src.loop = true;
+    const bp = ac.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 170; bp.Q.value = 0.8;
+    const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 520;
+    const am = ac.createGain(); am.gain.value = 0.5; const lfo = ac.createOscillator(); lfo.type = "sine"; lfo.frequency.value = rate;
+    const lg = ac.createGain(); lg.gain.value = 0.5; lfo.connect(lg); lg.connect(am.gain);
+    const env = ac.createGain(); env.gain.setValueAtTime(0.0001, s0); env.gain.linearRampToValueAtTime(vol, s0 + 0.3); env.gain.setValueAtTime(vol, s0 + dur - 0.35); env.gain.linearRampToValueAtTime(0.0001, s0 + dur);
+    src.connect(bp); bp.connect(lp); lp.connect(am); am.connect(env); env.connect(Sound.out);
+    src.start(s0); lfo.start(s0); src.stop(s0 + dur + 0.05); lfo.stop(s0 + dur + 0.05);
+  });
+}
+
+/* маленький салют из лапок */
+function paws(){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  for(let i=0;i<18;i++){
+    const p=document.createElement('span'); p.className='paw'; p.textContent=['🐾','🐾','✨','🧡'][Math.floor(Math.random()*4)];
+    p.style.left=(10+Math.random()*80)+'vw'; p.style.animationDelay=(Math.random()*.4)+'s';
+    p.style.setProperty('--dx',(Math.random()*60-30)+'px'); p.style.fontSize=(16+Math.random()*14)+'px';
+    document.body.appendChild(p); setTimeout(()=>p.remove(),2200);
+  }
+}
+
+/* ═══ ЗВУКИ И ОТКЛИК ИНТЕРФЕЙСА ═══
+   Одна мягкая «деревянно-стеклянная» палитра: всё тихое, короткое, без резких частот.
+   Ошибка — глухой мягкий звук, не «бззз»: ошибка не наказание.
+   Выключается кнопкой 🔊 в шапке, выбор общий для всего сайта (eng-sound). */
+const UI={
+  on(){ try{ return localStorage.getItem('eng-sound')!=='off'; }catch(e){ return true; } },
+  set(v){ try{ localStorage.setItem('eng-sound',v?'on':'off'); }catch(e){} },
+  tone(f,t,dur,vol,type){ const ac=Sound.ensure(); if(!ac||!this.on()) return;
+    const o=ac.createOscillator(), g=ac.createGain(), s=ac.currentTime+(t||0);
+    o.type=type||'sine'; o.frequency.setValueAtTime(f,s);
+    g.gain.setValueAtTime(0.0001,s); g.gain.exponentialRampToValueAtTime(vol||.12,s+0.008); g.gain.exponentialRampToValueAtTime(0.0001,s+dur);
+    o.connect(g); g.connect(Sound.out); o.start(s); o.stop(s+dur+0.02); },
+  vib(p){ try{ this.on()&&navigator.vibrate&&navigator.vibrate(p); }catch(e){} },
+  tap(){ this.tone(520,0,.06,.05,'triangle'); },
+  tick(){ this.tone(880,0,.05,.045,'triangle'); },
+  right(){ this.tone(784,0,.16,.1); this.tone(1175,.08,.22,.09); this.vib(12); },
+  wrong(){ this.tone(220,0,.18,.09,'sine'); this.tone(196,.07,.2,.07,'sine'); this.vib([25,40,25]); },
+  stage(){ [523,659,784].forEach((f,i)=>this.tone(f,i*.09,.22,.08)); },
+  finish(){ [523,659,784,1047].forEach((f,i)=>this.tone(f,i*.1,.3,.08)); this.tone(1319,.42,.5,.06); },
+  sparkle(){ [1568,2093,2637].forEach((f,i)=>this.tone(f,i*.06,.18,.04)); }
+};
+/* щелчок на любой обычной кнопке; у ответов и букв — свои звуки */
+document.addEventListener('pointerdown',e=>{
+  const b=e.target.closest('button,[role=button],.lesson,.pet,.box');
+  if(!b||b.matches('.opt,.key,.chipw')) return;
+  UI.tap();
+},true);
+/* плавная смена экранов */
+(function(){
+  const sc=document.getElementById('scene'); if(!sc||!window.MutationObserver) return;
+  let last=0;
+  new MutationObserver(()=>{ const now=Date.now(); if(now-last<120) return; last=now;
+    sc.classList.remove('enter'); void sc.offsetWidth; sc.classList.add('enter'); }).observe(sc,{childList:true});
+})();
+/* кнопка звука в шапке */
+function soundButton(host){
+  if(!host) return;
+  const b=document.createElement('button'); b.className='chip snd'; b.type='button';
+  const paint=()=>{ b.textContent=UI.on()?'🔊':'🔇'; b.setAttribute('aria-label',UI.on()?'Выключить звук':'Включить звук'); b.setAttribute('aria-pressed',String(!UI.on())); };
+  b.onclick=()=>{ UI.set(!UI.on()); paint(); if(UI.on()) UI.right(); };
+  paint(); host.appendChild(b);
+}
+
+</script>
+<script>
+/* ═══ ЧАСЫ ═══ */
+const NUM=['twelve','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve'];
+const MIN_EN={5:'five',10:'ten',15:'a quarter',20:'twenty',25:'twenty-five',30:'half'};
+const H_GEN=['двенадцатого','первого','второго','третьего','четвёртого','пятого','шестого','седьмого','восьмого','девятого','десятого','одиннадцатого','двенадцатого'];
+const H_NOM=['двенадцать','час','два','три','четыре','пять','шесть','семь','восемь','девять','десять','одиннадцать','двенадцать'];
+const MIN_RU_PAST={5:'пять минут',10:'десять минут',15:'четверть',20:'двадцать минут',25:'двадцать пять минут',30:'половина'};
+const MIN_RU_TO={5:'без пяти',10:'без десяти',15:'без четверти',20:'без двадцати',25:'без двадцати пяти'};
+const h12=h=>((h-1)%12+12)%12+1;
+function timeEn(h,m){ h=h12(h);
+  if(m===0) return `It's ${NUM[h]} o'clock`;
+  if(m<=30) return `It's ${MIN_EN[m]} past ${NUM[h]}`;
+  return `It's ${MIN_EN[60-m]} to ${NUM[h12(h+1)]}`; }
+function timeHtml(h,m){ h=h12(h);
+  if(m===0) return `It's ${NUM[h]} <mark class="past">o'clock</mark>`;
+  if(m<=30) return `It's ${MIN_EN[m]} <mark class="past">past</mark> ${NUM[h]}`;
+  return `It's ${MIN_EN[60-m]} <mark class="to">to</mark> ${NUM[h12(h+1)]}`; }
+function timeRu(h,m){ h=h12(h);
+  if(m===0) return `Ровно ${H_NOM[h]}`;
+  if(m<=30) return `${MIN_RU_PAST[m]} ${H_GEN[h12(h+1)]}`.replace(/^./,c=>c.toUpperCase());
+  return `${MIN_RU_TO[60-m]} ${H_NOM[h12(h+1)]}`.replace(/^./,c=>c.toUpperCase()); }
+const digital=(h,m)=>`${h12(h)}:${String(m).padStart(2,'0')}`;
+
+/* циферблат: halves=true — правая половина «past» зелёная, левая «to» рыжая */
+function clockSVG(h,m,o={}){
+  const cx=100,cy=100,R=88, a=(deg)=>(deg-90)*Math.PI/180;
+  let s=`<svg viewBox="${o.minuteLabels?'-22 -30 244 252':'0 0 200 200'}" class="${o.cls||''}" role="img" aria-label="${o.label||digital(h,m)}">`;
+  if(o.halves){
+    s+=`<path d="M100 100 L100 12 A88 88 0 0 1 100 188 Z" fill="var(--past-bg)"/>
+        <path d="M100 100 L100 188 A88 88 0 0 1 100 12 Z" fill="var(--to-bg)"/>
+        ${o.minuteLabels?`<text x="150" y="-14" text-anchor="middle" font-size="15" font-weight="700" fill="var(--past)" font-family="system-ui">past →</text>
+        <text x="50" y="-14" text-anchor="middle" font-size="15" font-weight="700" fill="var(--to)" font-family="system-ui">← to</text>`:''}`;
+  } else s+=`<circle cx="100" cy="100" r="${R}" fill="#fff"/>`;
+  s+=`<circle cx="100" cy="100" r="${R}" fill="none" stroke="var(--ink)" stroke-width="3"/>`;
+  for(let i=0;i<60;i++){ const big=i%5===0, r1=big?R-10:R-5, an=a(i*6);
+    s+=`<line x1="${cx+r1*Math.cos(an)}" y1="${cy+r1*Math.sin(an)}" x2="${cx+(R-1)*Math.cos(an)}" y2="${cy+(R-1)*Math.sin(an)}" stroke="var(--ink)" stroke-width="${big?2.2:.8}" stroke-opacity="${big?1:.5}"/>`; }
+  for(let i=1;i<=12;i++){ const an=a(i*30), r=R-22;
+    s+=`<text x="${cx+r*Math.cos(an)}" y="${cy+r*Math.sin(an)+5.5}" text-anchor="middle" font-size="${o.small?18:15}" font-family="Georgia,serif" fill="var(--ink)">${i}</text>`; }
+  if(o.minuteLabels) [[5,'5'],[10,'10'],[15,'¼'],[20,'20'],[25,'25'],[30,'½'],[35,'25'],[40,'20'],[45,'¼'],[50,'10'],[55,'5']].forEach(([mm,t])=>{
+    const an=a(mm*6), r=R+0; s+=`<text x="${cx+(R+13)*Math.cos(an)}" y="${cy+(R+13)*Math.sin(an)+4}" text-anchor="middle" font-size="12" font-weight="700" font-family="system-ui" fill="${mm<=30?'var(--past)':'var(--to)'}">${t}</text>`; });
+  const ha=a((h12(h)%12)*30+m*0.5), ma=a(m*6);
+  s+=`<line x1="100" y1="100" x2="${100+46*Math.cos(ha)}" y2="${100+46*Math.sin(ha)}" stroke="var(--ink)" stroke-width="7" stroke-linecap="round"/>
+      <line class="mhand" x1="100" y1="100" x2="${100+70*Math.cos(ma)}" y2="${100+70*Math.sin(ma)}" stroke="var(--clay)" stroke-width="4" stroke-linecap="round"/>
+      <circle cx="100" cy="100" r="5" fill="var(--ink)"/></svg>`;
+  return s;
+}
+
+/* ═══ УРОКИ ═══ */
+const LESSONS={
+ relative:{
+  icon:'👤', title:'Who, which, that', sub:'«который» — 3 вида заданий, много практики',
+  rule:()=>`<div class="card">
+    <div class="rule-row"><span class="pron p-who">who</span><div>про <b>людей</b><small>a girl <i>who</i> sings — девочка, которая поёт</small></div></div>
+    <div class="rule-row"><span class="pron p-which">which</span><div>про <b>вещи и животных</b><small>a cat <i>which</i> sleeps — кошка, которая спит</small></div></div>
+    <div class="rule-row"><span class="pron p-that">that</span><div>можно <b>и про людей, и про вещи</b><small>универсальное «который»</small></div></div>
+  </div>
+  <p class="sub">Запомнить просто: <b>who</b> — это «кто» (человек), <b>which</b> — «что» (предмет). Не уверена — бери <b>that</b>, он подходит всегда.</p>
+  <div class="card where"><p class="eyebrow" style="margin-bottom:10px">Где это встречается</p>
+    <div class="rule-row"><span class="ic2">📖</span><div><b>Определения слов</b> — в учебнике и словаре<small><i>A pedestrian is a person <b>who</b> walks in the street.</i></small></div></div>
+    <div class="rule-row"><span class="ic2">🧩</span><div><b>Загадки</b> — «угадай, что это»<small><i>It's a thing <b>which</b> keeps you safe in a car.</i></small></div></div>
+    <div class="rule-row"><span class="ic2">👉</span><div><b>Уточнить, о ком речь</b><small><i>The girl <b>who</b> sits next to me is my friend.</i></small></div></div>
+    <div class="rule-row"><span class="ic2">🔗</span><div><b>Склеить два предложения в одно</b><small><i>I have a cat. It sleeps all day.</i> → <i>I have a cat <b>which</b> sleeps all day.</i></small></div></div>
+  </div>`,
+  examples:[
+   {en:'A pedestrian is a person <mark class="who">who</mark> walks in the street.',ru:'📖 Пешеход — это человек, который идёт по улице.'},
+   {en:'A seat belt is a thing <mark class="which">which</mark> keeps you safe.',ru:'📖 Ремень безопасности — вещь, которая тебя защищает.'},
+   {en:'It\'s an animal <mark class="which">which</mark> says «wheek» and loves cucumbers. Who is it?',ru:'🧩 Животное, которое говорит «уи» и любит огурцы. Кто это? — Нико!'},
+   {en:'The girl <mark class="who">who</mark> sits next to me is my friend.',ru:'👉 Девочка, которая сидит рядом со мной, — моя подруга.'},
+   {en:'I have a cat. It sleeps all day. → I have a cat <mark class="which">which</mark> sleeps all day.',ru:'🔗 У меня есть кошка, которая спит весь день.'},
+   {en:'Iki is the hamster <mark class="that">that</mark> bites.',ru:'👉 Ики — тот хомяк, который кусается.'}
+  ],
+  tasks:()=>{
+   const sh=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+   const P=(q,who,tip)=>({type:'pick',q,ok:who?['who','that']:['which','that'],opts:['who','which','that'],tip});
+   const pick=[
+    P('A driver is a person ___ drives a car.',1,'«person» — человек → <b>who</b>. <b>that</b> тоже можно.'),
+    P('A bike lane is a road ___ is for bicycles.',0,'«road» — дорога, это вещь → <b>which</b> (или <b>that</b>).'),
+    P('I have a friend ___ lives in London.',1,'«friend» — человек → <b>who</b>.'),
+    P('Iki is a hamster ___ bites.',0,'Хомяк — животное, а про животных говорим <b>which</b>. Даже если он кусается.'),
+    P('This is the bus ___ goes to school.',0,'«bus» — вещь → <b>which</b>.'),
+    P('The teacher ___ helps us is very kind.',1,'«teacher» — человек → <b>who</b>.'),
+    P('A traffic warden is a man ___ helps people cross the road.',1,'«man» — человек → <b>who</b>.'),
+    P('Traffic lights are lights ___ tell us when to cross.',0,'«lights» — вещи → <b>which</b>.'),
+    P('Mum bought a cake ___ was very tasty.',0,'«cake» — вещь → <b>which</b>.'),
+    P('The boy ___ won the race is my brother.',1,'«boy» — человек → <b>who</b>.'),
+    P('Oxford Street is a street ___ has lots of shops.',0,'«street» — место, не человек → <b>which</b>.'),
+    P('A shop assistant is a person ___ works in a shop.',1,'«person» → <b>who</b>.')
+   ];
+   const riddle=[
+    {d:'It\'s a person ___ walks in the street.',w:1,a:'a pedestrian',o:['a pedestrian','a driver','a bicycle']},
+    {d:'It\'s a thing ___ you wear on your head when you ride a bike.',w:0,a:'a helmet',o:['a helmet','a seat belt','a pavement']},
+    {d:'It\'s a thing ___ keeps you safe in a car.',w:0,a:'a seat belt',o:['a seat belt','a handlebar','a bus lane']},
+    {d:'It\'s a person ___ drives a car.',w:1,a:'a driver',o:['a driver','a pedestrian','a traffic light']},
+    {d:'It\'s an animal ___ says «meow» and sleeps all day.',w:0,a:'a cat',o:['a cat','a guinea pig','a hamster']},
+    {d:'It\'s a place ___ people cross the road safely.',w:0,a:'a zebra crossing',o:['a zebra crossing','a bus lane','a pavement']},
+    {d:'It\'s a person ___ teaches children at school.',w:1,a:'a teacher',o:['a teacher','a driver','a shop assistant']}
+   ].map(r=>({type:'riddle',q:r.d,ok:r.w?['who','that']:['which','that'],opts:['who','which','that'],ans:r.a,aopts:r.o,
+     tip:r.w?'Речь о <b>человеке</b> → <b>who</b>.':'Речь о <b>вещи, месте или животном</b> → <b>which</b>.'}));
+   const join=[
+    {a:'I have a friend. She speaks English.',ok:'I have a friend who speaks English.',bad:['I have a friend which speaks English.','I have a friend who she speaks English.']},
+    {a:'This is a bike. It is very fast.',ok:'This is a bike which is very fast.',bad:['This is a bike who is very fast.','This is a bike which it is very fast.']},
+    {a:'I know a boy. He has three cats.',ok:'I know a boy who has three cats.',bad:['I know a boy which has three cats.','I know a boy who he has three cats.']},
+    {a:'We have a hamster. It runs in its wheel at night.',ok:'We have a hamster that runs in its wheel at night.',bad:['We have a hamster who it runs in its wheel at night.','We have a hamster that it runs in its wheel at night.']},
+    {a:'There is a shop. It sells toys.',ok:'There is a shop which sells toys.',bad:['There is a shop who sells toys.','There is a shop which it sells toys.']}
+   ].map(j=>({type:'join',q:j.a,ok:j.ok,opts:sh([j.ok,...j.bad]),
+     tip:'Две ловушки: 1) <b>who</b> — только для людей; 2) после who/which <b>не повторяем</b> he/she/it — слово «который» уже их заменило.'}));
+   return [...sh(pick).slice(0,5),...sh(riddle).slice(0,4),...sh(join).slice(0,3)];
+  }
+ },
+ time:{
+  icon:'🕒', title:'What time is it?', sub:'Время по часам: past и to',
+  rule:()=>`<div class="card" style="text-align:center">
+    ${clockSVG(4,10,{halves:true,minuteLabels:true,cls:'bigclock',label:'Правая половина — past, левая — to'})}
+    <p style="margin:0 0 6px">Смотри на <b style="color:var(--clay)">длинную стрелку</b>:</p>
+    <p style="margin:0"><mark class="past">справа — past</mark> «после»: <i>five <b>past</b> four</i> — пять минут пятого</p>
+    <p style="margin:6px 0 0"><mark class="to">слева — to</mark> «до»: <i>ten <b>to</b> five</i> — без десяти пять</p>
+  </div>
+  <div class="card">
+    <div class="rule-row"><span class="pron p-that" style="font-size:16px;min-width:100px">o'clock</span><div>ровно: <i>It's four o'clock</i><small>длинная стрелка на 12</small></div></div>
+    <div class="rule-row"><span class="pron p-which" style="font-size:16px;min-width:100px">a quarter</span><div>15 минут, четверть<small>quarter past / quarter to</small></div></div>
+    <div class="rule-row"><span class="pron p-who" style="font-size:16px;min-width:100px">half past</span><div>30 минут, половина<small>half past four — половина пятого</small></div></div>
+  </div>
+  <p class="sub">Главная ловушка: в <b>to</b> называем <b>следующий</b> час. 4:50 — это <i>ten to <b>five</b></i>, «без десяти пять».</p>`,
+  examples:[[3,0],[4,5],[7,15],[9,30],[2,45],[11,50],[6,20],[1,35]].map(([h,m])=>({clock:[h,m],en:timeHtml(h,m),say:timeEn(h,m),ru:`${digital(h,m)} — ${timeRu(h,m)}`})),
+  tasks:()=>{
+    const R=(a)=>a[Math.floor(Math.random()*a.length)], hr=()=>1+Math.floor(Math.random()*12);
+    const plan=[[0],[30],[15,45],[5,10,20,25],[35,40,50,55],[5,10,20,25,35,40,50,55]];
+    const T=[];
+    // 1-2: ровно и половина — часы → фраза
+    [[0],[30],[15],[45],[R([5,10,20,25])],[R([35,40,50,55])]].forEach(([m])=>{ const h=hr(); T.push(readTask(h,m)); });
+    // 7-8: фраза → часы
+    T.push(pickClockTask(hr(),R([15,45,30]))); T.push(pickClockTask(hr(),R([5,10,20,25,35,40,50,55])));
+    // 9-10: поставь стрелку сама
+    T.push(setTask(hr(),R([5,10,15,20,25,30]))); T.push(setTask(hr(),R([35,40,45,50,55])));
+    return T;
+  }
+ }
+};
+/* формы заданий для времени */
+function wrongTimes(h,m){ const S=new Set([`${h}:${m}`]), out=[];
+  const cand=[[h,(m+30)%60],[h12(h+1),m],[h,(60-m)%60],[h12(h-1),m],[h,(m+15)%60],[h12(h+1),(60-m)%60]];
+  for(const [a,b] of cand){ const k=`${a}:${b}`; if(!S.has(k)){S.add(k); out.push([a,b]);} if(out.length===2)break; } return out; }
+function readTask(h,m){ const opts=[[h,m],...wrongTimes(h,m)].sort(()=>Math.random()-.5);
+  return {type:'read',h,m,opts,tip:m===0?'Длинная стрелка на 12 — значит ровно: <b>o\'clock</b>.'
+    : m<=30?`Длинная стрелка <b>справа</b> → <b>past</b>, час — тот, что уже прошёл: ${NUM[h]}.`
+    : `Длинная стрелка <b>слева</b> → <b>to</b>, и час — <b>следующий</b>: ${NUM[h12(h+1)]}.`}; }
+function pickClockTask(h,m){ const opts=[[h,m],...wrongTimes(h,m)].sort(()=>Math.random()-.5);
+  return {type:'clock',h,m,opts,tip:m<=30?'<b>past</b> — длинная стрелка в правой половине.':'<b>to</b> — длинная стрелка в левой половине, а короткая почти дошла до следующего часа.'}; }
+function setTask(h,m){ return {type:'set',h,m,tip:m<=30?'past — крути длинную стрелку вправо от 12.':'to — длинная стрелка в левой половине: 12 минус столько минут.'}; }
+
+/* ═══ ОЗВУЧКА ═══ */
+let enV=null; const pickV=()=>{const v=speechSynthesis.getVoices(); enV=v.find(x=>x.lang==='en-GB')||v.find(x=>x.lang.startsWith('en'))||null;};
+try{ pickV(); speechSynthesis.addEventListener('voiceschanged',pickV); }catch(e){}
+function say(t){ try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t.replace(/<[^>]+>/g,'')); u.lang='en-GB'; u.rate=.85; if(enV)u.voice=enV; speechSynthesis.speak(u);}catch(e){} }
+
+/* ═══ ХРАНИЛИЩЕ ═══ */
+const RS={get(){try{return JSON.parse(localStorage.getItem('rules'))||{}}catch(e){return{}}},
+  set(id,v){const d=this.get(); d[id]={...(d[id]||{}),...v}; try{localStorage.setItem('rules',JSON.stringify(d))}catch(e){}}};
+
+/* ═══ ЭКРАНЫ ═══ */
+const scene=document.getElementById('scene'), homeBtn=document.getElementById('home'), bulb=document.getElementById('bulb');
+let L=null, LID=null, tasks=[], ti=0, score=0, firstTry=true;
+const mascot=(mood,text)=>`<div class="cat" onclick="purr()"><div class="mk-pic">${mashkaSVG('loaf',mood)}</div><div class="bubble"><b>Машка</b>${text}</div></div>`;
+function enter(){ scene.classList.remove('enter'); void scene.offsetWidth; scene.classList.add('enter'); window.scrollTo(0,0); }
+
+function list(){
+  L=null; bulb.hidden=true; homeBtn.style.visibility='hidden';
+  try{ if(location.hash) history.replaceState(null,'',location.pathname); }catch(e){}
+  const d=RS.get();
+  scene.innerHTML=`<p class="eyebrow">Мини-уроки</p><h1>Правила</h1>
+    <p class="sub">Коротко, с картинкой и примерами. Потом — задания. Ошибся — подскажу, почему.</p>
+    <ul class="lessons">${Object.entries(LESSONS).map(([id,l])=>`<li><button data-id="${id}"><span class="ic">${l.icon}</span>
+      <span><b>${l.title}</b><small>${l.sub}</small></span><span class="score">${d[id]&&d[id].best!=null?`${d[id].best}/${d[id].of}`:''}</span></button></li>`).join('')}
+      ${['to be — am, is, are','have got / has got','can, could, be able to','will — будущее время','Present Simple и Continuous','Как произносить: th, w, r…']
+        .map(t=>`<li><button class="soon" disabled><span class="ic">⏳</span><span><b>${t}</b><small>скоро</small></span><span></span></button></li>`).join('')}</ul>`;
+  scene.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>open(b.dataset.id));
+  enter();
+}
+function open(id){ L=LESSONS[id]; LID=id; homeBtn.style.visibility='visible'; bulb.hidden=false; ruleScreen(); }
+function ruleScreen(){
+  scene.innerHTML=`<p class="eyebrow">Правило · шаг 1 из 3</p><h1>${L.title}</h1>${L.rule()}
+    <button class="next" id="go">Смотреть примеры</button>`;
+  document.getElementById('go').onclick=examples; enter();
+}
+function examples(){
+  scene.innerHTML=`<p class="eyebrow">Примеры · шаг 2 из 3</p><h2>Нажми на пример — услышишь</h2>
+    ${L.examples.map((e,i)=>`<button class="ex" data-i="${i}">${e.clock?`<span style="width:64px;flex:none">${clockSVG(e.clock[0],e.clock[1],{small:true})}</span>`:'<span class="spk">🔊</span>'}
+      <span><span class="en">${e.en}</span><span class="ru">${e.ru}</span></span></button>`).join('')}
+    <button class="next" id="go">К заданиям</button>`;
+  scene.querySelectorAll('.ex').forEach(b=>b.onclick=()=>{ const e=L.examples[+b.dataset.i]; say(e.say||e.en); });
+  document.getElementById('go').onclick=()=>{ tasks=L.tasks(); ti=0; score=0; task(); }; enter();
+}
+function rail(){ return `<div class="rail">${tasks.map((_,i)=>`<i class="${i<ti?'done':i===ti?'now':''}"></i>`).join('')}</div>`; }
+function task(){
+  if(ti>=tasks.length) return result();
+  const t=tasks[ti]; firstTry=true;
+  let body='';
+  if(t.type==='pick'){
+    const [a,b]=t.q.split('___');
+    body=`<p class="q">${a}<span class="gap" id="gap">&nbsp;</span>${b}</p>
+      <div class="opts row">${t.opts.map(o=>`<button class="opt" data-v="${o}">${o}</button>`).join('')}</div>`;
+  } else if(t.type==='riddle'){
+    body=`<p class="eyebrow">🧩 Загадка: вставь слово и угадай</p><p class="q">${t.q.replace('___','<span class="gap" id="gap">&nbsp;</span>')}</p>
+      <div class="opts row">${t.opts.map(o=>`<button class="opt" data-v="${o}">${o}</button>`).join('')}</div><div id="guess"></div>`;
+  } else if(t.type==='join'){
+    body=`<p class="eyebrow">🔗 Склей в одно предложение</p><p class="q">${t.q}</p>
+      <div class="opts">${t.opts.map(o=>`<button class="opt" data-v="${o}" style="text-align:left;font-size:16px">${o}</button>`).join('')}</div>`;
+  } else if(t.type==='read'){
+    body=`<p class="q" style="text-align:center;font-size:18px">Который час?</p>${clockSVG(t.h,t.m,{cls:'bigclock'})}
+      <div class="opts">${t.opts.map(([h,m])=>`<button class="opt" data-v="${h}:${m}">${timeEn(h,m)}</button>`).join('')}</div>`;
+  } else if(t.type==='clock'){
+    body=`<p class="q" style="text-align:center">${timeEn(t.h,t.m)}<br><small style="font:14px var(--f-body);color:var(--dim)">Выбери часы</small></p>
+      <div class="opts row">${t.opts.map(([h,m])=>`<button class="opt clockopt" data-v="${h}:${m}">${clockSVG(h,m,{small:true})}</button>`).join('')}</div>`;
+  } else if(t.type==='set'){
+    t.cur=[t.h,0];
+    body=`<p class="q" style="text-align:center">Поставь стрелки: <b>${timeEn(t.h,t.m).replace("It's ","")}</b></p>
+      <div id="clk">${clockSVG(t.h,0,{cls:'bigclock'})}</div>
+      <div class="setter"><button data-d="-60">− час</button><button data-d="-5">− 5 мин</button><button data-d="5">+ 5 мин</button><button data-d="60">+ час</button></div>
+      <button class="next" id="check">Проверить</button>`;
+  }
+  scene.innerHTML=`${rail()}<p class="eyebrow" style="margin-top:12px">Задание ${ti+1} из ${tasks.length}</p>${body}<div id="fb"></div>`;
+  if(t.type==='set'){
+    const clk=document.getElementById('clk');
+    const draw=()=>{ clk.innerHTML=clockSVG(t.cur[0],t.cur[1],{cls:'bigclock'}); };
+    scene.querySelectorAll('.setter button').forEach(b=>b.onclick=()=>{ let tot=(t.cur[0]%12)*60+t.cur[1]+ +b.dataset.d; tot=(tot+720)%720;
+      t.cur=[Math.floor(tot/60)||12, tot%60]; UI.tick(); draw(); });
+    document.getElementById('check').onclick=()=>{
+      // «to» — правильный час на циферблате тот же, что в цифрах (4:50 — короткая стрелка почти у 5)
+      const ok=h12(t.cur[0])===h12(t.h)&&t.cur[1]===t.m;
+      answer(ok, ok?null:`Сейчас на часах ${digital(t.cur[0],t.cur[1])} — это <i>${timeEn(t.cur[0],t.cur[1]).replace("It's ","")}</i>. ${t.tip}`, `${timeEn(t.h,t.m)} = ${digital(t.h,t.m)}`);
+    };
+  } else {
+    scene.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+      const v=b.dataset.v;
+      if(b.closest('#guess')) return;
+      const ok= (t.type==='pick'||t.type==='riddle') ? t.ok.includes(v) : t.type==='join' ? v===t.ok : v===`${t.h}:${t.m}`;
+      if(ok&&t.type==='riddle'){ b.classList.add('right'); scene.querySelectorAll('.opts .opt').forEach(x=>x.disabled=true);
+        document.getElementById('gap').textContent=v; UI.tick();
+        const g=document.getElementById('guess');
+        g.innerHTML=`<p class="sub" style="margin:16px 0 8px">Верно! А теперь — что это?</p><div class="opts">${t.aopts.map(o=>[Math.random(),o]).sort((p,q)=>p[0]-q[0]).map(x=>`<button class="opt" data-a="${x[1]}">${x[1]}</button>`).join('')}</div>`;
+        g.querySelectorAll('.opt').forEach(x=>x.onclick=()=>{
+          if(x.dataset.a===t.ans){ x.classList.add('right'); g.querySelectorAll('.opt').forEach(y=>y.disabled=true);
+            say(t.q.replace('___',v)+' '+t.ans); answer(true,null,`${t.q.replace('___','<b>'+v+'</b>')} — <b>${t.ans}</b>`); }
+          else { x.classList.add('wrong'); x.disabled=true; UI.wrong(); firstTry=false; } });
+        return; }
+      if(ok){ b.classList.add('right'); scene.querySelectorAll('.opt').forEach(x=>x.disabled=true);
+        if(t.type==='pick'){ document.getElementById('gap').textContent=v; say(t.q.replace('___',v)); } else if(t.type==='join') say(v); else say(timeEn(t.h,t.m));
+        const extra= t.type==='pick'&&t.ok.length>1 ? (v==='that'?`Можно и <b>${t.ok[0]}</b>.`:'<b>that</b> тоже подошло бы.') : (t.type==='join'?'Одно предложение вместо двух — так и говорят.':t.type!=='pick'?`${digital(t.h,t.m)} — ${timeRu(t.h,t.m)}.`:'');
+        answer(true,null,extra);
+      } else { b.classList.add('wrong'); b.disabled=true; answer(false,t.tip); }
+    });
+  }
+  enter();
+}
+function answer(ok,tip,extra){
+  const fb=document.getElementById('fb');
+  if(ok){ UI.right(); if(firstTry) score++;
+    fb.innerHTML=`${extra?`<p class="sub" style="margin:14px 0 0">✓ ${extra}</p>`:''}<button class="next" id="nx">Дальше</button>`;
+    document.getElementById('nx').onclick=()=>{ ti++; task(); };
+    const ch=document.getElementById('check'); if(ch) ch.remove();
+  } else { UI.wrong(); firstTry=false;
+    fb.innerHTML=`<div class="tip"><b>💡 Почему</b>${tip}</div>`; }
+}
+function result(){
+  const of=tasks.length, prev=RS.get()[LID]||{};
+  RS.set(LID,{best:Math.max(prev.best||0,score),of,at:Date.now()});
+  const all=score===of; UI.finish(); if(all) setTimeout(paws,200);
+  scene.innerHTML=`<p class="eyebrow">Итог</p><p class="tally">${all?'Всё с первого раза!':`С первого раза: ${score} из ${of}`}</p>
+    ${mascot(all?'happy':'calm', all?'Чисто. Правило у тебя в лапах. Мур.' : score>=of*0.6?'Ошибки были, но ты разобралась, почему. Так правило и запоминается.' : 'Это правило с подвохом. Посмотри ещё раз картинку 💡 и попробуй снова — во второй раз всегда легче.')}
+    <button class="next" id="again">Ещё раз — задания будут другие</button>
+    <button class="ghost" id="rule">💡 Посмотреть правило</button>
+    <button class="ghost" id="back">← Все правила</button>`;
+  document.getElementById('again').onclick=()=>{ tasks=L.tasks(); ti=0; score=0; task(); };
+  document.getElementById('rule').onclick=ruleScreen;
+  document.getElementById('back').onclick=list; enter();
+}
+bulb.onclick=()=>{ if(!L) return;
+  const bg=document.createElement('div'); bg.style.cssText='position:fixed;inset:0;z-index:50;background:rgba(18,36,28,.4);display:flex;align-items:flex-end;justify-content:center';
+  bg.innerHTML=`<div style="background:var(--paper);width:min(600px,100%);max-height:86vh;overflow:auto;border-radius:18px 18px 0 0;padding:18px max(16px,env(safe-area-inset-left,0px)) calc(18px + env(safe-area-inset-bottom,0px))">
+    <p class="eyebrow">💡 Правило</p><h2>${L.title}</h2>${L.rule()}<button class="next" id="cl">Понятно</button></div>`;
+  document.body.appendChild(bg); bg.querySelector('#cl').onclick=()=>bg.remove(); bg.onclick=e=>{ if(e.target===bg) bg.remove(); };
+};
+homeBtn.onclick=list;
+soundButton(document.getElementById('sndHost'));
+(function start(){ const id=(location.hash||'').slice(1); if(LESSONS[id]) open(id); else list(); })();
+
+</script>
+</body>
+</html>
