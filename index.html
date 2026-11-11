@@ -42,6 +42,7 @@ h2{font:600 12px/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;c
 .lesson:hover{border-color:var(--moss)}
 .lesson:focus-visible{outline:2px solid var(--moss);outline-offset:2px}
 .tag{font:600 13px/1 var(--f-body);color:var(--moss);background:#e5efe7;border-radius:10px;height:44px;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}
+.lesson.text.own .tag{color:var(--moss);background:#e5efe7;font-size:22px}
 .lesson.text .tag{color:#9a5a24;background:#f8e7d6}
 .l-title{font:400 19px/1.25 var(--f-display);display:block}
 .l-sub{font-size:13px;color:var(--dim);display:block;margin-top:2px}
@@ -275,16 +276,19 @@ const LESSONS=[
  {type:'text',file:'l/tekst-oxford.html',tag:'Text',title:'Oxford Street',sub:'Famous Streets · 2 кусочка',key:'oxford-text',total:2},
  {type:'text',file:'l/tekst-uk-1d.html',tag:'1d',title:'The United Kingdom',sub:'Culture Corner · 4 кусочка',key:'uk-1d',total:4},
  {type:'text',file:'l/tekst-london.html',tag:'Text',title:'London',sub:'Текст про Лондон · 6 кусочков',key:'london-text',total:6}
+ {type:'own',file:'l/svoy-tekst.html',tag:'＋',title:'Свой текст',sub:'Вставь любой текст или песню — тренажёр соберётся сам',key:'own-texts',total:0},
 ];
 function progress(l){
   try{
     const d=JSON.parse(localStorage.getItem(l.key)||'null'); if(!d) return 0;
+    if(l.type==='own') return Array.isArray(d)?d.length:0;
     if(l.type==='text') return (d.done||[]).length;
     return Object.values(d).filter(w=>w&&w.learned).length;
   }catch(e){ return 0; }
 }
 function render(){
   const make=l=>{
+    if(l.type==='own'){ const k=progress(l); return `<button class="lesson text own" data-file="${l.file}" data-title="${l.title}"><span class="tag">${l.tag}</span><span><span class="l-title">${l.title}</span><span class="l-sub">${k?`Мои тексты: ${k}`:l.sub}</span></span><span class="l-go" aria-hidden="true">›</span></button>`; }
     const n=Math.min(progress(l),l.total), pct=Math.round(n/l.total*100);
     const unit=l.type==='text'?'кусочков':'слов';
     return `<button class="lesson ${l.type}" data-file="${l.file}" data-title="${l.title}">
@@ -295,7 +299,7 @@ function render(){
       <span class="l-go" aria-hidden="true">›</span></button>`;
   };
   document.getElementById('words').innerHTML=LESSONS.filter(l=>l.type==='words').map(make).join('');
-  document.getElementById('texts').innerHTML=LESSONS.filter(l=>l.type==='text').map(make).join('');
+  document.getElementById('texts').innerHTML=LESSONS.filter(l=>l.type==='text'||l.type==='own').map(make).join('');
   document.querySelectorAll('.lesson').forEach(b=>b.onclick=()=>openLesson(b.dataset.file,b.dataset.title));
 }
 const player=document.getElementById('player'), frame=document.getElementById('frame');

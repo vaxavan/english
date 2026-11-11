@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#12241c">
+<title>Свой текст</title>
+<style>
+:root{--ink:#12241c;--paper:#f2efe6;--chalk:#e8e3d5;--moss:#2f6b46;--clay:#b4573a;
+  --dim:#7b8a80;--line:rgba(18,36,28,.14)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{background:var(--paper);color:var(--ink);font:16px/1.5 Georgia,serif;
+  display:flex;flex-direction:column;
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+header{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.brand{font:13px/1 system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.spacer{flex:1}
+.chip{font:13px/1 system-ui,sans-serif;border:1px solid var(--line);border-radius:999px;
+  padding:7px 12px;background:#fff;color:var(--dim)}
+.rail{display:flex;gap:4px;padding:12px 18px 0}
+.rail i{flex:1;height:3px;background:var(--chalk);border-radius:2px}
+.rail i.done{background:var(--moss)} .rail i.now{background:var(--ink)}
+.stage{font:12px/1 system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--dim);padding:11px 18px 0}
+main{flex:1;display:flex;flex-direction:column;justify-content:center;
+  padding:10px 18px 28px;max-width:660px;width:100%;margin:0 auto}
+.eyebrow{font:12px/1 system-ui,sans-serif;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--dim);margin:0 0 8px}
+h1{font-size:clamp(28px,7.5vw,40px);font-weight:400;margin:0 0 10px;line-height:1.15}
+.en{font-size:clamp(22px,5.6vw,30px);line-height:1.35;margin:0 0 10px}
+.tr{font:15px/1.4 system-ui,sans-serif;color:var(--moss);margin:0 0 6px}
+.ru{font:16px/1.45 system-ui,sans-serif;color:var(--ink);margin:0 0 18px}
+.sub{color:var(--dim);font:15px/1.45 system-ui,sans-serif;margin:0 0 18px}
+.speak{display:inline-flex;gap:8px;margin:0 0 20px;border:1px solid var(--line);border-radius:999px;
+  padding:8px 16px;background:#fff;font:14px/1 system-ui,sans-serif;color:var(--dim)}
+.next{margin-top:22px;width:100%;padding:16px;border-radius:12px;background:var(--ink);
+  color:var(--paper);font:16px/1 system-ui,sans-serif}
+.ghostbtn{margin-top:12px;width:100%;padding:12px;color:var(--dim);font:14px/1.35 system-ui,sans-serif}
+.line{min-height:64px;border-bottom:2px solid var(--ink);padding:4px 2px 12px;margin-bottom:18px;
+  font-size:clamp(19px,4.8vw,25px);line-height:1.5}
+.line.bad{border-color:var(--clay);animation:nudge .3s}
+@keyframes nudge{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.ghost{color:var(--chalk)}
+.sent{font-size:clamp(21px,5.4vw,29px);line-height:1.7;margin:0 0 14px}
+.wd{}
+.box{background:var(--chalk);border:1px solid var(--line);border-radius:7px;
+  padding:1px 13px;font-size:inherit;color:var(--dim);vertical-align:baseline}
+.box:active{transform:scale(.95)}
+.ctl{display:flex;gap:8px;margin:0 0 10px;flex-wrap:wrap}
+.ctl .speak{margin:0}
+.speak.on{background:var(--moss);border-color:var(--moss);color:#fff}
+.spd{border:1px solid var(--line);border-radius:999px;padding:7px 14px;background:#fff;
+  font:13px/1 system-ui,sans-serif;color:var(--dim)}
+.spd.on{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.bank{display:flex;flex-wrap:wrap;gap:8px}
+.chipw{padding:10px 13px;background:#fff;border:1px solid var(--line);border-radius:10px;
+  font-size:18px;font-family:Georgia,serif}
+.chipw.used{opacity:.25;pointer-events:none}
+.chipw.shake{animation:nudge .3s;border-color:var(--clay);color:var(--clay)}
+.blank{border-bottom:2px solid var(--moss);padding:0 14px;color:var(--moss)}
+.cat{display:flex;gap:12px;align-items:flex-start;margin:20px 0 0;cursor:pointer}
+.cat svg{flex:none}
+.bubble{position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;
+  padding:12px 14px;font:15px/1.4 system-ui,sans-serif;flex:1;margin-top:8px}
+.bubble::before{content:'';position:absolute;left:-7px;top:16px;width:12px;height:12px;background:#fff;
+  border-left:1px solid var(--line);border-bottom:1px solid var(--line);transform:rotate(45deg)}
+.blocks{list-style:none;padding:0;margin:20px 0 0;border-top:1px solid var(--line)}
+.blocks li{display:flex;justify-content:space-between;gap:12px;padding:13px 10px;margin:0 -10px;
+  border-bottom:1px solid var(--line);cursor:pointer}
+.blocks li.ok{color:var(--moss)}
+.blocks li b{font-weight:400}
+.blocks li span{font:13px/1 system-ui,sans-serif;color:var(--dim)}
+.pic{display:block;width:100%;max-height:18vh;object-fit:cover;border-radius:10px;margin:0 0 12px}
+.mic{width:100%;padding:16px;border-radius:12px;background:var(--moss);color:#fff;font:16px/1 system-ui,sans-serif;margin-top:22px}
+.mic.on{background:var(--clay)}
+.heard{font-size:clamp(20px,5vw,27px);line-height:1.5;margin:0 0 10px}
+.heard .ok{color:var(--moss)} .heard .miss{color:var(--clay);text-decoration:underline}
+.mk{align-items:center}
+.mk-pic{width:118px;flex:none}.mk-pic svg{width:100%;height:auto;display:block}
+.mk-name{display:block;font:600 12px/1.2 system-ui,sans-serif;color:var(--dim);letter-spacing:.04em;margin-bottom:2px}
+.cat.mk .bubble{margin-top:0}
+.chip.mkbtn{padding:2px 6px}.chip.mkbtn svg{width:30px;height:28px;display:block}
+.chip.mkbtn.off{opacity:.4}
+.mk-lid{transform-box:fill-box;transform-origin:50% 0;transform:scaleY(.42);animation:mk-blink 5.5s infinite}
+@keyframes mk-blink{0%,93%,100%{transform:scaleY(.42)}96%{transform:scaleY(1.05)}}
+.mk-lid-up{transform:scaleY(.22);animation:mk-blink-up 6s infinite}
+@keyframes mk-blink-up{0%,93%,100%{transform:scaleY(.22)}96%{transform:scaleY(1.05)}}
+.mk-roll{animation:mk-roll 2.4s ease-in-out infinite}
+@keyframes mk-roll{0%,100%{transform:translate(-1.6px,.4px)}50%{transform:translate(1.6px,-.6px)}}
+.mk-z{animation:mk-z 2.6s ease-in-out infinite}.mk-z2{animation-delay:.6s}
+@keyframes mk-z{0%,100%{opacity:.2;transform:translateY(2px)}50%{opacity:1;transform:translateY(-2px)}}
+.mk-bag .mk-tail{transform-origin:0% 100%}
+.mk-tail{transform-box:fill-box;transform-origin:0% 50%;animation:mk-tail 3.4s ease-in-out infinite}
+@keyframes mk-tail{0%,100%{transform:rotate(0)}50%{transform:rotate(-7deg)}}
+.mk-ear-r{transform-box:fill-box;transform-origin:30% 100%;animation:mk-ear 8s infinite}
+@keyframes mk-ear{0%,90%,100%{transform:rotate(0)}93%{transform:rotate(-9deg)}96%{transform:rotate(3deg)}}
+.own-lbl{display:block;font:600 12px/1 system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);margin:16px 0 6px}
+.own-in,.own-ta{width:100%;border:1px solid var(--line);border-radius:12px;padding:12px;font:16px/1.45 system-ui,sans-serif;background:#fff;color:var(--ink)}
+.own-ta{resize:vertical;min-height:180px}
+.own-in:focus,.own-ta:focus{outline:2px solid var(--moss);outline-offset:1px}
+.own-lines{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;max-height:46vh;overflow:auto}
+.own-lines li{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.own-lines li.off{opacity:.45}
+.own-lines label{display:flex;gap:10px;align-items:flex-start;font:14px/1.4 system-ui,sans-serif;cursor:pointer}
+.own-lines b{font-weight:500}.own-lines small{color:var(--dim)}
+.own-lines input{margin-top:3px;accent-color:var(--moss);width:18px;height:18px;flex:none}
+.own-actions{display:flex;gap:10px}.own-actions .ghostbtn{flex:1}
+button{transition:transform .12s ease,background-color .2s,border-color .2s}
+button:active:not([disabled]){transform:scale(.97)}
+#scene.enter{animation:enter .28s ease-out}
+@keyframes enter{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.chip.snd{padding:5px 9px;font-size:15px;line-height:1}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<header><button class="chip" id="home">← Список</button><span class="spacer"></span>
+  <button class="chip mkbtn" id="catBtn" title="Машка: показать или спрятать"></button></header>
+<div class="rail" id="rail"></div>
+<div class="stage" id="stageName"></div>
+<main id="scene"></main>
+
+<script>
+/* Текст учебника — только для личной подготовки.
+   В продаваемое приложение не переносить. */
+let TEXT=[];          // заполняется из сохранённого текста
+const PIC='';
+</script>
+
+<script>
+/* ═══ ХРАНИЛИЩЕ ═══ */
+const Store={k:'own-none',
+  all(){try{return JSON.parse(localStorage.getItem(this.k))||{done:[],cat:true}}catch(e){return{done:[],cat:true}}},
+  save(d){try{localStorage.setItem(this.k,JSON.stringify(d))}catch(e){}},
+  isDone(i){return this.all().done.includes(i)},
+  mark(i){const d=this.all(); if(!d.done.includes(i)){d.done.push(i);this.save(d);}},
+  catOn(){return this.all().cat!==false},
+  toggleCat(){const d=this.all();d.cat=!this.catOn();this.save(d);}
+};
+
+/* ═══ ОЗВУЧКА ═══ */
+let enV=null, ruV=null;
+const pick=()=>{const v=speechSynthesis.getVoices();
+  enV=v.find(x=>x.lang==='en-GB')||v.find(x=>x.lang.startsWith('en'))||null;
+  ruV=v.find(x=>x.lang.startsWith('ru'))||null;};
+pick(); speechSynthesis.addEventListener('voiceschanged',pick);
+function say(t){ if(!('speechSynthesis'in window))return; speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t); u.lang='en-GB';
+  u.rate=(typeof rate!=='undefined')?rate:.85;
+  if(enV)u.voice=enV; speechSynthesis.speak(u); }
+function catSay(t){ /* звери не говорят синтезатором — только звуки */ }
+
+
+/* ═══ МАШКА ═══ рыже-белая кошка из «Над чертой»: моргает, машет хвостом, мурлычет */
+const Sound={ac:null,out:null,ensure(){try{if(!this.ac){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;
+  this.ac=new AC();const comp=this.ac.createDynamicsCompressor();comp.threshold.value=-10;comp.ratio.value=6;
+  this.out=this.ac.createGain();this.out.gain.value=1;this.out.connect(comp);comp.connect(this.ac.destination);}
+  if(this.ac.state==="suspended")this.ac.resume();return this.ac;}catch(e){return null;}}};
+let mkN = 0;
+/* moods: calm, grumpy, roll (eye-roll), happy, sleepy */
+function mashkaEyes(id, mood) {
+  const G = "#E0853F";
+  if (mood === "happy") return `<path d="M28.5 54 q6.5 -6.5 13 0 M58.5 54 q6.5 -6.5 13 0" stroke="#5A3A22" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  if (mood === "sleepy") return `<path d="M28.5 52 q6.5 4 13 0 M58.5 52 q6.5 4 13 0" stroke="#5A3A22" stroke-width="2" fill="none" stroke-linecap="round"/><text x="84" y="22" font-size="11" font-family="Comfortaa, sans-serif" fill="#8C9AA8" class="mk-z">z</text><text x="91" y="13" font-size="8" font-family="Comfortaa, sans-serif" fill="#8C9AA8" class="mk-z mk-z2">z</text>`;
+  const roll = mood === "roll", grumpy = mood === "grumpy";
+  const pupY = roll ? 49.2 : 54, pupR = roll ? "mk-roll" : "";
+  const lid = (cx, rot, cls) => `<g transform="rotate(${rot} ${cx} 46)"><rect class="${cls}" x="${cx - 9.5}" y="45.5" width="19" height="14" fill="${G}"/></g>`;
+  const lidCls = roll ? "mk-lid mk-lid-up" : "mk-lid";
+  const rot = grumpy ? 13 : 0;
+  let brows = "";
+  if (grumpy) brows = `<path d="M28.5 46.6 L42.5 50.2 M71.5 46.6 L57.5 50.2" stroke="#8C5A33" stroke-width="1.4" fill="none" stroke-linecap="round"/>`;
+  else if (roll) brows = `<path d="M29 43.5 q6 -3 12 0 M59 43.5 q6 -3 12 0" stroke="#8C5A33" stroke-width="1.3" fill="none" stroke-linecap="round"/>`;
+  return `<clipPath id="mkL${id}"><ellipse cx="35" cy="52" rx="6.6" ry="5.8"/></clipPath><clipPath id="mkR${id}"><ellipse cx="65" cy="52" rx="6.6" ry="5.8"/></clipPath>
+  <ellipse cx="35" cy="52" rx="6.6" ry="5.8" fill="#C9CF8C"/><ellipse cx="65" cy="52" rx="6.6" ry="5.8" fill="#C9CF8C"/>
+  <g class="${pupR}"><ellipse cx="36" cy="${pupY}" rx="2.3" ry="3.4" fill="#2A2A1F"/><ellipse cx="64" cy="${pupY}" rx="2.3" ry="3.4" fill="#2A2A1F"/>
+  <circle cx="37.4" cy="${pupY - 1.4}" r="1" fill="#FFF"/><circle cx="65.4" cy="${pupY - 1.4}" r="1" fill="#FFF"/></g>
+  <g clip-path="url(#mkL${id})">${lid(35, rot, lidCls)}</g><g clip-path="url(#mkR${id})">${lid(65, -rot, lidCls)}</g>${brows}`;
+}
+function mashkaHead(id, line, mood) {
+  mood = mood || "calm";
+  const ol = line ? 'stroke="#B9652B" stroke-width="1.5"' : '';
+  const mouth = mood === "happy" ? `<path d="M50 65.3 q-1 4 -5.5 3.6 M50 65.3 q1 4 5.5 3.6" stroke="#A07468" stroke-width="1.3" fill="none" stroke-linecap="round"/>`
+    : mood === "grumpy" ? `<path d="M46.4 69 q3.6 -2.6 7.2 0" stroke="#A07468" stroke-width="1.2" fill="none" stroke-linecap="round"/>`
+    : `<path d="M50 65.3 q0 3 -3.6 3.3 M50 65.3 q0 3 3.6 3.3" stroke="#A07468" stroke-width="1.1" fill="none" stroke-linecap="round"/>`;
+  return `<g class="mk-ear-l"><path d="M19 47 L9 15 L41 30 Z" fill="#E0853F" ${ol} stroke-linejoin="round"/><path d="M22 41 L15 22 L35 31 Z" fill="#F3C2AA"/><path d="M15 24 l4 3 M17 29 l4 2" stroke="#FBF7F1" stroke-width="1" stroke-linecap="round"/></g>
+  <g class="mk-ear-r"><path d="M81 47 L91 15 L59 30 Z" fill="#E0853F" ${ol} stroke-linejoin="round"/><path d="M78 41 L85 22 L65 31 Z" fill="#F3C2AA"/><path d="M85 24 l-4 3 M83 29 l-4 2" stroke="#FBF7F1" stroke-width="1" stroke-linecap="round"/></g>
+  <ellipse cx="50" cy="57" rx="38" ry="28.5" fill="#FBF7F1"/>
+  <path d="M12.6 62 C11.5 42 26 28.6 46.5 28.4 C46.4 34 46.6 39 47 43 C44 47 42.5 52 41 57 C38 61 31 64 24 66 C18 66.5 14 65 12.6 62 Z" fill="#E0853F"/>
+  <path d="M87.6 60 C88.6 41 74 28.6 53.5 28.4 C53.6 34 53.4 39 53 43 C56 47 57.5 51 59 55.5 C62 58.5 69 60.5 76 61.5 C81.5 62 85.5 61.5 87.6 60 Z" fill="#E0853F"/>
+  ${line ? '<ellipse cx="50" cy="57" rx="38" ry="28.5" fill="none" stroke="#B9652B" stroke-width="1.5"/>' : ""}
+  <path d="M31 35 q4 3 8 1 M61 36 q4 2 8 -1" stroke="#C96F32" stroke-width="2" fill="none" stroke-linecap="round"/>
+  ${mashkaEyes(id, mood)}
+  <path d="M47 62 L53 62 L50 65.3 Z" fill="#EBB0AE" stroke="#CF9290" stroke-width=".8" stroke-linejoin="round"/>
+  ${mouth}
+  <g stroke="#C9BFB0" stroke-width=".9" stroke-linecap="round" opacity=".95"><path d="M40 65 L11 60 M40 67.5 L11 70 M41 69.5 L15 77 M60 65 L89 60 M60 67.5 L89 70 M59 69.5 L85 77"/></g>`;
+}
+function mashkaSVG(kind, mood) {
+  const id = ++mkN;
+  if (kind === "head") return `<svg class="mashka mk-head" viewBox="8 6 86 82" aria-hidden="true">${mashkaHead(id, true, mood)}</svg>`;
+  if (kind === "bag") return `<svg class="mashka mk-bag" viewBox="0 0 170 120" aria-hidden="true">
+    <g class="mk-tail"><path d="M128 102 C150 100 156 84 146 74" fill="none" stroke="#E0853F" stroke-width="10" stroke-linecap="round"/>
+    <path d="M146 74 c-3 -4 -8 -3 -9 1" fill="none" stroke="#F2B57F" stroke-width="7" stroke-linecap="round"/></g>
+    <path d="M30 56 L132 56 L136 118 L26 118 Z" fill="#B98A55"/>
+    <g transform="translate(31 -2) scale(.96)">${mashkaHead(id, false, mood)}</g>
+    <path d="M24 62 L134 62 L138 118 L22 118 Z" fill="#D2A66F"/>
+    <path d="M24 62 L34 70 L44 62 L54 70 L64 62 L74 70 L84 62 L94 70 L104 62 L114 70 L124 62 L134 70 L134 62 Z" fill="#E2BC88"/>
+    <path d="M40 84 H120 M44 98 H116" stroke="#BF925A" stroke-width="2" stroke-linecap="round" opacity=".7"/>
+    <ellipse cx="62" cy="64" rx="9" ry="5.5" fill="#FBF7F1" stroke="#E2D9CC"/><ellipse cx="96" cy="64" rx="9" ry="5.5" fill="#FBF7F1" stroke="#E2D9CC"/>
+    <text x="80" y="104" text-anchor="middle" font-size="10" font-family="Caveat, cursive" fill="#8A6236">шурх-шурх</text>
+  </svg>`;
+  return `<svg class="mashka mk-loaf" viewBox="0 0 170 120" aria-hidden="true">
+    <g class="mk-tail"><path d="M150 96 C170 92 168 112 140 112 C120 112 104 110 96 108" fill="none" stroke="#E0853F" stroke-width="11" stroke-linecap="round"/>
+    <path d="M152 96 c8 -1 12 4 6 9" fill="none" stroke="#F2B57F" stroke-width="7" stroke-linecap="round"/></g>
+    <clipPath id="mkBody${id}"><ellipse cx="102" cy="82" rx="58" ry="30"/></clipPath>
+    <ellipse cx="102" cy="82" rx="58" ry="30" fill="#FBF7F1"/>
+    <path clip-path="url(#mkBody${id})" d="M40 40 H170 V92 C150 80 128 74 104 74 C84 74 66 70 52 62 Z" fill="#E0853F"/>
+    <path d="M78 64 C94 62 112 66 126 74" stroke="#C96F32" stroke-width="2.5" fill="none" stroke-linecap="round" opacity=".55"/>
+    <ellipse cx="102" cy="82" rx="58" ry="30" fill="none" stroke="#E6C3A2" stroke-width="1"/>
+    <ellipse cx="64" cy="90" rx="34" ry="22" fill="#FBF7F1"/>
+    <ellipse cx="52" cy="108" rx="12" ry="6.5" fill="#FBF7F1" stroke="#E2D9CC" stroke-width="1"/>
+    <ellipse cx="76" cy="109" rx="12" ry="6.5" fill="#FBF7F1" stroke="#E2D9CC" stroke-width="1"/>
+    <ellipse cx="47" cy="108" rx="5" ry="4" fill="#E0853F"/>
+    <g transform="translate(14 0) scale(1.02)">${mashkaHead(id, false, mood)}</g>
+    <path d="M38 81 Q65 99.5 92 81" fill="none" stroke="#E2D5C4" stroke-width="2" stroke-linecap="round"/>
+  </svg>`;
+}
+function purr() {
+  const ac = Sound.ensure(); if (!ac) return;
+  if (!Sound.brown) {
+    const len = Math.floor(ac.sampleRate * 2), buf = ac.createBuffer(1, len, ac.sampleRate), d = buf.getChannelData(0); let last = 0;
+    for (let i = 0; i < len; i++) { last = (last + 0.02 * (Math.random() * 2 - 1)) / 1.02; d[i] = last * 3.5; }
+    Sound.brown = buf;
+  }
+  /* a soft, slow purr: breathy low noise pulsing about 20 times a second, out-breath and in-breath */
+  const t0 = ac.currentTime + 0.03;
+  [[0, 1.35, 1.6, 19], [1.5, 1.0, 0.9, 21.5], [2.65, 1.35, 1.5, 19]].forEach(([st, dur, vol, rate]) => {
+    const s0 = t0 + st, src = ac.createBufferSource(); src.buffer = Sound.brown; src.loop = true;
+    const bp = ac.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 170; bp.Q.value = 0.8;
+    const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 520;
+    const am = ac.createGain(); am.gain.value = 0.5; const lfo = ac.createOscillator(); lfo.type = "sine"; lfo.frequency.value = rate;
+    const lg = ac.createGain(); lg.gain.value = 0.5; lfo.connect(lg); lg.connect(am.gain);
+    const env = ac.createGain(); env.gain.setValueAtTime(0.0001, s0); env.gain.linearRampToValueAtTime(vol, s0 + 0.3); env.gain.setValueAtTime(vol, s0 + dur - 0.35); env.gain.linearRampToValueAtTime(0.0001, s0 + dur);
+    src.connect(bp); bp.connect(lp); lp.connect(am); am.connect(env); env.connect(Sound.out);
+    src.start(s0); lfo.start(s0); src.stop(s0 + dur + 0.05); lfo.stop(s0 + dur + 0.05);
+  });
+}
+const MK_TAP=["Мур. Ещё разок — и запомнишь.","Мяу. Это значит «ты молодец».","Я в пакете. Меня тут нет. Учи.","Не торопись. Я вот никогда не тороплюсь.",
+  "Учи по кусочку. Я тоже ем по кусочку. Мур.","Хочешь, я сяду на учебник? Нет? Тогда учим.","Ты справишься. Я в тебя верю. Мур.",
+  "*закатывает глаза* Heart — это «ха:т», а не «херт».","World — губы трубочкой. Как я, когда вижу корм.","Фрр. Хватит гладить, повторяй."];
+function mkTap(box){
+  purr();
+  const r=Math.random(), t=MK_TAP[Math.floor(Math.random()*MK_TAP.length)];
+  const pose=t.includes('пакете')?'bag':'loaf', mood=t.includes('закатывает')?'roll':t.startsWith('Фрр')?'grumpy':'calm';
+  box.querySelector('.mk-pic').innerHTML=mashkaSVG(pose,mood);
+  box.querySelector('.mk-say').textContent=t;
+}
+function cat(m,p){ if(!Store.catOn())return'';
+  const mood=m==='cheer'?'happy':(m||'calm');
+  return `<div class="cat mk" onclick="mkTap(this)">
+    <div class="mk-pic">${mashkaSVG('loaf',mood)}</div>
+    <div class="bubble"><b class="mk-name">Машка</b><span class="mk-say">${p}</span></div></div>`; }
+
+/* ═══ РАЗБОР ПРЕДЛОЖЕНИЯ ═══ */
+const words=s=>s.split(/\s+/);
+const bare=w=>w.replace(/[.,!?;:]/g,'');
+const firstLetters=s=>words(s).map(w=>{
+  const b=bare(w); const tail=w.slice(b.length);
+  return b[0]+'·'.repeat(Math.max(0,b.length-1))+tail;}).join(' ');
+
+const STAGES=[
+ {id:'shadow',n:'Повторяй за диктором'},
+ {id:'order', n:'Собери предложение'},
+ {id:'gaps',  n:'Заполни пропуски'},
+ {id:'recall',n:'Вспомни по первым буквам'}
+];
+
+/* служебные слова прячем первыми — смысл держится дольше */
+const FUNC=new Set(['a','an','the','is','are','of','in','on','to','for','and','it',"it's",
+  'its','with','there','very','this','that','at','as','be','where','over','next','but']);
+function hideOrder(W){
+  const f=[],c=[];
+  W.forEach((w,i)=>(FUNC.has(w.replace(/[.,!?;:]/g,'').toLowerCase())?f:c).push(i));
+  return [...f,...c];
+}
+
+let looping=false, rate=.8;
+function stopLoop(){ looping=false; speechSynthesis.cancel(); }
+function loopSay(text){
+  if(!looping) return;
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang='en-GB'; u.rate=rate; if(enV)u.voice=enV;
+  u.onend=()=>{ if(looping) setTimeout(()=>loopSay(text), 400+text.split(/\s+/).length*260); };
+  speechSynthesis.speak(u);
+}
+
+let block=-1, st=0, si=0;
+const scene=document.getElementById('scene'), rail=document.getElementById('rail'),
+      stageName=document.getElementById('stageName');
+
+
+/* ═══ СВОЙ ТЕКСТ ═══
+   Текст вставляется прямо на телефоне и хранится только там (localStorage 'own-texts').
+   Ничего не публикуется. Формат вставки — как обычно копируют песню с переводом:
+   строка по-английски, под ней (не обязательно) строка перевода по-русски.
+   Строки с матом по умолчанию пропускаются — галочкой можно вернуть. */
+const OWN_KEY='own-texts';
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function plural(n,a,b,c){const m=n%10,h=n%100; return m===1&&h!==11?a:m>=2&&m<=4&&(h<12||h>14)?b:c;}
+const loadOwn=()=>{try{return JSON.parse(localStorage.getItem(OWN_KEY))||[]}catch(e){return []}};
+const saveOwn=l=>{try{localStorage.setItem(OWN_KEY,JSON.stringify(l))}catch(e){}};
+const CYR=/[а-яё]/i;
+const RUDE=/\b(shit\w*|fuck\w*|motherf\w*|bitch\w*|asshole\w*|bastard\w*|dick\w*|cunt\w*|piss\w*|damn\w*|crap\w*|wtf)\b|бля|хуй|хуё|пизд|ебат|ёб|сука|говн|дерьм/i;
+let CUR=null;
+function parseRaw(raw){
+  const lines=raw.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+  const out=[];
+  for(const l of lines){
+    if(CYR.test(l)&&!/[a-z]{3,}/i.test(l.replace(/\([^)]*\)/g,''))){ if(out.length&&!out[out.length-1].ru) out[out.length-1].ru=l; continue; }
+    if(!/[a-z]/i.test(l)) continue;                    // числа, знаки — не тренируем
+    out.push({en:l,ru:''});
+  }
+  // подряд одинаковые строки (припев ×4) — оставляем одну
+  const dedup=out.filter((x,i)=>i===0||x.en.toLowerCase()!==out[i-1].en.toLowerCase());
+  return dedup.map(x=>({...x,skip:RUDE.test(x.en)||RUDE.test(x.ru)}));
+}
+function toBlocks(lines){
+  const keep=lines.filter(l=>!l.skip), B=[];
+  for(let i=0;i<keep.length;i+=4){
+    const s=keep.slice(i,i+4).map(l=>({en:l.en,ru:l.ru,tr:''}));
+    const first=s[0].en.split(/\s+/).slice(0,4).join(' ');
+    B.push({t:first.replace(/[,.!?;:]+$/,'')+'…',s});
+  }
+  return B;
+}
+function openText(id){
+  const t=loadOwn().find(x=>x.id===id); if(!t) return library();
+  CUR=t; TEXT=toBlocks(t.lines); Store.k='own-'+t.id;
+  try{localStorage.setItem('own-last',t.id)}catch(e){}
+  if(!TEXT.length) return editor(t.id);
+  menu();
+}
+function library(){
+  stopLoop(); CUR=null; block=-1; rail.innerHTML=''; stageName.textContent='';
+  document.getElementById('home').style.visibility='hidden';
+  const L=loadOwn();
+  scene.innerHTML=`<p class="eyebrow">Тренажёр текста</p><h1>Свой текст</h1>
+    <p class="sub">Вставь любой английский текст или песню — с переводом или без. Тренажёр соберётся сам.
+      Тексты хранятся только на этом телефоне.</p>
+    ${L.length?`<ul class="blocks">${L.map(t=>{const B=toBlocks(t.lines); let d=0; try{d=(JSON.parse(localStorage.getItem('own-'+t.id))||{done:[]}).done.length}catch(e){}
+      return `<li data-id="${t.id}" class="${B.length&&d===B.length?'ok':''}"><b>${esc(t.title)}</b><span>${d?`пройдено ${d} из ${B.length}`:B.length+' '+plural(B.length,'кусочек','кусочка','кусочков')}</span></li>`;}).join('')}</ul>`:''}
+    <button class="next" id="add">+ Добавить текст</button>`;
+  scene.querySelectorAll('.blocks li').forEach(li=>li.onclick=()=>openText(li.dataset.id));
+  document.getElementById('add').onclick=()=>editor(null);
+}
+function editor(id){
+  stopLoop(); block=-1; rail.innerHTML=''; stageName.textContent='';
+  document.getElementById('home').style.visibility='visible';
+  const L=loadOwn(), t=id?L.find(x=>x.id===id):null;
+  let lines=t?t.lines:[];
+  scene.innerHTML=`<p class="eyebrow">${t?'Изменить текст':'Новый текст'}</p><h1>${t?esc(t.title):'Свой текст'}</h1>
+    <label class="own-lbl" for="ownTitle">Название</label>
+    <input id="ownTitle" class="own-in" maxlength="60" placeholder="Например: песня 1985" value="${t?esc(t.title):''}">
+    <label class="own-lbl" for="ownRaw">Текст</label>
+    <textarea id="ownRaw" class="own-ta" rows="9" placeholder="Вставь сюда текст.
+Строка по-английски,
+под ней — перевод (можно без него)."></textarea>
+    <button class="ghostbtn" id="parse">Разобрать текст ↓</button>
+    <div id="preview"></div>
+    <button class="next" id="save">Сохранить и учить</button>
+    ${t?'<button class="ghostbtn" id="del">Удалить этот текст</button>':''}`;
+  const raw=document.getElementById('ownRaw');
+  if(t) raw.value=t.raw||'';
+  const pv=document.getElementById('preview');
+  function show(){
+    const rude=lines.filter(l=>l.skip).length;
+    pv.innerHTML=lines.length?`<p class="sub" style="margin:14px 0 6px">Строк: ${lines.length}. Сними галочку, чтобы строку не учить.
+      ${rude?`<br><b>Строки с грубыми словами уже сняты</b> — можно вернуть, если нужно.`:''}</p>
+      <ul class="own-lines">${lines.map((l,i)=>`<li class="${l.skip?'off':''}"><label><input type="checkbox" data-i="${i}" ${l.skip?'':'checked'}>
+        <span><b>${esc(l.en)}</b>${l.ru?`<br><small>${esc(l.ru)}</small>`:''}</span></label></li>`).join('')}</ul>`:'';
+    pv.querySelectorAll('input[type=checkbox]').forEach(c=>c.onchange=()=>{ lines[+c.dataset.i].skip=!c.checked; c.closest('li').classList.toggle('off',!c.checked); });
+  }
+  const doParse=()=>{ lines=parseRaw(raw.value); show(); };
+  document.getElementById('parse').onclick=doParse;
+  raw.addEventListener('paste',()=>setTimeout(doParse,50));
+  show();
+  document.getElementById('save').onclick=()=>{
+    if(!lines.length) doParse();
+    if(!lines.filter(l=>!l.skip).length){ raw.focus(); pv.insertAdjacentHTML('afterbegin','<p class="sub" style="color:var(--clay)">Вставь текст — хотя бы одну английскую строку.</p>'); return; }
+    const title=(document.getElementById('ownTitle').value.trim()||lines[0].en.split(/\s+/).slice(0,4).join(' ')).slice(0,60);
+    const all=loadOwn(), nid=t?t.id:Date.now().toString(36);
+    const rec={id:nid,title,raw:raw.value,lines,at:Date.now()};
+    const i=all.findIndex(x=>x.id===nid); if(i>=0) all[i]=rec; else all.push(rec);
+    saveOwn(all);
+    if(t){ try{localStorage.removeItem('own-'+nid)}catch(e){} }   // текст изменился — кусочки заново
+    openText(nid);
+  };
+  const del=document.getElementById('del');
+  if(del){ let armed=false; del.onclick=()=>{
+    if(!armed){ armed=true; del.textContent='Точно удалить? Нажми ещё раз'; del.style.color='var(--clay)'; return; }
+    saveOwn(loadOwn().filter(x=>x.id!==t.id)); try{localStorage.removeItem('own-'+t.id)}catch(e){} library(); }; }
+}
+function startOwn(){
+  const L=loadOwn(); let last=null; try{last=localStorage.getItem('own-last')}catch(e){}
+  if(last&&L.find(x=>x.id===last)) openText(last); else library();
+}
+/* ═══ ЗВУКИ И ОТКЛИК ИНТЕРФЕЙСА ═══
+   Одна мягкая «деревянно-стеклянная» палитра: всё тихое, короткое, без резких частот.
+   Ошибка — глухой мягкий звук, не «бззз»: ошибка не наказание.
+   Выключается кнопкой 🔊 в шапке, выбор общий для всего сайта (eng-sound). */
+const UI={
+  on(){ try{ return localStorage.getItem('eng-sound')!=='off'; }catch(e){ return true; } },
+  set(v){ try{ localStorage.setItem('eng-sound',v?'on':'off'); }catch(e){} },
+  tone(f,t,dur,vol,type){ const ac=Sound.ensure(); if(!ac||!this.on()) return;
+    const o=ac.createOscillator(), g=ac.createGain(), s=ac.currentTime+(t||0);
+    o.type=type||'sine'; o.frequency.setValueAtTime(f,s);
+    g.gain.setValueAtTime(0.0001,s); g.gain.exponentialRampToValueAtTime(vol||.12,s+0.008); g.gain.exponentialRampToValueAtTime(0.0001,s+dur);
+    o.connect(g); g.connect(Sound.out); o.start(s); o.stop(s+dur+0.02); },
+  vib(p){ try{ this.on()&&navigator.vibrate&&navigator.vibrate(p); }catch(e){} },
+  tap(){ this.tone(520,0,.06,.05,'triangle'); },
+  tick(){ this.tone(880,0,.05,.045,'triangle'); },
+  right(){ this.tone(784,0,.16,.1); this.tone(1175,.08,.22,.09); this.vib(12); },
+  wrong(){ this.tone(220,0,.18,.09,'sine'); this.tone(196,.07,.2,.07,'sine'); this.vib([25,40,25]); },
+  stage(){ [523,659,784].forEach((f,i)=>this.tone(f,i*.09,.22,.08)); },
+  finish(){ [523,659,784,1047].forEach((f,i)=>this.tone(f,i*.1,.3,.08)); this.tone(1319,.42,.5,.06); },
+  sparkle(){ [1568,2093,2637].forEach((f,i)=>this.tone(f,i*.06,.18,.04)); }
+};
+/* щелчок на любой обычной кнопке; у ответов и букв — свои звуки */
+document.addEventListener('pointerdown',e=>{
+  const b=e.target.closest('button,[role=button],.lesson,.pet,.box');
+  if(!b||b.matches('.opt,.key,.chipw')) return;
+  UI.tap();
+},true);
+/* плавная смена экранов */
+(function(){
+  const sc=document.getElementById('scene'); if(!sc||!window.MutationObserver) return;
+  let last=0;
+  new MutationObserver(()=>{ const now=Date.now(); if(now-last<120) return; last=now;
+    sc.classList.remove('enter'); void sc.offsetWidth; sc.classList.add('enter'); }).observe(sc,{childList:true});
+})();
+/* кнопка звука в шапке */
+function soundButton(host){
+  if(!host) return;
+  const b=document.createElement('button'); b.className='chip snd'; b.type='button';
+  const paint=()=>{ b.textContent=UI.on()?'🔊':'🔇'; b.setAttribute('aria-label',UI.on()?'Выключить звук':'Включить звук'); b.setAttribute('aria-pressed',String(!UI.on())); };
+  b.onclick=()=>{ UI.set(!UI.on()); paint(); if(UI.on()) UI.right(); };
+  paint(); host.appendChild(b);
+}
+
+try{ const h=document.querySelector('header'); const sp=document.createElement('span'); h.insertBefore(sp,document.getElementById('catBtn')); soundButton(sp);}catch(e){}
+
+/* ═══ ОГЛАВЛЕНИЕ ═══ */
+function menu(){
+  stopLoop();
+  block=-1; rail.innerHTML=''; stageName.textContent='';
+  document.getElementById('home').style.visibility='hidden';
+  const done=Store.all().done.length;
+  scene.innerHTML=`
+    <p class="eyebrow">Свой текст</p><h1>${esc(CUR.title)}</h1>
+    <p class="sub">${TEXT.length} ${plural(TEXT.length,'кусочек','кусочка','кусочков')}. В каждом: прочитать → собрать → заполнить пропуски →
+      вспомнить по первым буквам. Учится по одному, не всё сразу.${
+      done?`<br>Пройдено: ${done} из ${TEXT.length}.`:''}</p>
+    ${cat(done?'happy':'calm', done===TEXT.length?'Весь текст пройден. Расскажи мне его целиком — я послушаю. Мур.'
+      : done?'Ты вернулась! Продолжим с того кусочка, что ещё не пройден.':'Свой текст — смело. Учим по кусочку. Мур.')}
+    <ul class="blocks">${TEXT.map((b,i)=>`
+      <li class="${Store.isDone(i)?'ok':''}" data-i="${i}">
+        <b>${i+1}. ${b.t}</b>
+        <span>${Store.isDone(i)?'✓ пройдено':b.s.length+' предл.'}</span></li>`).join('')}</ul>
+    ${done===TEXT.length?`<button class="next" id="whole">Рассказать весь текст</button>`:''}
+    <button class="ghostbtn" id="listen">🔊 Послушать текст целиком</button>
+    <div class="own-actions"><button class="ghostbtn" id="toLib">← Мои тексты</button><button class="ghostbtn" id="edit">✎ Изменить текст</button></div>`;
+  document.getElementById('toLib').onclick=library;
+  document.getElementById('edit').onclick=()=>editor(CUR.id);
+  scene.querySelectorAll('.blocks li').forEach(li=>li.onclick=()=>{
+    block=+li.dataset.i; st=0; si=0; render();});
+  document.getElementById('listen').onclick=()=>
+    say(TEXT.flatMap(b=>b.s.map(x=>x.en)).join(' '));
+  const wh=document.getElementById('whole'); if(wh) wh.onclick=whole;
+}
+
+function drawRail(){
+  rail.innerHTML='';
+  STAGES.forEach((_,i)=>{const b=document.createElement('i');
+    if(i<st)b.className='done'; if(i===st)b.className='now'; rail.appendChild(b);});
+  stageName.textContent=STAGES[st]?STAGES[st].n:'';
+}
+function nextSentence(){
+  stopLoop();
+  si++;
+  if(si>=TEXT[block].s.length){ si=0; st++; }
+  if(st>=STAGES.length) return finishBlock();
+  render();
+}
+
+function render(){
+  if(block<0) return menu();
+  if(st>=STAGES.length) return finishBlock();
+  document.getElementById('home').style.visibility='visible';
+  drawRail();
+  const b=TEXT[block], S=b.s[si], stage=STAGES[st].id;
+  const head=`<p class="eyebrow">${b.t} · ${si+1} из ${b.s.length}</p>`;
+
+  if(stage==='shadow'){
+    const W=words(S.en), ord=hideOrder(W);
+    let n=0;                       // сколько слов закрыто
+    const shown=new Set();         // открытые вручную
+    scene.innerHTML=`${head}
+      <div class="sent" id="sent"></div>
+      ${S.tr?`<p class="tr">${S.tr}</p>`:''}${S.ru?`<p class="ru">${S.ru}</p>`:''}
+      <div class="ctl">
+        <button class="speak" id="play">🔊 Всё предложение</button>
+        <button class="speak" id="loop">🔁 Повтор</button>
+      </div>
+      <div class="ctl">
+        ${[['0.6','🐢'],['0.8','обычно'],['1','быстрее']].map(([v,l])=>
+          `<button class="spd${+v===rate?' on':''}" data-r="${v}">${l}</button>`).join('')}
+      </div>
+      <button class="next" id="more"></button>
+      <button class="ghostbtn" id="skip">Дальше</button>`;
+
+    const sent=document.getElementById('sent');
+    const hidden=()=>new Set(ord.slice(0,n).filter(i=>!shown.has(i)));
+    function paint(){
+      const H=hidden();
+      sent.innerHTML=W.map((w,i)=>H.has(i)
+        ? `<button class="box" data-i="${i}">${'▢'}</button>`
+        : `<span class="wd">${w}</span>`).join(' ');
+      sent.querySelectorAll('.box').forEach(b=>b.onclick=()=>{
+        shown.add(+b.dataset.i); paint();
+        say(W[+b.dataset.i]);
+      });
+      document.getElementById('more').textContent =
+        n>=W.length ? 'Всё закрыто — дальше' : 'Закрыть ещё пару слов';
+    }
+    paint();
+
+    document.getElementById('play').onclick=()=>{stopLoop(); say(S.en, rate<.7);};
+    const lb=document.getElementById('loop');
+    lb.onclick=()=>{
+      if(looping){ stopLoop(); lb.classList.remove('on'); lb.textContent='🔁 Повтор'; }
+      else{ looping=true; lb.classList.add('on'); lb.textContent='⏹ Стоп'; loopSay(S.en); }
+    };
+    scene.querySelectorAll('.spd').forEach(b=>b.onclick=()=>{
+      rate=+b.dataset.r;
+      scene.querySelectorAll('.spd').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on');
+      if(looping){ speechSynthesis.cancel(); loopSay(S.en); }
+    });
+    document.getElementById('more').onclick=()=>{
+      if(n>=W.length){ stopLoop(); return nextSentence(); }
+      n=Math.min(W.length, n+2); paint();
+    };
+    document.getElementById('skip').onclick=()=>{stopLoop(); nextSentence();};
+    say(S.en, rate<.7);
+    return;
+  }
+
+  if(stage==='order'){
+    const W=words(S.en), shuf=[...W.keys()].sort(()=>Math.random()-.5);
+    scene.innerHTML=`${head}<p class="ru">${S.ru}</p>
+      <div class="line" id="line"></div><div class="bank" id="bank"></div>
+      <button class="ghostbtn" id="sp2">🔊 Подсказать на слух</button>`;
+    let at=0;
+    const line=document.getElementById('line'), bank=document.getElementById('bank');
+    const paint=()=>line.innerHTML=W.slice(0,at).join(' ')+
+      (at<W.length?` <span class="ghost">${'·'.repeat(3)}</span>`:'');
+    shuf.forEach(idx=>{
+      const c=document.createElement('button'); c.className='chipw'; c.textContent=W[idx];
+      c.onclick=()=>{
+        if(W[idx]===W[at]){ at++; c.classList.add('used'); paint();
+          if(at===W.length){ say(S.en); setTimeout(nextSentence,800);} }
+        else{ c.classList.add('shake'); setTimeout(()=>c.classList.remove('shake'),300); }
+      };
+      bank.appendChild(c);
+    });
+    document.getElementById('sp2').onclick=()=>say(S.en);
+    paint(); return;
+  }
+
+  if(stage==='gaps'){
+    const W=words(S.en);
+    // прячем каждое третье слово, но не первое
+    const hide=W.map((_,i)=>i>0&&i%3===0);
+    if(!hide.some(Boolean)) hide[W.length-1]=true;
+    const need=W.filter((_,i)=>hide[i]);
+    scene.innerHTML=`${head}<p class="ru">${S.ru}</p>
+      <div class="line" id="line"></div><div class="bank" id="bank"></div>
+      <button class="ghostbtn" id="sp3">🔊 Подсказать на слух</button>`;
+    let k=0;
+    const line=document.getElementById('line'), bank=document.getElementById('bank');
+    const paint=()=>{
+      let n=0;
+      line.innerHTML=W.map((w,i)=>{
+        if(!hide[i]) return w;
+        const j=n++; return j<k ? w : '<span class="blank">&nbsp;</span>';
+      }).join(' ');
+    };
+    [...need].sort(()=>Math.random()-.5).forEach(w=>{
+      const c=document.createElement('button'); c.className='chipw'; c.textContent=w;
+      c.onclick=()=>{
+        if(w===need[k]){ k++; c.classList.add('used'); paint();
+          if(k===need.length){ say(S.en); setTimeout(nextSentence,800);} }
+        else{ c.classList.add('shake'); setTimeout(()=>c.classList.remove('shake'),300); }
+      };
+      bank.appendChild(c);
+    });
+    document.getElementById('sp3').onclick=()=>say(S.en);
+    paint(); return;
+  }
+
+  if(stage==='recall'){
+    scene.innerHTML=`${head}<p class="ru">${S.ru}</p>
+      <p class="en" id="hint">${firstLetters(S.en)}</p>
+      <p class="sub" id="msg">${SR?'Нажми на микрофон и скажи предложение целиком. Я проверю.':'Скажи вслух целиком, потом проверь себя.'}</p>
+      ${SR?'<button class="mic" id="mic">🎤 Сказать</button>':''}
+      <button class="${SR?'ghostbtn':'next'}" id="show">Показать ответ</button>
+      <button class="ghostbtn" id="sp4">🔊 Послушать</button>`;
+    document.getElementById('sp4').onclick=()=>say(S.en);
+    const reveal=()=>{
+      say(S.en);
+      scene.innerHTML=`${head}<p class="en">${S.en}</p><p class="ru">${S.ru}</p>
+        <p class="sub">Так же и сказала?</p>
+        <button class="next" id="yes">Да, получилось</button>
+        <button class="ghostbtn" id="no">Не совсем — ещё раз</button>`;
+      document.getElementById('yes').onclick=nextSentence;
+      document.getElementById('no').onclick=render;
+    };
+    document.getElementById('show').onclick=reveal;
+    if(SR) document.getElementById('mic').onclick=()=>listen(S, reveal);
+    return;
+  }
+}
+
+/* ═══ ПРОВЕРКА ГОЛОСОМ ═══
+   Движок распознаёт СЛОВА, а не произношение: проверяет, вспомнила ли текст.
+   Не расслышал или нет интернета — никакой оценки, просто «проверь сама». */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition||null;
+const NUM={d:'d',h:'h'};
+const norm=t=>t.toLowerCase().replace(/[^a-z' ]+/g,' ').split(/\s+/).filter(Boolean);
+function score(target,heard){
+  const pool=[...heard], ok=target.map(w=>{const i=pool.indexOf(w); if(i>=0){pool.splice(i,1);return true;} return false;});
+  return {ok, ratio:ok.filter(Boolean).length/target.length};
+}
+function listen(S, reveal){
+  const btn=document.getElementById('mic'), msg=document.getElementById('msg');
+  let r; try{ r=new SR(); }catch(e){ msg.textContent='Микрофон тут не работает — проверь себя сама.'; return; }
+  r.lang='en-GB'; r.maxAlternatives=3; r.interimResults=false;
+  btn.classList.add('on'); btn.textContent='🎤 Слушаю… говори';
+  let got=false;
+  r.onresult=e=>{
+    got=true;
+    const T=words(S.en), target=norm(S.en);
+    let best=null;
+    for(const alt of e.results[0]){ const sc=score(target,norm(alt.transcript)); if(!best||sc.ratio>best.ratio) best=sc; }
+    // раскраска по исходным словам
+    let k=0; const marks=T.map(w=>{const n=norm(w).length; const g=best.ok.slice(k,k+n).every(Boolean); k+=n; return g;});
+    const html=T.map((w,i)=>`<span class="${marks[i]?'ok':'miss'}">${w}</span>`).join(' ');
+    const good=best.ratio>=0.8;
+    const ln=catPick(); if(good){ setTimeout(()=>{purr();},700); }
+    say(S.en);
+    scene.innerHTML=`<p class="eyebrow">${good?'Получилось':'Почти'}</p>
+      <p class="heard">${html}</p><p class="ru">${S.ru}</p>
+      <p class="sub">${good?'Зелёное — я услышала. Отлично.':'Красные слова я не услышала. Послушай, как надо, и попробуй ещё раз.'}</p>
+      ${good?cat('cheer',ln):cat('calm','Ничего. Послушай ещё раз — у меня тоже не с первого раза получается ловить муху.')}
+      <button class="next" id="yes">${good?'Дальше':'Всё равно дальше'}</button>
+      <button class="ghostbtn" id="again">🎤 Ещё раз</button>`;
+    document.getElementById('yes').onclick=nextSentence;
+    document.getElementById('again').onclick=render;
+  };
+  r.onerror=e=>{ btn.classList.remove('on'); btn.textContent='🎤 Сказать';
+    msg.textContent= e.error==='network' ? 'Без интернета я не расслышу — проверь себя сама кнопкой «Показать ответ».'
+      : e.error==='not-allowed' ? 'Микрофон не разрешён — проверь себя сама кнопкой «Показать ответ».'
+      : 'Не расслышала. Попробуй ещё раз или проверь себя сама.'; };
+  r.onend=()=>{ if(!got && btn.isConnected){ btn.classList.remove('on'); btn.textContent='🎤 Сказать'; } };
+  r.start();
+}
+const CHEER=['Слово в слово. Я даже уши навострила.','Вот это память. Мур.','Чисто. Хоть сейчас на Оксфорд-стрит. Я с тобой, в сумке.'];
+const catPick=()=>CHEER[Math.floor(Math.random()*CHEER.length)];
+
+function finishBlock(){
+  Store.mark(block);
+  rail.innerHTML=''; stageName.textContent='';
+  const left=TEXT.length-Store.all().done.length;
+  const line=left? 'Кусочек готов. Осталось '+left+'. Мур.' : 'Всё. Текст целиком у тебя в голове. Мур-р.';
+  setTimeout(()=>catSay(line),400);
+  scene.innerHTML=`
+    <h1>${TEXT[block].t} — готово</h1>
+    ${cat(left?'cheer':'cheer',line)}
+    <button class="next" id="back">К списку</button>
+    ${block+1<TEXT.length?`<button class="ghostbtn" id="nx">Следующий кусочек</button>`:''}`;
+  document.getElementById('back').onclick=menu;
+  const nx=document.getElementById('nx');
+  if(nx) nx.onclick=()=>{block++; st=0; si=0; render();};
+}
+
+/* ═══ ВЕСЬ ТЕКСТ ПО ПЕРВЫМ БУКВАМ ═══ */
+function whole(){
+  rail.innerHTML=''; stageName.textContent='';
+  const all=TEXT.flatMap(b=>b.s);
+  scene.innerHTML=`
+    <p class="eyebrow">Весь текст</p><h1>По первым буквам</h1>
+    <p class="sub">Расскажи вслух целиком. Если застряла — нажми строчку, она откроется.</p>
+    ${all.map((S,i)=>`<p class="en recall-line" data-i="${i}"
+      style="font-size:19px;margin:0 0 12px;cursor:pointer">${firstLetters(S.en)}</p>`).join('')}
+    <button class="next" id="back2">К списку</button>`;
+  scene.querySelectorAll('.recall-line').forEach(p=>p.onclick=()=>{
+    const S=all[+p.dataset.i]; p.textContent=S.en; say(S.en);});
+  document.getElementById('back2').onclick=menu;
+}
+
+const cbt=document.getElementById('catBtn');
+cbt.innerHTML=mashkaSVG('head','calm'); cbt.classList.toggle('off',!Store.catOn());
+cbt.onclick=()=>{Store.toggleCat(); cbt.classList.toggle('off',!Store.catOn()); if(Store.catOn())purr(); render();};
+document.getElementById('home').onclick=()=>{stopLoop(); if(CUR) menu(); else library();};
+startOwn();
+</script>
+</body>
+</html>
