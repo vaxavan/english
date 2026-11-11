@@ -74,6 +74,26 @@ mark.past{background:var(--past-bg);color:var(--past)} mark.to{background:var(--
 .lessons small{color:var(--dim)}
 .score{font:600 13px var(--f-body);color:var(--moss)}
 .soon{opacity:.55}
+.w{cursor:pointer;border-bottom:1px dotted rgba(18,36,28,.35)}
+.w.kn{border-bottom:2px solid var(--leaf)}
+.wpop{position:fixed;z-index:80;max-width:260px;background:var(--ink);color:var(--paper);padding:9px 12px;border-radius:10px;font:15px/1.35 var(--f-body);box-shadow:0 6px 18px rgba(0,0,0,.2);animation:enter .15s ease-out;pointer-events:none}
+.wpop small{display:block;color:var(--leaf);font-size:12px;margin-top:2px}
+.opts.row.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.big-snd{display:block;margin:6px auto 18px;width:96px;height:96px;border-radius:50%;border:1px solid var(--line);background:#fff;font-size:40px;cursor:pointer}
+.sounds{display:flex;flex-direction:column;gap:10px;margin:0 0 14px}
+.snd-card{display:grid;grid-template-columns:120px minmax(0,1fr);gap:12px;align-items:center;text-align:left;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px;font:inherit;color:var(--ink);cursor:pointer}
+.snd-card svg{width:120px;height:auto;display:block}
+.snd-card small{display:block;color:var(--dim);font-size:13.5px;margin-top:4px}
+.ipa{font:600 20px/1 var(--f-display);color:var(--clay)}
+.ipa-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 14px}
+.ipa-grid div{display:flex;gap:10px;align-items:baseline}
+.ipa-grid b{font:600 22px/1 var(--f-display);color:var(--clay);min-width:30px;text-align:center}
+.ipa-grid small{display:block;color:var(--dim);font-size:12.5px}
+.ipa-q{font-size:28px;color:var(--clay)}
+.s-rule{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.s-col p{margin:0;font:19px/1.6 var(--f-display)}
+.s-col.hot{background:#fdf1e6;border-radius:12px;padding:8px 10px}
+.s-col.hot b{color:var(--clay);font-size:1.15em}
 .ic2{font-size:24px;width:40px;text-align:center}
 .where .rule-row{align-items:start}
 .cat{display:flex;gap:10px;align-items:center;margin:14px 0}
@@ -369,7 +389,8 @@ const LESSONS={
     {a:'There is a shop. It sells toys.',ok:'There is a shop which sells toys.',bad:['There is a shop who sells toys.','There is a shop which it sells toys.']}
    ].map(j=>({type:'join',q:j.a,ok:j.ok,opts:sh([j.ok,...j.bad]),
      tip:'Две ловушки: 1) <b>who</b> — только для людей; 2) после who/which <b>не повторяем</b> he/she/it — слово «который» уже их заменило.'}));
-   return [...sh(pick).slice(0,5),...sh(riddle).slice(0,4),...sh(join).slice(0,3)];
+   const K=knownSet(); const rid=sh(riddle).sort((x,y)=>(K.has(y.ans.replace(/^an? /,''))?1:0)-(K.has(x.ans.replace(/^an? /,''))?1:0));
+   return [...sh(pick).slice(0,5),...rid.slice(0,4),...sh(join).slice(0,3)];
   }
  },
  time:{
@@ -413,10 +434,222 @@ function pickClockTask(h,m){ const opts=[[h,m],...wrongTimes(h,m)].sort(()=>Math
   return {type:'clock',h,m,opts,tip:m<=30?'<b>past</b> — длинная стрелка в правой половине.':'<b>to</b> — длинная стрелка в левой половине, а короткая почти дошла до следующего часа.'}; }
 function setTask(h,m){ return {type:'set',h,m,tip:m<=30?'past — крути длинную стрелку вправо от 12.':'to — длинная стрелка в левой половине: 12 минус столько минут.'}; }
 
+/* ═══ ЕЩЁ ПРАВИЛА ═══ общий конструктор: правило → «где встречается» → примеры → задания */
+const shf=a=>a.map(x=>[Math.random(),x]).sort((p,q)=>p[0]-q[0]).map(x=>x[1]);
+const G=(q,ok,opts,tip,ru)=>({type:'pick',q,ok:[].concat(ok),opts,tip,ru});
+const C=(ru,ok,bad,tip)=>({type:'join',label:'🇷🇺 → 🇬🇧 Как сказать по-английски?',q:ru,ok,opts:shf([ok,...bad]),tip,ru:'Так и говорят.'});
+const where=rows=>`<div class="card where"><p class="eyebrow" style="margin-bottom:10px">Где это встречается</p>${rows.map(([i,t,e])=>`<div class="rule-row"><span class="ic2">${i}</span><div><b>${t}</b><small><i>${e}</i></small></div></div>`).join('')}</div>`;
+const table=rows=>`<div class="card">${rows.map(([a,b,c,cls])=>`<div class="rule-row"><span class="pron ${cls||'p-who'}" style="font-size:17px;min-width:96px">${a}</span><div>${b}<small>${c||''}</small></div></div>`).join('')}</div>`;
+const ex=(en,ru)=>({en,ru});
+
+/* схема рта сбоку: лицо смотрит влево */
+function mouthSVG(k){
+  const tongue={
+    th:'M150 92 C120 84 90 80 64 76 C50 74 36 70 24 68 C30 74 46 80 66 86 C96 94 126 100 150 100 Z',
+    r:'M150 92 C126 86 104 84 88 82 C80 70 78 60 84 54 C90 60 90 70 94 80 C110 88 130 96 150 100 Z',
+    w:'M150 84 C130 70 110 74 90 84 C76 90 62 92 56 94 C70 98 100 100 150 100 Z',
+    ng:'M150 100 C150 80 140 52 120 50 C100 56 84 74 66 86 C58 90 54 94 52 98 C80 100 120 102 150 100 Z',
+    v:'M150 92 C120 86 92 86 70 88 C60 89 54 92 52 96 C80 100 120 102 150 100 Z'
+  }[k];
+  const lips= k==='w' ? `<ellipse cx="18" cy="72" rx="9" ry="12" fill="none" stroke="var(--clay)" stroke-width="5"/>`
+    : k==='v' ? `<path d="M30 46 C18 50 16 60 22 66" fill="none" stroke="var(--clay)" stroke-width="6" stroke-linecap="round"/><path d="M24 70 C30 72 36 74 40 80 C34 92 24 96 20 92" fill="none" stroke="var(--clay)" stroke-width="6" stroke-linecap="round"/>`
+    : `<path d="M30 44 C14 48 12 60 22 64" fill="none" stroke="var(--clay)" stroke-width="6" stroke-linecap="round"/><path d="M22 76 C10 82 14 94 30 98" fill="none" stroke="var(--clay)" stroke-width="6" stroke-linecap="round"/>`;
+  const note={th:'кончик языка между зубами, дуй',r:'кончик загнут вверх, нёба НЕ касается',w:'губы трубочкой, как «у»',ng:'спинка языка прижата к мягкому нёбу, звук в нос',v:'верхние зубы на нижней губе'}[k];
+  return `<svg viewBox="0 0 170 130" class="mouth" role="img" aria-label="${note}">
+    <path d="M30 40 C60 30 110 22 160 30" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+    <path d="M36 42 C70 34 110 34 160 44" fill="#f3d6cf" stroke="var(--ink)" stroke-width="1.5"/>
+    <rect x="${k==='v'?30:34}" y="46" width="10" height="${k==='v'?22:18}" rx="3" fill="#fff" stroke="var(--ink)" stroke-width="1.5"/>
+    <rect x="36" y="${k==='th'?76:72}" width="10" height="16" rx="3" fill="#fff" stroke="var(--ink)" stroke-width="1.5"/>
+    <path d="M40 108 C80 118 120 116 160 108" fill="none" stroke="var(--ink)" stroke-width="2.5"/>
+    ${lips}
+    <path d="${tongue}" fill="#e58f86" stroke="#b4573a" stroke-width="1.5"/>
+    ${k==='th'?'<path d="M8 56 l-6 -4 M8 66 l-8 0 M8 76 l-6 4" stroke="var(--moss)" stroke-width="2" stroke-linecap="round"/>':''}
+    ${k==='ng'?'<path d="M128 26 C130 14 140 8 150 8" fill="none" stroke="var(--moss)" stroke-width="2" stroke-dasharray="3 3"/><text x="150" y="20" font-size="10" fill="var(--moss)" font-family="system-ui">нос</text>':''}
+  </svg>`;
+}
+
+Object.assign(LESSONS,{
+ tobe:{icon:'🟰',title:'to be — am, is, are',sub:'«быть», «являться» — то, чего нет в русском',
+  rule:()=>table([['I am','я','I\'m eleven. — Мне одиннадцать.'],['he / she / it is','он, она, оно','Mashka is ginger. — Машка рыжая.','p-which'],['we / you / they are','мы, вы, ты, они','Niko and Iki are my pets.','p-that']])+
+   `<p class="sub">Главная ловушка: по-русски говорим «Я ученица» — без глагола. По-английски так нельзя: <b>I <u>am</u> a pupil</b>. Глагол <b>am/is/are</b> нужен всегда.</p>`+
+   table([['не','am not · isn\'t · aren\'t','Iki isn\'t happy. — Ики не рад.','p-which'],['вопрос','Am I…? Is she…? Are you…?','Глагол прыгает вперёд: Are you hungry?','p-that']])+
+   where([['🙋','Рассказать о себе','I\'m Masha. I\'m eleven. I\'m from Russia.'],['🐱','Описать кого-то','Mashka is lazy. Her eyes are green.'],['📍','Где что находится','The bus stop is near the school.'],['😋','Как ты себя чувствуешь','I\'m hungry. I\'m tired.']]),
+  examples:[ex('I <mark class="who">am</mark> a pupil.','Я ученица. (по-русски глагола нет!)'),ex('Mashka <mark class="which">is</mark> a lazy cat.','Машка — ленивая кошка.'),ex('Niko and Iki <mark class="that">are</mark> my pets.','Нико и Ики — мои питомцы.'),ex('Iki <mark class="which">isn\'t</mark> happy today.','Ики сегодня не рад.'),ex('<mark class="that">Are</mark> you hungry? — Yes, I <mark class="who">am</mark>.','Ты голодная? — Да.'),ex('The bus stop <mark class="which">is</mark> near the school.','Остановка — рядом со школой.')],
+  tasks:()=>{const O=['am','is','are'],Q=['Am','Is','Are'];return [...shf([
+   G('I ___ eleven years old.','am',O,'<b>I</b> → всегда <b>am</b>.'),G('Mashka ___ a lazy cat.','is',O,'Машка — она, <b>she</b> → <b>is</b>.'),
+   G('Niko and Iki ___ my pets.','are',O,'Их двое — <b>they</b> → <b>are</b>.'),G('We ___ at school now.','are',O,'<b>we</b> → <b>are</b>.'),
+   G('My mum ___ a doctor.','is',O,'мама — <b>she</b> → <b>is</b>.'),G('It ___ cold today.','is',O,'<b>it</b> → <b>is</b>.'),
+   G('They ___ not at home.','are',O,'<b>they</b> → <b>are</b>.'),G('I ___ not tired.','am',O,'<b>I</b> → <b>am</b>.'),
+   G('The bus stop ___ near the school.','is',O,'остановка одна — <b>it</b> → <b>is</b>.'),G('My friends ___ from London.','are',O,'друзей много — <b>they</b> → <b>are</b>.')]).slice(0,6),
+   ...shf([G('___ you hungry?','Are',Q,'<b>you</b> → <b>are</b>. В вопросе глагол встаёт вперёд.'),G('___ Iki angry? — Yes, he is.','Is',Q,'Ики — <b>he</b> → <b>is</b>.'),G('___ I late?','Am',Q,'<b>I</b> → <b>am</b>, и в вопросе тоже.')]).slice(0,2),
+   ...shf([C('Я ученица.','I am a pupil.',['I a pupil.','I is a pupil.'],'По-русски глагола нет, а по-английски он обязателен: <b>I am</b>.'),C('Машка рыжая.','Mashka is ginger.',['Mashka ginger.','Mashka are ginger.'],'Нужен глагол: <b>Mashka is</b>.'),C('Мы не дома.','We aren\'t at home.',['We not at home.','We isn\'t at home.'],'<b>we</b> → <b>are</b>, «не» → <b>aren\'t</b>.')]).slice(0,2)];}},
+
+ havegot:{icon:'🎒',title:'have got / has got',sub:'«у меня есть» — семья, внешность, вещи',
+  rule:()=>table([['I / you / we / they','have got (\'ve got)','I\'ve got a sister. — У меня есть сестра.'],['he / she / it','has got (\'s got)','Mashka has got green eyes.','p-which']])+
+   `<p class="sub">Ловушка: про <b>одного другого</b> — he, she, it, Машка, мама — только <b>has</b>. По-английски не «у меня есть кошка», а «я имею кошку»: <i>I have got a cat</i>.</p>`+
+   table([['не','haven\'t got · hasn\'t got','Iki hasn\'t got a tail. — У Ики нет хвоста.','p-which'],['вопрос','Have you got…? Has she got…?','— Yes, I have. / No, I haven\'t.','p-that']])+
+   where([['👨‍👩‍👧','Семья','I\'ve got a brother and a sister.'],['👀','Внешность','She has got long hair and blue eyes.'],['🚲','Вещи','I\'ve got a new bike.'],['🐹','Питомцы','We\'ve got a guinea pig and a hamster.']]),
+  examples:[ex('I <mark class="who">have got</mark> a cat.','У меня есть кошка.'),ex('Mashka <mark class="which">has got</mark> green eyes.','У Машки зелёные глаза.'),ex('Niko <mark class="which">has got</mark> three orange stripes.','У Нико три рыжие полоски.'),ex('Iki <mark class="which">hasn\'t got</mark> a tail. Well, a tiny one.','У Ики нет хвоста. Ну, крошечный.'),ex('<mark class="that">Have</mark> you <mark class="that">got</mark> a bike? — Yes, I <mark class="that">have</mark>.','У тебя есть велосипед? — Да.')],
+  tasks:()=>{const O=['have','has'];return [...shf([
+   G('I ___ got a sister.','have',O,'<b>I</b> → <b>have</b>.'),G('Mashka ___ got green eyes.','has',O,'Машка — <b>she</b> → <b>has</b>.'),G('Niko ___ got three orange stripes.','has',O,'Нико — <b>he</b> → <b>has</b>.'),
+   G('We ___ got a guinea pig.','have',O,'<b>we</b> → <b>have</b>.'),G('My dad ___ got a car.','has',O,'папа — <b>he</b> → <b>has</b>.'),G('They ___ got two cats.','have',O,'<b>they</b> → <b>have</b>.'),
+   G('___ you got a bike?','Have',['Have','Has'],'<b>you</b> → <b>Have</b>.'),G('___ she got long hair?','Has',['Have','Has'],'<b>she</b> → <b>Has</b>.'),
+   G('Have you got a pet? — Yes, I ___.','have',['have','has','got'],'Краткий ответ: <b>Yes, I have.</b> Без got.'),G('Has Iki got a wheel? — Yes, he ___.','has',['have','has','got'],'Краткий ответ: <b>Yes, he has.</b>')]).slice(0,8),
+   ...shf([C('У Машки есть хвост.','Mashka has got a tail.',['Mashka have got a tail.','Mashka has a got tail.'],'Машка — она → <b>has got</b>, и got сразу после has.'),C('У меня нет брата.','I haven\'t got a brother.',['I hasn\'t got a brother.','I not have got a brother.'],'<b>I</b> → <b>haven\'t got</b>.'),C('У тебя есть собака?','Have you got a dog?',['You have got a dog?','Has you got a dog?'],'В вопросе <b>Have</b> встаёт вперёд.')]).slice(0,2)];}},
+
+ can:{icon:'💪',title:'can, could, be able to',sub:'могу, мог, смогу',
+  rule:()=>table([['can','могу, умею — <b>сейчас</b>','I can swim. — Я умею плавать.'],['could','мог, умел — <b>раньше</b>','I could read at five. — Я умела читать в пять лет.','p-which'],['will be able to','смогу — <b>в будущем</b>','I will be able to drive. — Я смогу водить.','p-that']])+
+   `<p class="sub">Два правила-ловушки: после can/could глагол <b>голый</b> — без to и без -s. <i>She can <b>swim</b></i>, а не «can to swim» и не «can swims». И у самого can нет -s: <i>he can</i>.</p>`+
+   table([['не','can\'t · couldn\'t · won\'t be able to','Iki can\'t fly. — Ики не умеет летать.','p-which'],['вопрос','Can you…? Could you…?','Could you help me? — вежливая просьба','p-that']])+
+   where([['🏊','Что умеешь','I can ride a bike and swim.'],['🙏','Спросить разрешения','Can I go out, Mum?'],['🎩','Вежливая просьба','Could you help me, please?'],['⏳','Что умела раньше','When I was three, I couldn\'t read.']]),
+  examples:[ex('Niko <mark class="who">can</mark> jump very high!','Нико умеет высоко прыгать!'),ex('Iki <mark class="who">can\'t</mark> fly.','Ики не умеет летать.'),ex('When I was five, I <mark class="which">could</mark> read.','В пять лет я уже умела читать.'),ex('<mark class="which">Could</mark> you help me, please?','Не могли бы вы мне помочь?'),ex('Next year I <mark class="that">will be able to</mark> speak English well.','В следующем году я смогу хорошо говорить по-английски.'),ex('<mark class="who">Can</mark> I go out? — Yes, you <mark class="who">can</mark>.','Можно мне погулять? — Можно.')],
+  tasks:()=>{const O=['can','could','will'];return [...shf([
+   G('Mashka ___ sleep all day. (сейчас)','can',O,'сейчас → <b>can</b>.'),G('When I was five, I ___ swim.','could',O,'раньше, в прошлом → <b>could</b>.'),
+   G('Next year I ___ be able to speak English well.','will',O,'в будущем → <b>will be able to</b>.'),G('Niko ___ jump very high! Look!','can',O,'сейчас → <b>can</b>.'),
+   G('___ you help me, please? (вежливо)',['Could','Can'],['Can','Could','Will'],'Вежливая просьба — <b>Could you…?</b> (Can тоже можно, но проще).'),
+   G('Last year I ___ ride a bike, but now I can.','couldn\'t',['couldn\'t','can\'t','won\'t'],'в прошлом году → <b>couldn\'t</b>.'),
+   G('I\'m ill. I ___ be able to go to school tomorrow.','won\'t',['won\'t','can\'t','couldn\'t'],'завтра — будущее → <b>won\'t be able to</b>.')]).slice(0,5),
+   ...shf([G('Iki can ___ in his wheel all night.','run',['run','to run','runs'],'После can глагол голый: <b>can run</b>.'),G('She can ___ English.','speak',['speak','to speak','speaks'],'После can — без to и без -s: <b>can speak</b>.'),G('My cat ___ climb trees.','can',['can','cans','can to'],'У can никогда нет -s: <b>can</b>.')]).slice(0,2),
+   ...shf([C('Она умеет плавать.','She can swim.',['She can swims.','She cans swim.'],'После can — голый глагол, и у can нет -s.'),C('Я не могла найти свой шлем.','I couldn\'t find my helmet.',['I can\'t find my helmet.','I couldn\'t to find my helmet.'],'в прошлом → <b>couldn\'t</b>, и без to.')]).slice(0,2)];}},
+
+ will:{icon:'🔮',title:'will — будущее',sub:'будет, сделаю, обещаю',
+  rule:()=>table([['will + глагол','будущее: сделаю, будет','I will help you = I\'ll help you'],['won\'t','не буду, не будет','= will not. Iki won\'t bite. Наверное.','p-which'],['Will you…?','вопрос','Will you come to my party?','p-that']])+
+   `<p class="sub">Одно правило для всех: <i>I will, she will, they will</i> — will не меняется. После will глагол голый: <i>she will <b>go</b></i>, без to и без -s.</p>`+
+   where([['☀️','Предсказать','It will be sunny tomorrow.'],['💡','Решить прямо сейчас','The phone is ringing! — I\'ll answer it!'],['🤝','Пообещать','I\'ll be careful on the road. I promise.'],['📅','С «будущими» словами','tomorrow, next week, next year, in 2030']]),
+  examples:[ex('It <mark class="who">will</mark> be sunny tomorrow.','Завтра будет солнечно.'),ex('I<mark class="who">\'ll</mark> help you with your bag!','Я помогу тебе с сумкой!'),ex('Mashka <mark class="who">will</mark> sleep all day tomorrow too.','Машка завтра тоже будет спать весь день.'),ex('Iki <mark class="which">won\'t</mark> bite you. I promise.','Ики тебя не укусит. Обещаю.'),ex('<mark class="that">Will</mark> you come to my party?','Ты придёшь ко мне на праздник?')],
+  tasks:()=>[...shf([
+   G('Tomorrow it ___ be sunny.','will',['will','is','was'],'tomorrow — завтра → <b>will</b>.'),G('Next year I ___ be twelve.','will',['will','am','was'],'next year → <b>will</b>.'),
+   G('Mashka ___ sleep tomorrow too.','will',['will','wills','is'],'will один для всех, без -s.'),G('She will ___ to London next summer.','go',['go','goes','to go'],'После will — голый глагол: <b>will go</b>.'),
+   G('Iki ___ bite you, I promise.','won\'t',['won\'t','doesn\'t will','not will'],'«не будет» → <b>won\'t</b> (= will not).'),G('___ you come to my party?','Will',['Will','Do','Are'],'вопрос о будущем → <b>Will you…?</b>'),
+   G('It\'s heavy! — I ___ help you!','\'ll',['\'ll','am','do'],'Решила прямо сейчас помочь → <b>I\'ll</b>.'),G('We will ___ a new bike next week.','buy',['buy','buys','buying'],'После will — голый глагол.')]).slice(0,7),
+   ...shf([C('Я помогу тебе.','I\'ll help you.',['I will helps you.','I will to help you.'],'После will — голый глагол.'),C('Завтра будет дождь.','It will rain tomorrow.',['It rains tomorrow.','It will rains tomorrow.'],'будущее → <b>will rain</b>.'),C('Я буду осторожной на дороге.','I will be careful on the road.',['I will careful on the road.','I be careful on the road.'],'«буду» → <b>will be</b>.')]).slice(0,3)]},
+
+ present:{icon:'⏱️',title:'Present Simple и Continuous',sub:'«обычно» или «прямо сейчас»',
+  rule:()=>table([['Present Simple','<b>обычно, всегда, каждый день</b>','I go to school every day. · She <b>goes</b> (he/she/it + s)'],['Present Continuous','<b>прямо сейчас</b> — am/is/are + -ing','Look! Niko is eating a cucumber.','p-which']])+
+   `<div class="card"><p class="eyebrow" style="margin-bottom:8px">Слова-подсказки</p>
+    <p style="margin:0 0 6px"><mark class="who">Simple</mark> every day · usually · always · often · sometimes · never · on Mondays</p>
+    <p style="margin:0"><mark class="which">Continuous</mark> now · right now · at the moment · Look! · Listen!</p></div>
+   <p class="sub">Ловушка Simple: <b>he/she/it</b> → глагол с <b>-s</b>: Mashka sleep<b>s</b>. Ловушка Continuous: не забыть <b>am/is/are</b>: Niko <b>is</b> eating.</p>`+
+   where([['📅','Распорядок дня','I get up at seven. I go to school by bus.'],['🖼️','Описать картинку (на устном зачёте!)','In the picture, a boy is crossing the road.'],['📞','Что делаешь сейчас','— What are you doing? — I\'m doing my homework.'],['🐱','Привычки','Mashka always sleeps after lunch.']]),
+  examples:[ex('Mashka <mark class="who">sleeps</mark> every day.','Машка спит каждый день. (обычно)'),ex('Look! Mashka <mark class="which">is washing</mark>.','Смотри! Машка умывается. (сейчас)'),ex('Iki usually <mark class="who">runs</mark> at night.','Ики обычно бегает ночью.'),ex('Listen! Iki <mark class="which">is running</mark> in his wheel.','Слышишь? Ики бегает в колесе.'),ex('In the picture, a girl <mark class="which">is crossing</mark> the road.','На картинке девочка переходит дорогу.'),ex('I <mark class="who">wear</mark> a helmet when I ride my bike.','Я надеваю шлем, когда катаюсь.')],
+  tasks:()=>[...shf([
+   G('Mashka ___ every day.','sleeps',['sleeps','is sleeping'],'<b>every day</b> → Simple: sleeps.'),G('Look! Niko ___ a cucumber.','is eating',['eats','is eating'],'<b>Look!</b> → прямо сейчас: is eating.'),
+   G('I usually ___ to school by bus.','go',['go','am going'],'<b>usually</b> → Simple.'),G('Listen! Iki ___ in his wheel.','is running',['runs','is running'],'<b>Listen!</b> → сейчас: is running.'),
+   G('My dad ___ coffee every morning.','drinks',['drinks','is drinking'],'<b>every morning</b> → Simple, папа — he → drink<b>s</b>.'),G('We ___ English now.','are learning',['learn','are learning'],'<b>now</b> → Continuous.'),
+   G('She often ___ TV in the evening.','watches',['watches','is watching'],'<b>often</b> → Simple, she → watch<b>es</b>.'),G('At the moment, the pedestrian ___ the road.','is crossing',['crosses','is crossing'],'<b>at the moment</b> → Continuous.'),
+   G('It ___ now. Take an umbrella!','is raining',['rains','is raining'],'<b>now</b> → Continuous.'),G('Mashka ___ milk.','likes',['likes','is liking'],'like — про то, что нравится вообще → Simple: likes.'),
+   G('My brother ___ his bike every Saturday.','rides',['ride','rides'],'он — he → глагол с <b>-s</b>: rides.'),G('Niko ___ sleeping now.','is',['is','are','am'],'Нико — he → <b>is</b> sleeping.')]).slice(0,8),
+   ...shf([C('Сейчас мама готовит.','Mum is cooking now.',['Mum cooks now.','Mum is cook now.'],'сейчас → <b>is cooking</b>: и is, и -ing.'),C('Машка всегда спит после обеда.','Mashka always sleeps after lunch.',['Mashka always sleep after lunch.','Mashka is always sleep after lunch.'],'always → Simple, she → sleep<b>s</b>.'),C('Что ты делаешь?','What are you doing?',['What do you doing?','What you are doing?'],'сейчас → <b>are you doing</b>.')]).slice(0,2)]},
+
+ sounds:{icon:'👅',title:'Как произносить: th, w, r, ŋ, v',sub:'схемы языка и губ + «услышь разницу»',
+  rule:()=>`<div class="sounds">${[
+    ['th','θ / ð','think, three · this, the','Кончик языка <b>между зубами</b>, дуй воздух. Без голоса — [θ] think; с голосом — [ð] this. Не «с», не «з», не «ф»!'],
+    ['w','w','window, west, we','Губы <b>трубочкой</b>, как «у», и сразу раскрыть. Зубы губу не трогают — это не «в»!'],
+    ['v','v','very, van, video','А вот это — русское «в»: <b>верхние зубы</b> на нижней губе.'],
+    ['r','r','red, road, run','Кончик языка <b>загнут вверх</b> и нёба <b>не касается</b>. Не рычим, как русская «р».'],
+    ['ng','ŋ','sing, running, long','Как «н», но <b>спинкой языка</b> и в нос. «g» в конце не произносим: sing — не «синг».']
+   ].map(([k,ipa,w,t])=>`<button class="snd-card" data-w="${w.split(',')[0].trim()}">${mouthSVG(k)}<span><b class="ipa">[${ipa}]</b> <i>${w}</i><small>${t}</small></span></button>`).join('')}</div>
+   <p class="sub">Нажми на карточку — услышишь слово. Повтори перед зеркалом, глядя на схему.</p>`+
+   where([['📖','Транскрипция в словаре','three /θriː/ — значок θ значит «язык между зубами»'],['🗣️','Устный зачёт','th и w слышно сразу — это главные «английские» звуки'],['⚠️','Где путают смысл','three (три) — tree (дерево) — free (свободный)']]),
+  examples:[ex('three — tree — free','три — дерево — свободный. Слушай разницу!'),ex('think — sink','думать — раковина'),ex('west — vest','запад — жилет'),ex('This is the third thing.','Это третья вещь. (тренируем th)'),ex('We walk to the window.','Мы идём к окну. (тренируем w)'),ex('The red road is long.','Красная дорога длинная. (r и ng)')],
+  tasks:()=>{const L=(w,opts,tip)=>({type:'listen',word:w,ok:[w],opts:shf(opts),tip});return [
+   ...shf([L('three',['three','tree','free'],'three — язык между зубами [θ]; tree — [t]; free — [f].'),L('think',['think','sink','fink'],'think — [θ], язык между зубами.'),
+    L('west',['west','vest','best'],'west — губы трубочкой [w]; vest — зубы на губе [v].'),L('wine',['wine','vine','line'],'w — губы трубочкой.'),
+    L('thank',['thank','tank','sank'],'thank — [θ]; tank — [t]; sank — [s].'),L('road',['road','load','toad'],'road — [r], кончик языка не касается нёба.'),L('sing',['sing','sin','sink'],'sing — [ŋ] в нос, g не слышно; sink — в конце [k].')]).slice(0,5),
+   ...shf([G('В каком слове звук [θ] (без голоса)?','three',['three','this','the'],'this и the — с голосом [ð]. three — без голоса [θ].'),
+    G('В каком слове звук [ð] (с голосом)?','mother',['mother','thank','bath'],'mother — [ð], с голосом. thank, bath — [θ].'),
+    G('Где губы трубочкой?','window',['window','very','video'],'window — [w]. very, video — [v], зубы на губе.'),
+    G('Где на конце [ŋ]?','running',['running','rain','ran'],'-ing читается [ɪŋ] — в нос, без «г».')]).slice(0,3)];}},
+
+ ipa:{icon:'🔤',title:'Транскрипция: как читать значки',sub:'/ʃuːz/ — это shoes',
+  rule:()=>`<div class="card ipa-grid">${[['ː','долгий звук','see /siː/ — «си-и»'],['ˈ','ударение — перед слогом','/ˈpedl/ — ПЕдл'],['ə','безударный «э/а»','driver /ˈdraɪvə/'],['æ','между «а» и «э»','cat /kæt/'],['ɪ','короткое «и»','sit /sɪt/'],['ʊ','короткое «у»','book /bʊk/'],['ʃ','«ш»','shop /ʃɒp/'],['tʃ','«ч»','cheese /tʃiːz/'],['dʒ','«дж»','jam /dʒæm/'],['θ ð','th (язык между зубами)','three /θriː/'],['ŋ','«н» в нос','long /lɒŋ/'],['j','«й»','yes /jes/']].map(([s,a,b])=>`<div><b>${s}</b><span>${a}<small>${b}</small></span></div>`).join('')}</div>
+   <p class="sub">Транскрипцию пишут в / / или [ ]. Это «как слышится», а не «как пишется»: <i>knife</i> пишется с k, а читается /naɪf/ — k не звучит.</p>`+
+   where([['📖','Словарь и учебник','В Spotlight в списке слов в конце книги'],['🔊','Когда не с кем проверить','Видишь /θ/ — знаешь, что язык между зубами'],['✍️','Тренажёр слов','В наших уроках слова тоже с транскрипцией']]),
+  examples:[ex('shoes — /ʃuːz/','ʃ = «ш», uː = долгое «у»'),ex('seat belt — /ˈsiːt belt/','ˈ — ударение на первом слоге'),ex('cheese — /tʃiːz/','tʃ = «ч»'),ex('jam — /dʒæm/','dʒ = «дж», æ = между «а» и «э»'),ex('three — /θriː/','θ = язык между зубами'),ex('driver — /ˈdraɪvə/','ə на конце — слабый звук, r не читается')],
+  tasks:()=>{const T=(ipa,ok,bad,tip)=>({type:'pick',q:`<span class="ipa-q">/${ipa}/</span> — какое это слово?`,noGap:true,ok:[ok],opts:shf([ok,...bad]),tip,sayOk:ok});return shf([
+   T('ʃɒp','shop',['sop','chop'],'ʃ = «ш» → shop.'),T('tʃiːz','cheese',['shoes','keys'],'tʃ = «ч», iː = долгое «и» → cheese.'),T('ʃuːz','shoes',['choose','juice'],'ʃ = «ш», uː = долгое «у» → shoes.'),
+   T('bʊk','book',['back','bike'],'ʊ = короткое «у» → book.'),T('kæt','cat',['cut','kite'],'æ = между «а» и «э» → cat.'),T('θriː','three',['tree','free'],'θ = язык между зубами → three.'),
+   T('dʒæm','jam',['gem','yam'],'dʒ = «дж» → jam.'),T('jes','yes',['jazz','less'],'j = «й» → yes.'),T('ˈdraɪvə','driver',['diver','river'],'dr + aɪ («ай») → driver.'),
+   T('lɒŋ','long',['log','lung'],'ŋ = «н» в нос → long.'),T('naɪf','knife',['nice','knit'],'k в начале не читается: knife = /naɪf/.'),T('sɪt','sit',['seat','set'],'ɪ = короткое «и» → sit. Долгое было бы /siːt/ — seat.')]).slice(0,10);}}
+});
+Object.assign(LESSONS,{
+ ends:{icon:'🐍',title:'he sleeps — буква -s',sub:'I sleep, но he sleeps: когда глаголу нужна -s',
+  rule:()=>`<div class="card s-rule">
+    <div class="s-col"><p class="eyebrow">без -s</p><p>I sleep<br>you sleep<br>we sleep<br>they sleep</p></div>
+    <div class="s-col hot"><p class="eyebrow">+ s</p><p>he sleep<b>s</b><br>she sleep<b>s</b><br>it sleep<b>s</b><br>Mashka sleep<b>s</b></p></div></div>
+   <p class="sub">Запомни: <b>он, она, оно</b> — или <b>одно имя</b> (Mashka, Mum, my friend) — и речь про «обычно, всегда» → у глагола в конце <b>-s</b>. Как змейка: he-she-it — сссс 🐍</p>`+
+   table([['+ s','почти все глаголы','sleep → sleeps · dance → dances · play → plays'],['+ es','если в конце s, sh, ch, x, o','watch → watches · wash → washes · go → goes · do → does','p-which'],['y → ies','согласная + y','fly → flies · study → studies · cry → cries<br>но play → plays (перед y гласная)','p-that'],['has','исключение','have → <b>has</b>: She has got a cat.','p-who']])+
+   `<div class="card"><p class="eyebrow" style="margin-bottom:8px">Как звучит -s</p>
+    <p style="margin:0 0 4px"><mark class="who">[s]</mark> после глухих: sleeps, eats, walks</p>
+    <p style="margin:0 0 4px"><mark class="which">[z]</mark> после звонких: plays, runs, goes</p>
+    <p style="margin:0"><mark class="that">[ɪz]</mark> лишний слог: dances, watches, washes</p></div>
+   <p class="sub">Ловушка: в вопросе и с «не» -s уходит к does/doesn't: <i>Does she <b>sleep</b>? She doesn't <b>sleep</b>.</i> Глагол снова без -s.</p>`+
+   where([['🐱','Рассказать про кого-то','Mashka sleeps all day. She eats fish.'],['📅','Распорядок мамы, папы, друга','My dad gets up at six. He drives to work.'],['📖','Определения','A pedestrian is a person who walks in the street.']]),
+  examples:[ex('I sleep. Mashka <mark class="who">sleeps</mark>.','Я сплю. Машка спит.'),ex('We dance. She <mark class="that">dances</mark>.','Мы танцуем. Она танцует. (dances — [ɪz])'),ex('Iki <mark class="which">runs</mark> in his wheel every night.','Ики бегает в колесе каждую ночь.'),ex('Mum <mark class="that">watches</mark> TV. Dad <mark class="that">washes</mark> the car.','Мама смотрит ТВ. Папа моет машину.'),ex('Niko <mark class="which">plays</mark>, then he <mark class="which">cries</mark> «wheek»!','Нико играет, а потом кричит «уи»!'),ex('<mark class="who">Does</mark> Iki bite? — Yes, he <mark class="who">does</mark>.','Ики кусается? — Да.')],
+  tasks:()=>[...shf([
+   G('Mashka ___ all day.','sleeps',['sleep','sleeps'],'Машка — она → <b>sleeps</b>.'),G('I ___ in my bed.','sleep',['sleep','sleeps'],'<b>I</b> → без -s.'),
+   G('We ___ to school by bus.','go',['go','goes'],'<b>we</b> → без -s.'),G('My sister ___ very well.','dances',['dance','dances'],'сестра — she → <b>dances</b>.'),
+   G('Niko and Iki ___ a lot.','eat',['eat','eats'],'их двое — <b>they</b> → без -s.'),G('Iki ___ in his wheel.','runs',['run','runs'],'Ики — he → <b>runs</b>.'),
+   G('They ___ football on Sundays.','play',['play','plays'],'<b>they</b> → без -s.'),G('My dad ___ to work.','drives',['drive','drives'],'папа — he → <b>drives</b>.')]).slice(0,5),
+   ...shf([G('watch → he ___','watches',['watchs','watches','watchies'],'в конце ch → <b>+es</b>: watches.'),G('fly → it ___','flies',['flys','flies','flyes'],'согласная + y → <b>ies</b>: flies.'),
+    G('play → she ___','plays',['plays','plaies','playes'],'перед y гласная a → просто <b>+s</b>: plays.'),G('go → he ___','goes',['gos','goes','goies'],'в конце o → <b>+es</b>: goes.'),
+    G('wash → Mum ___','washes',['washs','washes','washies'],'в конце sh → <b>+es</b>: washes.'),G('study → she ___','studies',['studys','studies','studyes'],'согласная + y → <b>ies</b>: studies.'),
+    G('have → he ___','has',['haves','has','have'],'исключение: <b>has</b>.')]).slice(0,4),
+   ...shf([G('Как звучит -s в «dances»?','[ɪz]',['[s]','[z]','[ɪz]'],'после звука [s] (dance) — лишний слог <b>[ɪz]</b>.'),G('Как звучит -s в «sleeps»?','[s]',['[s]','[z]','[ɪz]'],'после глухого [p] — <b>[s]</b>.'),G('Как звучит -s в «plays»?','[z]',['[s]','[z]','[ɪz]'],'после гласной — звонкое <b>[z]</b>.')]).slice(0,1),
+   ...shf([C('Она не спит.','She doesn\'t sleep.',['She doesn\'t sleeps.','She don\'t sleep.'],'-s ушла к does: <b>doesn\'t sleep</b>.'),C('Машка любит рыбу.','Mashka likes fish.',['Mashka like fish.','Mashka is like fish.'],'Машка — она → <b>likes</b>.')]).slice(0,2)]}
+});
+
 /* ═══ ОЗВУЧКА ═══ */
 let enV=null; const pickV=()=>{const v=speechSynthesis.getVoices(); enV=v.find(x=>x.lang==='en-GB')||v.find(x=>x.lang.startsWith('en'))||null;};
 try{ pickV(); speechSynthesis.addEventListener('voiceschanged',pickV); }catch(e){}
 function say(t){ try{ speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(t.replace(/<[^>]+>/g,'')); u.lang='en-GB'; u.rate=.85; if(enV)u.voice=enV; speechSynthesis.speak(u);}catch(e){} }
+
+const GL={"able": ["способный (be able to — мочь)"], "after": ["после"], "again": ["снова"], "all": ["весь, все"], "always": ["всегда"], "am": ["есть (я есть) — форма to be"], "an": ["неопред. артикль"], "and": ["и"], "angry": ["злой, сердитый"], "animal": ["животное"], "answer": ["ответить; ответ"], "are": ["есть — форма to be (мы, вы, они)"], "assistant": ["помощник (shop assistant — продавец)"], "at": ["в, на (at school — в школе)"], "back": ["назад; спина"], "bag": ["сумка"], "bath": ["ванна"], "be": ["быть"], "bed": ["кровать"], "belt": ["ремень"], "best": ["лучший"], "bicycle": ["велосипед"], "bike": ["велосипед"], "bite": ["кусать(ся)"], "blue": ["синий, голубой"], "book": ["книга"], "bought": ["купил(а) — от buy"], "boy": ["мальчик"], "bus": ["автобус"], "but": ["но"], "buy": ["покупать"], "by": ["на (by bus — на автобусе)"], "cake": ["торт"], "can": ["могу, умею"], "car": ["машина"], "careful": ["осторожный"], "cat": ["кошка"], "cheese": ["сыр"], "choose": ["выбирать"], "chop": ["рубить"], "climb": ["лазить, взбираться"], "clock": ["часы (настенные)"], "coffee": ["кофе"], "cold": ["холодный; холодно"], "come": ["приходить"], "cook": ["готовить (еду)"], "could": ["мог, умел; не могли бы вы…"], "cry": ["кричать; плакать"], "cucumber": ["огурец"], "cut": ["резать"], "dance": ["танцевать"], "day": ["день"], "do": ["делать"], "doctor": ["врач"], "does": ["делает (he/she/it); вспомогательный в вопросе"], "dog": ["собака"], "drink": ["пить"], "drive": ["водить, ехать (на машине)"], "driver": ["водитель", "sp6-3a"], "eat": ["есть, кушать"], "eight": ["восемь"], "eleven": ["одиннадцать"], "english": ["английский"], "evening": ["вечер"], "every": ["каждый"], "eyes": ["глаза"], "fast": ["быстрый"], "find": ["найти"], "fish": ["рыба"], "five": ["пять"], "fly": ["летать; муха"], "football": ["футбол"], "four": ["четыре"], "free": ["свободный; бесплатный"], "friend": ["друг, подруга"], "from": ["из, от"], "get": ["получать (get up — вставать)"], "ginger": ["рыжий"], "girl": ["девочка"], "go": ["идти, ехать"], "got": ["have got — иметь"], "guinea": ["guinea pig — морская свинка"], "half": ["половина"], "hamster": ["хомяк"], "happy": ["счастливый, довольный"], "has": ["имеет (he/she/it has)"], "have": ["иметь"], "he": ["он"], "head": ["голова"], "heavy": ["тяжёлый"], "helmet": ["шлем"], "help": ["помогать"], "her": ["её"], "high": ["высоко; высокий"], "his": ["его"], "home": ["дом (at home — дома)"], "homework": ["домашнее задание"], "hungry": ["голодный"], "i": ["я"], "ill": ["больной"], "in": ["в"], "is": ["есть — форма to be (он, она, оно)"], "it": ["оно, это"], "its": ["его, её (о предмете, животном)"], "jam": ["варенье, джем"], "juice": ["сок"], "jump": ["прыгать"], "keep": ["держать, сохранять (keeps you safe — защищает)"], "key": ["ключ"], "kind": ["добрый"], "kite": ["воздушный змей"], "knife": ["нож"], "know": ["знать"], "lane": ["полоса (bike lane — велодорожка)"], "last": ["прошлый; последний"], "late": ["поздно; опоздавший"], "lazy": ["ленивый"], "learn": ["учить, изучать"], "light": ["свет, фонарь (traffic lights — светофор)"], "like": ["нравиться, любить"], "line": ["линия; строка"], "live": ["жить"], "long": ["длинный", "sp6-1a"], "look": ["смотреть (Look! — Смотри!)"], "lot": ["a lot — много"], "love": ["любить"], "lunch": ["обед"], "man": ["мужчина"], "me": ["мне, меня"], "milk": ["молоко"], "moment": ["момент (at the moment — сейчас)"], "monday": ["понедельник"], "morning": ["утро"], "mother": ["мама"], "mum": ["мама", "sp6-1a"], "my": ["мой, моя"], "near": ["рядом, около"], "never": ["никогда"], "new": ["новый"], "next": ["следующий (next year — в следующем году)"], "night": ["ночь"], "nine": ["девять"], "no": ["нет"], "not": ["не"], "now": ["сейчас"], "o'clock": ["ровно (о часах)"], "often": ["часто"], "on": ["на"], "one": ["один"], "orange": ["оранжевый, рыжий; апельсин"], "party": ["праздник, вечеринка"], "past": ["после (о времени: five past four)"], "people": ["люди"], "person": ["человек"], "pet": ["домашний питомец"], "phone": ["телефон"], "picture": ["картинка"], "pig": ["свинья (guinea pig — морская свинка)"], "place": ["место"], "play": ["играть"], "please": ["пожалуйста"], "promise": ["обещать"], "pupil": ["ученик, ученица"], "quarter": ["четверть"], "race": ["гонка, забег"], "rain": ["дождь; идёт дождь"], "red": ["красный"], "ride": ["ехать (верхом)", "sp6-3a"], "riddle": ["загадка"], "right": ["правильный; правый"], "ring": ["звонить"], "river": ["река"], "road": ["дорога"], "run": ["бегать"], "safe": ["безопасный, в безопасности", "sp6-3a"], "safely": ["безопасно"], "saturday": ["суббота"], "say": ["говорить, сказать"], "school": ["школа"], "seat": ["сиденье (seat belt — ремень безопасности)"], "see": ["видеть"], "sell": ["продавать"], "seven": ["семь"], "she": ["она"], "shoes": ["туфли, обувь"], "shop": ["магазин"], "sing": ["петь"], "sink": ["раковина"], "sister": ["сестра", "sp6-1a"], "sit": ["сидеть"], "six": ["шесть"], "sleep": ["спать"], "sometimes": ["иногда"], "speak": ["говорить (на языке)"], "street": ["улица"], "stripe": ["полоска"], "study": ["учиться, изучать"], "summer": ["лето"], "sunday": ["воскресенье"], "sunny": ["солнечный"], "swim": ["плавать"], "tail": ["хвост"], "take": ["брать"], "tank": ["танк; бак"], "tasty": ["вкусный"], "teach": ["учить, преподавать"], "teacher": ["учитель"], "tell": ["говорить, сообщать"], "ten": ["десять"], "thank": ["благодарить"], "that": ["тот; который"], "the": ["определённый артикль"], "then": ["потом"], "there": ["там (there is — есть)"], "they": ["они"], "thing": ["вещь"], "think": ["думать"], "third": ["третий"], "three": ["три"], "time": ["время"], "tiny": ["крошечный"], "tired": ["уставший"], "to": ["к, в; до (о времени: ten to five)"], "today": ["сегодня"], "tomorrow": ["завтра"], "too": ["тоже; слишком"], "toy": ["игрушка"], "traffic": ["движение", "sp6-3a"], "tree": ["дерево"], "tv": ["телевизор"], "twelve": ["двенадцать"], "twenty": ["двадцать"], "two": ["два"], "umbrella": ["зонт"], "up": ["вверх"], "usually": ["обычно"], "van": ["фургон"], "very": ["очень"], "vest": ["жилет"], "video": ["видео"], "walk": ["идти пешком, гулять"], "warden": ["смотритель (traffic warden — регулировщик)"], "was": ["был, была — прошедшее от to be"], "wash": ["мыть(ся), умываться"], "watch": ["смотреть (TV); часы (наручные)"], "we": ["мы"], "wear": ["носить, надевать"], "week": ["неделя"], "well": ["хорошо"], "west": ["запад", "sp6-1c"], "what": ["что, какой"], "wheel": ["колесо"], "when": ["когда"], "where": ["где"], "which": ["который (о вещах, животных)"], "who": ["кто; который (о людях)"], "will": ["будет, буду — будущее"], "wine": ["вино"], "with": ["с"], "won": ["выиграл — от win"], "word": ["слово"], "work": ["работа; работать"], "wrong": ["неправильный"], "year": ["год"], "yes": ["да"], "you": ["ты, вы"], "your": ["твой, ваш"], "zebra": ["зебра (zebra crossing — пешеходный переход)"], "lives": ["живёт — от live"], "age": ["возраст", "sp6-1a"], "aunt": ["тётя", "sp6-1a"], "big": ["большой", "sp6-1a"], "brother": ["брат", "sp6-1a"], "child": ["ребёнок", "sp6-1a"], "children": ["дети", "sp6-1a"], "cousin": ["двоюродный брат, двоюродная сестра", "sp6-1a"], "curly": ["кудрявый", "sp6-1a"], "daughter": ["дочь", "sp6-1a"], "dad": ["папа", "sp6-1a"], "fair": ["светлый", "sp6-1a"], "fat": ["толстый", "sp6-1a"], "grey": ["седой", "sp6-1a"], "hair": ["волосы", "sp6-1a"], "height": ["рост", "sp6-1a"], "husband": ["муж", "sp6-1a"], "old": ["старый", "sp6-1a"], "parents": ["родители", "sp6-1a"], "short": ["короткий", "sp6-1a"], "slim": ["стройный", "sp6-1a"], "son": ["сын", "sp6-1a"], "straight": ["прямой (о волосах)", "sp6-1a"], "twins": ["близнецы", "sp6-1a"], "uncle": ["дядя", "sp6-1a"], "wavy": ["волнистые (о волосах)", "sp6-1a"], "weight": ["вес", "sp6-1a"], "wife": ["жена", "sp6-1a"], "young": ["молодой", "sp6-1a"], "brazil": ["Бразилия", "sp6-1c"], "brazilian": ["бразильский; бразилец", "sp6-1c"], "britain": ["Великобритания", "sp6-1c"], "british": ["британский; британец", "sp6-1c"], "chile": ["Чили", "sp6-1c"], "chilean": ["чилийский; чилиец", "sp6-1c"], "compass": ["компас", "sp6-1c"], "desert": ["пустыня", "sp6-1c"], "east": ["восток", "sp6-1c"], "exactly": ["точно", "sp6-1c"], "german": ["немецкий; немец", "sp6-1c"], "germany": ["Германия", "sp6-1c"], "include": ["включать", "sp6-1c"], "japan": ["Япония", "sp6-1c"], "japanese": ["японский; японец", "sp6-1c"], "location": ["местонахождение", "sp6-1c"], "mountains": ["горы", "sp6-1c"], "north": ["север", "sp6-1c"], "north-east": ["северо-восток", "sp6-1c"], "north-west": ["северо-запад", "sp6-1c"], "poland": ["Польша", "sp6-1c"], "polish": ["польский; поляк", "sp6-1c"], "russia": ["Россия", "sp6-1c"], "russian": ["русский; русский", "sp6-1c"], "south": ["юг", "sp6-1c"], "spain": ["Испания", "sp6-1c"], "spanish": ["испанский; испанец", "sp6-1c"], "valley": ["долина", "sp6-1c"], "aspirin": ["аспирин", "sp6-2c"], "baker's": ["булочная", "sp6-2c"], "bank": ["банк", "sp6-2c"], "cafe": ["кафе", "sp6-2c"], "chemist's": ["аптека", "sp6-2c"], "greengrocer's": ["овощной магазин", "sp6-2c"], "library": ["библиотека", "sp6-2c"], "neighbourhood": ["микрорайон, район", "sp6-2c"], "newsagent's": ["газетный киоск", "sp6-2c"], "supermarket": ["супермаркет", "sp6-2c"], "pavement": ["тротуар", "sp6-3a"], "pedestrian": ["пешеход", "sp6-3a"], "annoy": ["досаждать, раздражать", "sp6-3a"], "block": ["загораживать", "sp6-3a"], "brakes": ["тормоза", "sp6-3a"], "check": ["проверять", "sp6-3a"], "clear": ["свободный (от транспорта); чистый", "sp6-3a"], "cross": ["пересекать", "sp6-3a"], "dangerous": ["опасный", "sp6-3a"], "enter": ["входить", "sp6-3a"], "handgrip": ["поручень", "sp6-3a"], "kerb": ["обочина", "sp6-3a"], "park": ["парковать(ся)", "sp6-3a"], "push": ["толкать", "sp6-3a"], "use": ["использовать", "sp6-3a"], "tyre": ["шина", "sp6-3a"]};
+const GLM={"middle aged": ["среднего возраста", "sp6-1a"], "bus station": ["автовокзал, автостанция", "sp6-2c"], "coffee shop": ["кафетерий, кофейня", "sp6-2c"], "pet shop": ["зоомагазин", "sp6-2c"], "post office": ["почта", "sp6-2c"], "toy shop": ["магазин игрушек", "sp6-2c"], "sports shop": ["спортивный магазин", "sp6-2c"], "back seat": ["заднее сиденье", "sp6-3a"], "bike lane": ["велосипедная дорожка", "sp6-3a"], "bicycle helmet": ["велосипедный шлем", "sp6-3a"], "lean out of the window": ["высовываться из окна", "sp6-3a"], "look both ways": ["смотреть в обе стороны", "sp6-3a"], "on foot": ["пешком", "sp6-3a"], "parking zone": ["парковка", "sp6-3a"], "seat belt": ["ремень безопасности", "sp6-3a"], "traffic lights": ["светофор", "sp6-3a"], "traffic sign": ["дорожный знак", "sp6-3a"], "traffic warden": ["дорожный инспектор, регулировщик", "sp6-3a"], "zebra crossing": ["пешеходный переход, «зебра»", "sp6-3a"], "flow of": ["поток чего-либо", "sp6-3a"]};
+
+/* ═══ НАЖМИ НА СЛОВО — ПЕРЕВОД ═══ выученные в тренажёрах слова подчёркнуты зелёным */
+const LKEYS=['sp6-1a','sp6-1c','sp6-2c','sp6-3a'];
+function knownSet(){ const S=new Set(); LKEYS.forEach(k=>{ try{ const d=JSON.parse(localStorage.getItem(k)||'{}'); Object.keys(d).forEach(w=>{ if(d[w]&&d[w].learned) S.add(w.toLowerCase()); }); }catch(e){} }); return S; }
+function lemma(w){ w=w.toLowerCase().replace(/’/g,"'"); const c=[w];
+  if(/n't$/.test(w)) c.push(w.replace(/n't$/,''), w==="won't"?'will':w==="can't"?'can':'');
+  if(w.endsWith("'s")) c.push(w.slice(0,-2)); if(w.endsWith("'ll")) c.push('will');
+  if(w.endsWith('ies')) c.push(w.slice(0,-3)+'y'); if(w.endsWith('es')) c.push(w.slice(0,-2)); if(w.endsWith('s')) c.push(w.slice(0,-1));
+  if(w.endsWith('ing')) c.push(w.slice(0,-3), w.slice(0,-3)+'e', w.slice(0,-4));
+  return c.find(x=>x&&GL[x]); }
+function wrapWords(root){
+  const K=knownSet();
+  root.querySelectorAll('.q, .ex .en, .card i, .s-col p, .where small, .snd-card i').forEach(el=>{
+    if(el.dataset.wrapped) return; el.dataset.wrapped=1;
+    const tw=document.createTreeWalker(el,NodeFilter.SHOW_TEXT,{acceptNode:n=>n.parentElement.closest('.gap,.w')?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
+    const nodes=[]; while(tw.nextNode()) nodes.push(tw.currentNode);
+    nodes.forEach(n=>{ const t=n.nodeValue; if(!/[A-Za-z]/.test(t)) return;
+      const f=document.createDocumentFragment(); let last=0;
+      t.replace(/[A-Za-z]+(?:['’][a-z]+)?/g,(m,i)=>{ const L=lemma(m); if(!L) return m;
+        f.appendChild(document.createTextNode(t.slice(last,i)));
+        const sp=document.createElement('span'); sp.className='w'+(K.has(L)||K.has(m.toLowerCase())?' kn':''); sp.dataset.l=L; sp.textContent=m; f.appendChild(sp); last=i+m.length; return m; });
+      f.appendChild(document.createTextNode(t.slice(last))); n.replaceWith(f); });
+  });
+}
+let wpop=null;
+document.addEventListener('click',e=>{
+  if(wpop){ wpop.remove(); wpop=null; }
+  const w=e.target.closest&&e.target.closest('.w'); if(!w) return;
+  e.preventDefault(); e.stopPropagation();
+  let word=w.textContent, L=w.dataset.l, ru=GL[L][0];
+  const nx=w.nextSibling&&w.nextSibling.nodeValue===' '?w.nextSibling.nextSibling:null;
+  const pv=w.previousSibling&&w.previousSibling.nodeValue===' '?w.previousSibling.previousSibling:null;
+  if(nx&&nx.classList&&nx.classList.contains('w')&&GLM[(L+' '+nx.dataset.l)]){ word=word+' '+nx.textContent; ru=GLM[L+' '+nx.dataset.l][0]; }
+  else if(pv&&pv.classList&&pv.classList.contains('w')&&GLM[(pv.dataset.l+' '+L)]){ word=pv.textContent+' '+word; ru=GLM[pv.dataset.l+' '+L][0]; }
+  const kn=w.classList.contains('kn');
+  wpop=document.createElement('div'); wpop.className='wpop';
+  wpop.innerHTML=`<b>${word}</b> — ${ru}${kn?'<small>✓ ты учила это слово</small>':''}`;
+  document.body.appendChild(wpop);
+  const r=w.getBoundingClientRect(), pw=wpop.offsetWidth;
+  wpop.style.left=Math.max(8,Math.min(innerWidth-pw-8,r.left+r.width/2-pw/2))+'px';
+  wpop.style.top=(r.top>90?r.top-wpop.offsetHeight-8:r.bottom+8)+'px';
+  say(word); UI.tick();
+},true);
+addEventListener('scroll',()=>{ if(wpop){ wpop.remove(); wpop=null; } },{passive:true});
 
 /* ═══ ХРАНИЛИЩЕ ═══ */
 const RS={get(){try{return JSON.parse(localStorage.getItem('rules'))||{}}catch(e){return{}}},
@@ -426,18 +659,18 @@ const RS={get(){try{return JSON.parse(localStorage.getItem('rules'))||{}}catch(e
 const scene=document.getElementById('scene'), homeBtn=document.getElementById('home'), bulb=document.getElementById('bulb');
 let L=null, LID=null, tasks=[], ti=0, score=0, firstTry=true;
 const mascot=(mood,text)=>`<div class="cat" onclick="purr()"><div class="mk-pic">${mashkaSVG('loaf',mood)}</div><div class="bubble"><b>Машка</b>${text}</div></div>`;
-function enter(){ scene.classList.remove('enter'); void scene.offsetWidth; scene.classList.add('enter'); window.scrollTo(0,0); }
+function enter(){ scene.classList.remove('enter'); void scene.offsetWidth; scene.classList.add('enter'); window.scrollTo(0,0); wrapWords(scene); scene.querySelectorAll('.snd-card').forEach(b=>b.onclick=()=>say(b.dataset.w)); }
 
+const ORDER=['tobe','havegot','ends','present','can','will','relative','time','sounds','ipa'];
 function list(){
   L=null; bulb.hidden=true; homeBtn.style.visibility='hidden';
   try{ if(location.hash) history.replaceState(null,'',location.pathname); }catch(e){}
   const d=RS.get();
   scene.innerHTML=`<p class="eyebrow">Мини-уроки</p><h1>Правила</h1>
     <p class="sub">Коротко, с картинкой и примерами. Потом — задания. Ошибся — подскажу, почему.</p>
-    <ul class="lessons">${Object.entries(LESSONS).map(([id,l])=>`<li><button data-id="${id}"><span class="ic">${l.icon}</span>
+    <ul class="lessons">${ORDER.map(id=>[id,LESSONS[id]]).map(([id,l])=>`<li><button data-id="${id}"><span class="ic">${l.icon}</span>
       <span><b>${l.title}</b><small>${l.sub}</small></span><span class="score">${d[id]&&d[id].best!=null?`${d[id].best}/${d[id].of}`:''}</span></button></li>`).join('')}
-      ${['to be — am, is, are','have got / has got','can, could, be able to','will — будущее время','Present Simple и Continuous','Как произносить: th, w, r…']
-        .map(t=>`<li><button class="soon" disabled><span class="ic">⏳</span><span><b>${t}</b><small>скоро</small></span><span></span></button></li>`).join('')}</ul>`;
+</ul>`;
   scene.querySelectorAll('[data-id]').forEach(b=>b.onclick=()=>open(b.dataset.id));
   enter();
 }
@@ -462,14 +695,18 @@ function task(){
   let body='';
   if(t.type==='pick'){
     const [a,b]=t.q.split('___');
-    body=`<p class="q">${a}<span class="gap" id="gap">&nbsp;</span>${b}</p>
-      <div class="opts row">${t.opts.map(o=>`<button class="opt" data-v="${o}">${o}</button>`).join('')}</div>`;
+    const wide=t.opts.some(o=>o.length>9);
+    body=`<p class="q">${t.noGap||b===undefined?t.q:`${a}<span class="gap" id="gap">&nbsp;</span>${b}`}</p>
+      <div class="opts ${wide?'':t.opts.length===2?'row two':'row'}">${t.opts.map(o=>`<button class="opt" data-v="${o}">${o}</button>`).join('')}</div>`;
   } else if(t.type==='riddle'){
     body=`<p class="eyebrow">🧩 Загадка: вставь слово и угадай</p><p class="q">${t.q.replace('___','<span class="gap" id="gap">&nbsp;</span>')}</p>
       <div class="opts row">${t.opts.map(o=>`<button class="opt" data-v="${o}">${o}</button>`).join('')}</div><div id="guess"></div>`;
   } else if(t.type==='join'){
-    body=`<p class="eyebrow">🔗 Склей в одно предложение</p><p class="q">${t.q}</p>
+    body=`<p class="eyebrow">${t.label||'🔗 Склей в одно предложение'}</p><p class="q">${t.q}</p>
       <div class="opts">${t.opts.map(o=>`<button class="opt" data-v="${o}" style="text-align:left;font-size:16px">${o}</button>`).join('')}</div>`;
+  } else if(t.type==='listen'){
+    body=`<p class="eyebrow">👂 Послушай и выбери слово</p><button class="big-snd" id="again">🔊</button>
+      <div class="opts row">${t.opts.map(o=>`<button class="opt" data-v="${o}">${o}</button>`).join('')}</div>`;
   } else if(t.type==='read'){
     body=`<p class="q" style="text-align:center;font-size:18px">Который час?</p>${clockSVG(t.h,t.m,{cls:'bigclock'})}<div class="digital">${digital(t.h,t.m)}</div>
       <div class="opts">${t.opts.map(([h,m])=>`<button class="opt" data-v="${h}:${m}">${timeEn(h,m)}</button>`).join('')}</div>`;
@@ -484,6 +721,7 @@ function task(){
       <button class="next" id="check">Проверить</button>`;
   }
   scene.innerHTML=`${rail()}<p class="eyebrow" style="margin-top:12px">Задание ${ti+1} из ${tasks.length}</p>${body}<div id="fb"></div>`;
+  if(t.type==='listen'){ setTimeout(()=>say(t.word),350); document.getElementById('again').onclick=()=>say(t.word); }
   if(t.type==='set'){
     const clk=document.getElementById('clk');
     const draw=()=>{ clk.innerHTML=clockSVG(t.cur[0],t.cur[1],{cls:'bigclock'})+`<div class="digital">${digital(t.cur[0],t.cur[1])}</div>`; };
@@ -498,7 +736,7 @@ function task(){
     scene.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
       const v=b.dataset.v;
       if(b.closest('#guess')) return;
-      const ok= (t.type==='pick'||t.type==='riddle') ? t.ok.includes(v) : t.type==='join' ? v===t.ok : v===`${t.h}:${t.m}`;
+      const ok= (t.type==='pick'||t.type==='riddle'||t.type==='listen') ? t.ok.includes(v) : t.type==='join' ? v===t.ok : v===`${t.h}:${t.m}`;
       if(ok&&t.type==='riddle'){ b.classList.add('right'); scene.querySelectorAll('.opts .opt').forEach(x=>x.disabled=true);
         document.getElementById('gap').textContent=v; UI.tick();
         const g=document.getElementById('guess');
@@ -509,8 +747,8 @@ function task(){
           else { x.classList.add('wrong'); x.disabled=true; UI.wrong(); firstTry=false; } });
         return; }
       if(ok){ b.classList.add('right'); scene.querySelectorAll('.opt').forEach(x=>x.disabled=true);
-        if(t.type==='pick'){ document.getElementById('gap').textContent=v; say(t.q.replace('___',v)); } else if(t.type==='join') say(v); else say(timeEn(t.h,t.m));
-        const extra= t.type==='pick'&&t.ok.length>1 ? (v==='that'?`Можно и <b>${t.ok[0]}</b>.`:'<b>that</b> тоже подошло бы.') : (t.type==='join'?'Одно предложение вместо двух — так и говорят.':t.type!=='pick'?`${digital(t.h,t.m)} — ${timeRu(t.h,t.m)}.`:'');
+        if(t.type==='pick'){ const g=document.getElementById('gap'); if(g){ g.textContent=v; say(t.q.replace('___',v)); } else if(t.sayOk) say(t.sayOk); } else if(t.type==='join'||t.type==='listen') say(v); else say(timeEn(t.h,t.m));
+        const extra= t.ru ? t.ru : t.type==='listen' ? `Это <b>${v}</b>.` : t.type==='pick'&&t.ok.length>1&&t.ok.includes('that') ? (v==='that'?`Можно и <b>${t.ok[0]}</b>.`:'<b>that</b> тоже подошло бы.') : (t.type==='pick'?'':t.type==='join'?'Одно предложение вместо двух — так и говорят.':t.type!=='pick'?`${digital(t.h,t.m)} — ${timeRu(t.h,t.m)}.`:'');
         answer(true,null,extra);
       } else { b.classList.add('wrong'); b.disabled=true; answer(false,t.tip); }
     });
@@ -543,7 +781,7 @@ bulb.onclick=()=>{ if(!L) return;
   const bg=document.createElement('div'); bg.style.cssText='position:fixed;inset:0;z-index:50;background:rgba(18,36,28,.4);display:flex;align-items:flex-end;justify-content:center';
   bg.innerHTML=`<div style="background:var(--paper);width:min(600px,100%);max-height:86vh;overflow:auto;border-radius:18px 18px 0 0;padding:18px max(16px,env(safe-area-inset-left,0px)) calc(18px + env(safe-area-inset-bottom,0px))">
     <p class="eyebrow">💡 Правило</p><h2>${L.title}</h2>${L.rule()}<button class="next" id="cl">Понятно</button></div>`;
-  document.body.appendChild(bg); bg.querySelector('#cl').onclick=()=>bg.remove(); bg.onclick=e=>{ if(e.target===bg) bg.remove(); };
+  document.body.appendChild(bg); wrapWords(bg); bg.querySelector('#cl').onclick=()=>bg.remove(); bg.onclick=e=>{ if(e.target===bg) bg.remove(); };
 };
 homeBtn.onclick=list;
 soundButton(document.getElementById('sndHost'));
