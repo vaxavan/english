@@ -275,18 +275,21 @@ const LESSONS=[
  {type:'rule',file:'l/pravila.html#time',id:'time',tag:'time',title:'What time is it?',sub:'Время по часам: past и to',isNew:true},
  {type:'rule',file:'l/pravila.html#sounds',id:'sounds',tag:'θ',title:'Как произносить: th, w, r, ŋ',sub:'схемы языка и губ, «услышь разницу»',isNew:true},
  {type:'rule',file:'l/pravila.html#ipa',id:'ipa',tag:'/ʃ/',title:'Транскрипция',sub:'как читать значки: /ʃuːz/ — shoes',isNew:true},
+ {type:'dict',file:'l/pravila.html#dict',tag:'📒',title:'Мой словарик',sub:'Нажми на слово в правилах → «＋ в словарик»',key:'my-dict'},
  {type:'own',file:'l/svoy-tekst.html',tag:'＋',title:'Свой текст',sub:'Вставь любой текст или песню — тренажёр соберётся сам',key:'own-texts',total:0},
 ];
 function progress(l){
   try{
     const d=JSON.parse(localStorage.getItem(l.key)||'null'); if(!d) return 0;
-    if(l.type==='own') return Array.isArray(d)?d.length:0;
+    if(l.type==='own'||l.type==='dict') return Array.isArray(d)?d.length:0;
     if(l.type==='text') return (d.done||[]).length;
     return Object.values(d).filter(w=>w&&w.learned).length;
   }catch(e){ return 0; }
 }
 function render(){
   const make=l=>{
+    if(l.type==='dict'){ let n=0; try{ n=(JSON.parse(localStorage.getItem('my-dict')||'[]')).length; }catch(e){}
+      return `<button class="lesson text own" data-file="${l.file}" data-title="${l.title}"><span class="tag">${l.tag}</span><span><span class="l-title">${l.title}</span><span class="l-sub">${n?`Слов: ${n} · проверь себя`:l.sub}</span></span><span class="l-go" aria-hidden="true">›</span></button>`; }
     if(l.type==='rule'){ let r=null; try{ r=(JSON.parse(localStorage.getItem('rules')||'{}'))[l.id]; }catch(e){}
       return `<button class="lesson rule" data-file="${l.file}" data-title="${l.title}"><span class="tag">${l.tag}</span><span><span class="l-title">${l.title}${l.isNew&&!r?'<span class="new">новое</span>':''}</span><span class="l-sub">${l.sub}${r?` · лучший результат ${r.best} из ${r.of}`:''}</span>${r?`<span class="bar"><i style="width:${Math.round(r.best/r.of*100)}%"></i></span>`:''}</span><span class="l-go" aria-hidden="true">›</span></button>`; }
     if(l.type==='own'){ const k=progress(l); return `<button class="lesson text own" data-file="${l.file}" data-title="${l.title}"><span class="tag">${l.tag}</span><span><span class="l-title">${l.title}</span><span class="l-sub">${k?`Мои тексты: ${k}`:l.sub}</span></span><span class="l-go" aria-hidden="true">›</span></button>`; }
@@ -299,7 +302,7 @@ function render(){
         ${n?`<span class="bar"><i style="width:${pct}%"></i></span>`:''}</span>
       <span class="l-go" aria-hidden="true">›</span></button>`;
   };
-  document.getElementById('words').innerHTML=LESSONS.filter(l=>l.type==='words').map(make).join('');
+  document.getElementById('words').innerHTML=LESSONS.filter(l=>l.type==='words'||l.type==='dict').map(make).join('');
   document.getElementById('texts').innerHTML=LESSONS.filter(l=>l.type==='text'||l.type==='own').map(make).join('');
   document.getElementById('rules').innerHTML=LESSONS.filter(l=>l.type==='rule').map(make).join('');
   document.querySelectorAll('.lesson').forEach(b=>b.onclick=()=>openLesson(b.dataset.file,b.dataset.title));
