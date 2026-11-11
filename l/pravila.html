@@ -55,7 +55,8 @@ mark.past{background:var(--past-bg);color:var(--past)} mark.to{background:var(--
 .opt.right{background:#e8f2ea;border-color:var(--moss);color:var(--moss);animation:pop .35s cubic-bezier(.3,1.6,.5,1)}
 .opt.wrong{background:#f8e8e2;border-color:var(--clay);color:var(--clay);animation:nudge .3s}
 .opt[disabled]{cursor:default}
-.clockopt{padding:8px;display:flex;justify-content:center}
+.clockopt{padding:8px;display:flex;flex-direction:column;align-items:center;gap:4px}
+.dig-s{display:block;font:600 15px/1 ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums;margin-top:3px}
 .clockopt svg{width:100%;max-width:120px;height:auto}
 .tip{background:#fff7e8;border:1px solid #edd9b0;border-radius:12px;padding:12px 14px;margin:14px 0 0;font-size:15px}
 .tip b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:#94561e;margin-bottom:4px}
@@ -374,7 +375,7 @@ const LESSONS={
  time:{
   icon:'🕒', title:'What time is it?', sub:'Время по часам: past и to',
   rule:()=>`<div class="card" style="text-align:center">
-    ${clockSVG(4,10,{halves:true,minuteLabels:true,cls:'bigclock',label:'Правая половина — past, левая — to'})}
+    ${clockSVG(4,10,{halves:true,minuteLabels:true,cls:'bigclock',label:'Правая половина — past, левая — to'})}<div class="digital">4:10</div>
     <p style="margin:0 0 6px">Смотри на <b style="color:var(--clay)">длинную стрелку</b>:</p>
     <p style="margin:0"><mark class="past">справа — past</mark> «после»: <i>five <b>past</b> four</i> — пять минут пятого</p>
     <p style="margin:6px 0 0"><mark class="to">слева — to</mark> «до»: <i>ten <b>to</b> five</i> — без десяти пять</p>
@@ -448,7 +449,7 @@ function ruleScreen(){
 }
 function examples(){
   scene.innerHTML=`<p class="eyebrow">Примеры · шаг 2 из 3</p><h2>Нажми на пример — услышишь</h2>
-    ${L.examples.map((e,i)=>`<button class="ex" data-i="${i}">${e.clock?`<span style="width:64px;flex:none">${clockSVG(e.clock[0],e.clock[1],{small:true})}</span>`:'<span class="spk">🔊</span>'}
+    ${L.examples.map((e,i)=>`<button class="ex" data-i="${i}">${e.clock?`<span style="width:64px;flex:none;text-align:center">${clockSVG(e.clock[0],e.clock[1],{small:true})}<b class="dig-s">${digital(e.clock[0],e.clock[1])}</b></span>`:'<span class="spk">🔊</span>'}
       <span><span class="en">${e.en}</span><span class="ru">${e.ru}</span></span></button>`).join('')}
     <button class="next" id="go">К заданиям</button>`;
   scene.querySelectorAll('.ex').forEach(b=>b.onclick=()=>{ const e=L.examples[+b.dataset.i]; say(e.say||e.en); });
@@ -470,22 +471,22 @@ function task(){
     body=`<p class="eyebrow">🔗 Склей в одно предложение</p><p class="q">${t.q}</p>
       <div class="opts">${t.opts.map(o=>`<button class="opt" data-v="${o}" style="text-align:left;font-size:16px">${o}</button>`).join('')}</div>`;
   } else if(t.type==='read'){
-    body=`<p class="q" style="text-align:center;font-size:18px">Который час?</p>${clockSVG(t.h,t.m,{cls:'bigclock'})}
+    body=`<p class="q" style="text-align:center;font-size:18px">Который час?</p>${clockSVG(t.h,t.m,{cls:'bigclock'})}<div class="digital">${digital(t.h,t.m)}</div>
       <div class="opts">${t.opts.map(([h,m])=>`<button class="opt" data-v="${h}:${m}">${timeEn(h,m)}</button>`).join('')}</div>`;
   } else if(t.type==='clock'){
     body=`<p class="q" style="text-align:center">${timeEn(t.h,t.m)}<br><small style="font:14px var(--f-body);color:var(--dim)">Выбери часы</small></p>
-      <div class="opts row">${t.opts.map(([h,m])=>`<button class="opt clockopt" data-v="${h}:${m}">${clockSVG(h,m,{small:true})}</button>`).join('')}</div>`;
+      <div class="opts row">${t.opts.map(([h,m])=>`<button class="opt clockopt" data-v="${h}:${m}">${clockSVG(h,m,{small:true})}<b class="dig-s">${digital(h,m)}</b></button>`).join('')}</div>`;
   } else if(t.type==='set'){
     t.cur=[t.h,0];
     body=`<p class="q" style="text-align:center">Поставь стрелки: <b>${timeEn(t.h,t.m).replace("It's ","")}</b></p>
-      <div id="clk">${clockSVG(t.h,0,{cls:'bigclock'})}</div>
+      <div id="clk">${clockSVG(t.h,0,{cls:'bigclock'})}<div class="digital">${digital(t.h,0)}</div></div>
       <div class="setter"><button data-d="-60">− час</button><button data-d="-5">− 5 мин</button><button data-d="5">+ 5 мин</button><button data-d="60">+ час</button></div>
       <button class="next" id="check">Проверить</button>`;
   }
   scene.innerHTML=`${rail()}<p class="eyebrow" style="margin-top:12px">Задание ${ti+1} из ${tasks.length}</p>${body}<div id="fb"></div>`;
   if(t.type==='set'){
     const clk=document.getElementById('clk');
-    const draw=()=>{ clk.innerHTML=clockSVG(t.cur[0],t.cur[1],{cls:'bigclock'}); };
+    const draw=()=>{ clk.innerHTML=clockSVG(t.cur[0],t.cur[1],{cls:'bigclock'})+`<div class="digital">${digital(t.cur[0],t.cur[1])}</div>`; };
     scene.querySelectorAll('.setter button').forEach(b=>b.onclick=()=>{ let tot=(t.cur[0]%12)*60+t.cur[1]+ +b.dataset.d; tot=(tot+720)%720;
       t.cur=[Math.floor(tot/60)||12, tot%60]; UI.tick(); draw(); });
     document.getElementById('check').onclick=()=>{
