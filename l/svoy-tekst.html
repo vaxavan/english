@@ -122,6 +122,17 @@ button:active:not([disabled]){transform:scale(.97)}
 <div class="stage" id="stageName"></div>
 <main id="scene"></main>
 
+<script>/* нет встроенной озвучки (так бывает во встроенном браузере Telegram/WhatsApp на Android):
+   урок всё равно работает, только без голоса, и подсказываем открыть в обычном браузере */
+(function(){ var no=!window.speechSynthesis||!window.SpeechSynthesisUtterance; if(!no) return;
+  try{ var stub={getVoices:function(){return []},speak:function(){},cancel:function(){},pause:function(){},resume:function(){},addEventListener:function(){},removeEventListener:function(){},speaking:false,pending:false,paused:false};
+       Object.defineProperty(window,'speechSynthesis',{value:stub,configurable:true,writable:true});
+       Object.defineProperty(window,'SpeechSynthesisUtterance',{value:function(t){this.text=t;},configurable:true,writable:true}); }catch(e){}
+  document.addEventListener('DOMContentLoaded',function(){ var d=document.createElement('div');
+    d.style.cssText='position:relative;margin:8px;background:#12241c;color:#f2efe6;font:14px/1.35 system-ui,sans-serif;padding:10px 38px 10px 12px;border-radius:12px';
+    d.innerHTML='🔇 В этом браузере нет озвучки слов. Открой ссылку в Chrome или Safari — там слова будут звучать.<button aria-label="Закрыть" style="position:absolute;right:6px;top:6px;border:0;background:none;color:inherit;font-size:18px;cursor:pointer">✕</button>';
+    d.querySelector('button').onclick=function(){d.remove()}; document.body.insertBefore(d,document.body.firstChild); });
+})();</script>
 <script>
 /* Текст учебника — только для личной подготовки.
    В продаваемое приложение не переносить. */
@@ -311,7 +322,7 @@ function plural(n,a,b,c){const m=n%10,h=n%100; return m===1&&h!==11?a:m>=2&&m<=4
 const loadOwn=()=>{try{return JSON.parse(localStorage.getItem(OWN_KEY))||[]}catch(e){return []}};
 const saveOwn=l=>{try{localStorage.setItem(OWN_KEY,JSON.stringify(l))}catch(e){}};
 const CYR=/[а-яё]/i;
-const RUDE=/\b(shit\w*|fuck\w*|motherf\w*|bitch\w*|asshole\w*|bastard\w*|dick\w*|cunt\w*|piss\w*|damn\w*|crap\w*|wtf)\b|бля|хуй|хуё|пизд|ебат|ёб|сука|говн|дерьм/i;
+const RUDE=/\b(shit\w*|fuck\w*|motherf\w*|bitch\w*|asshole\w*|bastard\w*|dick(?:s|head\w*)?|cunt\w*|piss\w*|damn\w*|crap\w*|wtf)\b|бля|хуй|хуё|пизд|ебат|ёб|сука|говн|дерьм/i;
 let CUR=null;
 function parseRaw(raw){
   const lines=raw.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);

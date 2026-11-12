@@ -125,6 +125,17 @@ h1{font-size:clamp(30px,8vw,42px);font-weight:400;margin:0 0 8px;line-height:1.1
 <div class="stage" id="stageName"></div>
 <main id="scene"></main>
 
+<script>/* нет встроенной озвучки (так бывает во встроенном браузере Telegram/WhatsApp на Android):
+   урок всё равно работает, только без голоса, и подсказываем открыть в обычном браузере */
+(function(){ var no=!window.speechSynthesis||!window.SpeechSynthesisUtterance; if(!no) return;
+  try{ var stub={getVoices:function(){return []},speak:function(){},cancel:function(){},pause:function(){},resume:function(){},addEventListener:function(){},removeEventListener:function(){},speaking:false,pending:false,paused:false};
+       Object.defineProperty(window,'speechSynthesis',{value:stub,configurable:true,writable:true});
+       Object.defineProperty(window,'SpeechSynthesisUtterance',{value:function(t){this.text=t;},configurable:true,writable:true}); }catch(e){}
+  document.addEventListener('DOMContentLoaded',function(){ var d=document.createElement('div');
+    d.style.cssText='position:relative;margin:8px;background:#12241c;color:#f2efe6;font:14px/1.35 system-ui,sans-serif;padding:10px 38px 10px 12px;border-radius:12px';
+    d.innerHTML='🔇 В этом браузере нет озвучки слов. Открой ссылку в Chrome или Safari — там слова будут звучать.<button aria-label="Закрыть" style="position:absolute;right:6px;top:6px;border:0;background:none;color:inherit;font-size:18px;cursor:pointer">✕</button>';
+    d.querySelector('button').onclick=function(){d.remove()}; document.body.insertBefore(d,document.body.firstChild); });
+})();</script>
 <script>
 /* ═══ СЛОВАРЬ ═══
    phrase — словосочетание, показывается ПОСЛЕ того, как слово выучено.
