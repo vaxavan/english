@@ -265,16 +265,7 @@ const LESSONS=[
  {type:'text',file:'l/tekst-oxford.html',tag:'Text',title:'Oxford Street',sub:'Famous Streets · 2 кусочка',key:'oxford-text',total:2},
  {type:'text',file:'l/tekst-uk-1d.html',tag:'1d',title:'The United Kingdom',sub:'Culture Corner · 4 кусочка',key:'uk-1d',total:4},
  {type:'text',file:'l/tekst-london.html',tag:'Text',title:'London',sub:'Текст про Лондон · 6 кусочков',key:'london-text',total:6},
- {type:'rule',file:'l/pravila.html#tobe',id:'tobe',tag:'be',title:'to be — am, is, are',sub:'«быть»: I am, she is, they are',isNew:true},
- {type:'rule',file:'l/pravila.html#havegot',id:'havegot',tag:'have',title:'have got / has got',sub:'«у меня есть»: семья, внешность, вещи',isNew:true},
- {type:'rule',file:'l/pravila.html#ends',id:'ends',tag:'-s',title:'he sleeps — буква\u00a0‑s',sub:'I sleep, но he sleeps, she dances',isNew:true},
- {type:'rule',file:'l/pravila.html#present',id:'present',tag:'now',title:'Present Simple и Continuous',sub:'«обычно» или «прямо сейчас»',isNew:true},
- {type:'rule',file:'l/pravila.html#can',id:'can',tag:'can',title:'can, could, be able to',sub:'могу, мог, смогу',isNew:true},
- {type:'rule',file:'l/pravila.html#will',id:'will',tag:'will',title:'will — будущее',sub:'будет, сделаю, обещаю',isNew:true},
- {type:'rule',file:'l/pravila.html#relative',id:'relative',tag:'who',title:'Who, which, that',sub:'«который»: загадки, определения, склейка',isNew:true},
- {type:'rule',file:'l/pravila.html#time',id:'time',tag:'time',title:'What time is it?',sub:'Время по часам: past и to',isNew:true},
- {type:'rule',file:'l/pravila.html#sounds',id:'sounds',tag:'θ',title:'Как произносить: th, w, r, ŋ',sub:'схемы языка и губ, «услышь разницу»',isNew:true},
- {type:'rule',file:'l/pravila.html#ipa',id:'ipa',tag:'/ʃ/',title:'Транскрипция',sub:'как читать значки: /ʃuːz/ — shoes',isNew:true},
+ {type:'rules',file:'l/pravila.html',tag:'Aa',title:'Правила по учебнику',sub:'22 мини-урока: модули 1–4, время, произношение',total:22,isNew:true},
  {type:'dict',file:'l/pravila.html#dict',tag:'📒',title:'Мой словарик',sub:'Нажми на слово в правилах → «＋ в словарик»',key:'my-dict'},
  {type:'own',file:'l/svoy-tekst.html',tag:'＋',title:'Свой текст',sub:'Вставь любой текст или песню — тренажёр соберётся сам',key:'own-texts',total:0},
 ];
@@ -293,6 +284,9 @@ function render(){
   const make=l=>{
     if(l.type==='dict'){ let n=0; try{ n=(JSON.parse(localStorage.getItem('my-dict')||'[]')).length; }catch(e){}
       return `<button class="lesson text own" data-file="${l.file}" data-title="${l.title}"><span class="tag">${l.tag}</span><span><span class="l-title">${l.title}</span><span class="l-sub">${n?`Слов: ${n} · проверь себя`:l.sub}</span></span><span class="l-go" aria-hidden="true">›</span></button>`; }
+    if(l.type==='rules'){ let d={}; try{ d=JSON.parse(localStorage.getItem('rules')||'{}')||{}; }catch(e){}
+      const n=Object.values(d).filter(r=>r&&r.best!=null).length, pct=Math.round(Math.min(n,l.total)/l.total*100);
+      return `<button class="lesson rule" data-file="${l.file}" data-title="${l.title}"><span class="tag">${l.tag}</span><span><span class="l-title">${l.title}${l.isNew&&!n?'<span class="new">новое</span>':''}</span><span class="l-sub">${n?`Пройдено ${n} из ${l.total} · по модулям, как в учебнике`:l.sub}</span>${n?`<span class="bar"><i style="width:${pct}%"></i></span>`:''}</span><span class="l-go" aria-hidden="true">›</span></button>`; }
     if(l.type==='rule'){ let r=null; try{ r=(JSON.parse(localStorage.getItem('rules')||'{}'))[l.id]; }catch(e){}
       return `<button class="lesson rule" data-file="${l.file}" data-title="${l.title}"><span class="tag">${l.tag}</span><span><span class="l-title">${l.title}${l.isNew&&!r?'<span class="new">новое</span>':''}</span><span class="l-sub">${l.sub}${r?` · лучший результат ${r.best} из ${r.of}`:''}</span>${r?`<span class="bar"><i style="width:${Math.round(r.best/r.of*100)}%"></i></span>`:''}</span><span class="l-go" aria-hidden="true">›</span></button>`; }
     if(l.type==='own'){ const k=progress(l); return `<button class="lesson text own" data-file="${l.file}" data-title="${l.title}"><span class="tag">${l.tag}</span><span><span class="l-title">${l.title}</span><span class="l-sub">${k?`Мои тексты: ${k}`:l.sub}</span></span><span class="l-go" aria-hidden="true">›</span></button>`; }
@@ -307,7 +301,7 @@ function render(){
   };
   document.getElementById('words').innerHTML=LESSONS.filter(l=>l.type==='words'||l.type==='dict').map(make).join('');
   document.getElementById('texts').innerHTML=LESSONS.filter(l=>l.type==='text'||l.type==='own').map(make).join('');
-  document.getElementById('rules').innerHTML=LESSONS.filter(l=>l.type==='rule').map(make).join('');
+  document.getElementById('rules').innerHTML=LESSONS.filter(l=>l.type==='rules').map(make).join('');
   document.querySelectorAll('.lesson').forEach(b=>b.onclick=()=>openLesson(b.dataset.file,b.dataset.title));
 }
 const player=document.getElementById('player'), frame=document.getElementById('frame');
